@@ -10,6 +10,9 @@
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12"
   },
+  "resolutions": {
+    "chokidar": "^3.4.0"
+  },
   "version": "0.1.0",
   "devDependencies": {
     "webpack-dev-server": "^3.11.2"
