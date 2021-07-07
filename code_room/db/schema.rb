@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_07_012249) do
+ActiveRecord::Schema.define(version: 2021_07_07_021215) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 2021_07_07_012249) do
     t.integer "friends", default: [], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "session_token", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
