@@ -1,3 +1,5 @@
 node_modules
-tmp/
+tmp
+tmp/cache/bootsnap/compile-cache
+tmp/development_secret.txt
 .rubocop.yml
