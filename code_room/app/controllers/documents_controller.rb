@@ -19,6 +19,18 @@ class DocumentsController < ApplicationController
     end
   end
 
+  def edit
+    @document = Document.find_by(id: params[:id])
+    @room = @document.room
+    redirect_to user_document_room(@room)
+  end
+
+  def index
+    @documents = Document.where(admin_id: params[:admin_id])
+
+    render json: @documents
+  end
+
   def show
     @document = Document.find_by(id: params[:id])
 

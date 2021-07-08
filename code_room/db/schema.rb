@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_07_021215) do
+ActiveRecord::Schema.define(version: 2021_07_08_003525) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -19,12 +19,10 @@ ActiveRecord::Schema.define(version: 2021_07_07_021215) do
   create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "file_name", null: false
     t.text "content"
-    t.uuid "room_id"
     t.uuid "admin_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["admin_id"], name: "index_documents_on_admin_id"
-    t.index ["room_id"], name: "index_documents_on_room_id"
   end
 
   create_table "rooms", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -33,7 +31,9 @@ ActiveRecord::Schema.define(version: 2021_07_07_021215) do
     t.integer "collabs", array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.uuid "document_id", null: false
     t.index ["admin_id"], name: "index_rooms_on_admin_id"
+    t.index ["document_id"], name: "index_rooms_on_document_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 2021_07_07_021215) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "documents", "rooms"
   add_foreign_key "documents", "users", column: "admin_id"
+  add_foreign_key "rooms", "documents"
   add_foreign_key "rooms", "users", column: "admin_id"
 end

@@ -8,8 +8,9 @@ class Document < ApplicationRecord
              foreign_key: :admin_id,
              primary_key: :id
 
-  belongs_to :room,
+  has_one :room,
              class_name: 'Room',
-             foreign_key: :room_id,
-             primary_key: :id
+             foreign_key: :document_id,
+             primary_key: :id,
+             dependent: :destroy
 end
