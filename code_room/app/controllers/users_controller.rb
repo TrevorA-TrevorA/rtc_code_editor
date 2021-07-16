@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  before_action :confirm_logged_in, except: %i[new create]
+  before_action :confirm_logged_in, except: [:new, :create]
 
   def show
     @user = User.find_by(id: params[:id])

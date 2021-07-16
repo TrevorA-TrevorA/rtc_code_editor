@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
     @user = User.find_by_credentials(email, password)
     if @user
       log_in(@user)
-      redirect_to user_url(@user)
+      redirect_to user_dash_url(@user)
     else
       flash.now[:error] = 'Log-in unsuccessful'
       render :new
