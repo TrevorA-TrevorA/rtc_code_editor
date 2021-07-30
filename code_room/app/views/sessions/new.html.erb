@@ -1,9 +1,0 @@
-<%= flash.now[:errors] %>
-
-<%= form_with(url: session_url, id: "sign_in") do %>
-<%= label(:user,:email, "Email:") %><br>
-<%= email_field(:user,:email, autofocus: true) %><br>
-<%= label(:user,:password, "Password:") %><br>
-<%= password_field(:user,:password) %><br>
-<%= submit_tag("Sign In") %>
-<% end %>

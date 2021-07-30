@@ -17,11 +17,10 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       log_in(@user)
-      render json: @user
-      #redirect_to user_url(@user)
+      render status: 201, json: @user
     else
       flash.now[:errors] = @user.errors.full_messages
-      render json: { "status": 401 }
+      render status: 404
       return
     end
   end
@@ -29,7 +28,7 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find_by(id: params[:id])
     @user.destroy
-    redirect_to new_user_url
+    render status: 200
   end
 
   private

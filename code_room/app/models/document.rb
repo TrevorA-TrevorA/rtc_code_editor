@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Document < ApplicationRecord
-  validates_presence_of :file_name, :admin_id, :room_id
+  validates_presence_of :file_name, :admin_id
 
   belongs_to :admin,
              class_name: 'User',

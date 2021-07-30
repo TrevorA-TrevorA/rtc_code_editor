@@ -1,13 +1,15 @@
 Rails.application.routes.draw do
-  root 'sessions#new'
-  get '/dash/:user_id', to: 'users#show', as: 'user_dash'
-  resources :users, only: [:new, :create, :show, :destroy] do
-    resources :documents, except: [:new, :show], shallow: true do
+  scope path: :api, defaults: { format: 'json' } do
+    get '/dash/:user_id', to: 'users#show', as: 'user_dash'
+    resources :users, only: [:create, :show, :destroy, :index] do
+      resources :documents, except: [:show], shallow: true do
+      end
     end
-  end
-  
-  resources :rooms, only: [:create, :show, :destroy]
+    
+    resources :rooms, only: [:create, :show, :destroy]
 
-  get '/sign-in', to: 'sessions#new', as: 'sign_in'
-  resource :session, only: [:new, :create, :destroy]
+    resource :session, only: [:create, :destroy]
+  end
+
+  root "static#index"
 end

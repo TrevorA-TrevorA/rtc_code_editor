@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 class DocumentsController < ApplicationController
-  def new; end
-
   def create
-    @document = Document.create(document_params)
-
-    render json: @document if @document
+    @document = Document.new(document_params)
+    @document.admin_id = request.path_parameters[:user_id]
+    if @document.save
+      render status: 201, json: @document
+    else
+      render status: 400
+    end
   end
 
   def delete
@@ -19,14 +21,8 @@ class DocumentsController < ApplicationController
     end
   end
 
-  def edit
-    @document = Document.find_by(id: params[:id])
-    @room = @document.room
-    redirect_to user_document_room(@room)
-  end
-
   def index
-    @documents = Document.where(admin_id: params[:admin_id])
+    @documents = Document.where(admin_id: request.path_parameters[:user_id])
 
     render json: @documents
   end
@@ -36,9 +32,6 @@ class DocumentsController < ApplicationController
 
     if @document
       render json: @document
-      respond_to do |format|
-        format.js
-      end
     else
       render status: 404
     end
@@ -47,14 +40,17 @@ class DocumentsController < ApplicationController
   def update
     @document = Document.find_by(id: params[:id])
 
-    if @document.update(document_update_params)
+    if @document.update(document_params)
       render json: @document
-      respond_to do |format|
-        format.js
-      end
     else
       render status: 400
       flash.now[:errors] = @document.errors.full_messages
     end
   end
+end
+
+private
+
+def document_params
+  params.require(:document).permit(:file_name, :content)
 end
