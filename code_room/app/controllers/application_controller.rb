@@ -20,6 +20,8 @@ class ApplicationController < ActionController::Base
   private
 
   def confirm_logged_in
-    redirect_to new_session_url unless current_user
+    unless current_user
+      render status: 401, json: nil
+    end
   end
 end

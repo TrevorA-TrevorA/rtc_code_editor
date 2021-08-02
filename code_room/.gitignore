@@ -8,3 +8,5 @@ tmp
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+.byebug_history
+.vscode/

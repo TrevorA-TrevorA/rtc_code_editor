@@ -7,9 +7,9 @@ class SessionsController < ApplicationController
     @user = User.find_by_credentials(email, password)
     if @user
       log_in(@user)
-      render json: @user
+      render "users/show"
     else
-      flash.now[:error] = 'Log-in unsuccessful'
+      render status: 400, json: nil
     end
   end
 
