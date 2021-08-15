@@ -14,8 +14,6 @@ class Nav extends React.Component {
     .then(res => {
       if (res.ok) {
         this.props.dispatch({ type: LOGOUT })
-        e.returnValue = true;
-        return;
       } else {
         throw new Error(res.statusText)
       }
@@ -25,6 +23,7 @@ class Nav extends React.Component {
   render() {
     return(
     <div className="nav-menu">
+      <h5>Welcome, {this.props.user.username}</h5>
       <Link to="/" onClick={this.logout}>Logout</Link>
     </div>
     )

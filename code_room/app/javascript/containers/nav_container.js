@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
-import nav from '../components/nav';
+import Nav from '../components/nav';
 
 const mapStateToProps = state => ({
   user: state.user
 })
 
-const NavContainer = connect(mapStateToProps)(nav);
+const NavContainer = connect(mapStateToProps)(Nav);
 
 export default NavContainer;

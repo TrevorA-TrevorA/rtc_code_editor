@@ -3,8 +3,12 @@ import LoginContainer from '../containers/login_container';
 import { Redirect } from 'react-router-dom'
 
 class Home extends React.Component {
+  constructor(props) {
+    super(props)
+  }
   render() {
-    return window.currentUser ? <Redirect to="/dash"/> : <LoginContainer/>;
+    console.log(this.props.user)
+    return this.props.user ? <Redirect to="/dash"/> : <LoginContainer/>;
   }
 }
 

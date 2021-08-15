@@ -1,4 +1,20 @@
+.dash {
+  color: #ffffff;
+  background: url("code_room_bg.png");
+  background-size: cover;
+  padding: 0 2vw;
+  height: 100%;
+}
+
 .nav-menu {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  * { display: inline-block; margin: 0; }
+  font-size: 1.5vw;
+  padding-top: 1vw;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }

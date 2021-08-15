@@ -1,5 +1,6 @@
 import React from 'react';
 import { LOGIN } from '../reducers/auth_reducer';
+import { Redirect } from 'react-router-dom';
 
 class Login extends React.Component {
   constructor(props) {
@@ -28,7 +29,6 @@ class Login extends React.Component {
       const response = await fetch("api/session", options)
       if (!response.ok) throw new Error("log in failed")
       const user = await response.json();
-      window.currentUser = user;
       this.props.dispatch({ type: LOGIN, user: user})
       
     } catch(error) {
@@ -37,7 +37,7 @@ class Login extends React.Component {
   }
   
   render() {
-    if (this.props.currentUser) {
+    if (this.props.user) {
       return <Redirect to="/dash"/>
     }
 

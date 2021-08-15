@@ -3,14 +3,17 @@ import NavContainer from '../containers/nav_container'
 import { Redirect } from 'react-router-dom'
 
 class Dash extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  
   render() {
-    if (!this.props.currentUser) {
+    if (!this.props.user) {
       return <Redirect to="/"/>
     }
 
     return (
-    <div>
-      <h1>Welcome {currentUser.username}</h1>
+    <div className="dash">
       <NavContainer/>
     </div>
     )

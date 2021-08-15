@@ -1,18 +1,19 @@
 import React from 'react';
-import Home from './home'
-import { store } from '../store'
+import HomeContainer from '../containers/home_container';
+import { store } from '../store';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import Dash from './dash';
+import DashContainer from '../containers/dash_container';
 
 class App extends React.Component {
   render() {
+    const user = store.getState().user;
     return (
   <Provider store={store}>
     <BrowserRouter>
       <Switch>
-        <Route exact path="/" render={() => <Home/>}/>
-        <Route exact path="/dash" render={() => <Dash/>}/>
+        <Route exact path="/" render={() => <HomeContainer/>}/>
+        <Route exact path="/dash" render={() => <DashContainer/>}/>
       </Switch>
     </BrowserRouter>
   </Provider>
