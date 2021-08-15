@@ -5,16 +5,17 @@
 
 * {
   font-family: Arial, Helvetica, sans-serif;
-  color: white;
 }
 
-body {
+.login {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   height: 100vh;
-  background-image: url("code_room_bg.png");
+  background: url("code_room_bg.png");
+  background-size: cover;
+  color: white;
 }
 
 form {

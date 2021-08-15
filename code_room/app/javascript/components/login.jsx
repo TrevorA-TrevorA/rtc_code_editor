@@ -1,4 +1,5 @@
 import React from 'react';
+import { LOGIN } from '../reducers/auth_reducer';
 
 class Login extends React.Component {
   constructor(props) {
@@ -23,26 +24,33 @@ class Login extends React.Component {
       }
     }
 
-    const response = await fetch("api/session", options)
-    if (response.status === 400) { 
-      console.log("log in failed")
-      return;
+    try {
+      const response = await fetch("api/session", options)
+      if (!response.ok) throw new Error("log in failed")
+      const user = await response.json();
+      window.currentUser = user;
+      this.props.dispatch({ type: LOGIN, user: user})
+      
+    } catch(error) {
+      console.log(error);
     }
-
-    const user = await response.json();
-    window.currentUser = user;
-    location.replace(`dash/${user.id}`)
   }
   
   render() {
+    if (this.props.currentUser) {
+      return <Redirect to="/dash"/>
+    }
+
     return (
-      <form onSubmit={this.authenticateUser}>
-        <label>email</label>
-        <input type="email" onChange={this.update} value={this.state.email}/>
-        <label>password</label>
-        <input type="password" onChange={this.update} value={this.state.password}/>
-        <input type="submit" value="sign in"/>
-      </form>
+      <div className="login">
+        <form onSubmit={this.authenticateUser}>
+          <label>email</label>
+          <input type="email" autoFocus onChange={this.update} value={this.state.email}/>
+          <label>password</label>
+          <input type="password" onChange={this.update} value={this.state.password}/>
+          <input type="submit" value="sign in"/>
+        </form>
+      </div>
     )
   }
 }
