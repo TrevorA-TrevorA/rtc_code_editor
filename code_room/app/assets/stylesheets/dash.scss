@@ -12,9 +12,16 @@
   * { display: inline-block; margin: 0; }
   font-size: 1.5vw;
   padding-top: 1vw;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 a {
   text-decoration: none;
   color: inherit;
+}
+
+#ace-editor {
+  position: absolute;
+  top: 7.708333333333334vw;
+  left: 4.635416666666667vw;
 }

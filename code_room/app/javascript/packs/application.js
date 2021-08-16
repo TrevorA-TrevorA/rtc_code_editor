@@ -17,3 +17,6 @@ window.$ = $;
 var componentRequireContext = require.context("components", true);
 var ReactRailsUJS = require("react_ujs");
 ReactRailsUJS.useContext(componentRequireContext);
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => $(".profiler-button").css("display", "none"), 300)
+})
