@@ -14,6 +14,7 @@ class App extends React.Component {
       <Switch>
         <Route exact path="/" render={() => <HomeContainer/>}/>
         <Route exact path="/dash" render={() => <DashContainer/>}/>
+        <Route exact path="/doc/:docId/room" render={() => <Room/>}/>
       </Switch>
     </BrowserRouter>
   </Provider>

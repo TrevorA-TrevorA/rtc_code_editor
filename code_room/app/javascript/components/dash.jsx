@@ -1,7 +1,7 @@
 import React from 'react';
-import NavContainer from '../containers/nav_container'
-import { Redirect } from 'react-router-dom'
-import AceEditor from 'react-ace';
+import { DashButtons } from './dash_buttons';
+import NavContainer from '../containers/nav_container';
+import { Redirect } from 'react-router-dom';
 import "ace-builds";
 import "ace-builds/webpack-resolver";
 
@@ -18,12 +18,9 @@ class Dash extends React.Component {
     return (
     <div className="dash">
       <NavContainer/>
-      <AceEditor
-      height="60%"
-      width="45%"
-      mode="javascript"
-      theme="monokai"
-      />
+      <div className="gray-area">
+      <DashButtons/>
+      </div>
     </div>
     )
   }
