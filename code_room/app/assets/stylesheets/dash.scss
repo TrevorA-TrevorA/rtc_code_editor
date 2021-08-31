@@ -1,16 +1,16 @@
 .dash {
   padding: 0 2vw;
   height: 100%;
+  font-family: Montserrat, Arial, Helvetica, sans-serif;
 }
 
 .nav-menu {
   display: flex;
   justify-content: space-between;
   * { display: inline-block; margin: 0; }
-  font-size: 1.5vw;
+  font-size: 20px;
   padding: 2vw;
   margin: 0 3.229166666666667vw;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 a {
@@ -42,4 +42,43 @@ a {
   justify-content: space-between;
   margin-bottom: 6.406249999999999vw;
   column-gap: 1.0416666666666665vw;
+}
+
+#fileUpload {
+  width: 100%;
+  height: 100%;
+}
+
+.doc-row {
+  display: flex;
+  position: relative;
+  align-items: center;
+  min-height: 5.104166666666667vw;
+  font-size: 15px;
+  border: 0.26041666666666663 solid #F3F6F9;
+  background-color: #FFFFFF;
+  input[type="checkbox"] {
+    position: absolute;
+    left: 1.5625vw;
+  }
+}
+
+.file-name {
+  position: absolute;
+  left: 5.729166666666666vw;
+}
+
+.file-size {
+  position: absolute;
+  left: 31.145833333333332vw;
+}
+
+.file-date {
+  position: absolute;
+  left: 52.03124999999999vw;
+}
+
+.file-open-button {
+  position: absolute;
+  right: 2.3958333333333335vw;
 }

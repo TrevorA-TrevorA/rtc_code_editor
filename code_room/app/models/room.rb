@@ -11,5 +11,5 @@ class Room < ApplicationRecord
   belongs_to :document,
            class_name: 'Document',
            foreign_key: :document_id,
-           primary_key: :id,
+           primary_key: :id
 end

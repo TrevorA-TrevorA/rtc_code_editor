@@ -1,30 +1,60 @@
 import React from 'react';
+import { UPLOAD } from '../reducers/doc_reducer';
 
-export const DashButtons = () => {
-  return (
-    <div className="dash-button-row">
-      <UploadButton/>
-      <DownloadButton/>
-      <DeleteButton/>
-      <ManageEditorsButton/>
-    </div>
-  )
-}
+ export class UploadButton extends React.Component {
+   constructor(props) {
+     super(props)
+     this.addFile = this.addFile.bind(this);
+   }
 
-export const UploadButton = (props) => {
-  return (
-    <div style={{position: "relative", flexGrow: 1}}>
-      <input
-      id="fileUpload"
-      style={{position: "absolute", zIndex: -1}}
-      className="dash-button"
-      accept=".js, .jsx, .ts, .rb, .py, .dart" 
-      onChange={props.callback} 
-      type="file" 
-      title=""/>
-      <button style={{width: "100%"}} onClick={() => fileUpload.click()} className="dash-button">UPLOAD</button>
-    </div>
-  )
+  async addFile(e) {
+    const newDocs = e.currentTarget.files;
+    const successfullyAddedDocs = [];
+    const url = `api/users/${this.props.user.id}/documents`
+    for (let i = 0; i < newDocs.length; i++) {
+      let doc = newDocs[i]
+      let reader = new FileReader();
+      reader.readAsText(doc)
+      const params = JSON.stringify({ document: {
+        size: (doc.size),
+        file_name:  doc.name,
+      }})
+      
+      const headers =  { "Content-Type": "application/json" }
+      const options = { body: params, method: 'POST', headers }
+
+      try {
+        const res = await fetch(url, options)
+        const json = await res.json()
+        if (!res.ok) throw new Error(res.statusText);
+        let { name, size } = doc;
+        let docRecord = { file_name: name, size, id: json.id }
+        docRecord.updated_at = json.updated_at;
+        successfullyAddedDocs.push(docRecord);
+      } catch(err) {
+        console.log(err);
+      }
+   }
+    fileUpload.value = ""
+    this.props.dispatch({ type: UPLOAD, documents: successfullyAddedDocs })
+  }
+
+   render() {
+    return (
+      <div style={{position: "relative", flexGrow: 1}}>
+        <input
+        id="fileUpload"
+        style={{position: "absolute", zIndex: -1}}
+        onChange={this.addFile}
+        className="dash-button"
+        multiple={true}
+        accept=".js, .jsx, .ts, .rb, .py, .dart" 
+        type="file" 
+        title=""/>
+        <button style={{width: "100%"}} onClick={() => fileUpload.click()} className="dash-button">UPLOAD</button>
+      </div>
+    )
+   }
 }
 
 export const DownloadButton = () => {

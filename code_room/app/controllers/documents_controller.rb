@@ -52,5 +52,5 @@ end
 private
 
 def document_params
-  params.require(:document).permit(:file_name, :content)
+  params.require(:document).permit(:file_name, :size, :content)
 end

@@ -1,9 +1,8 @@
 import React from 'react';
-import { DashButtons } from './dash_buttons';
+import { DashButtonRow } from './dash_button_row';
+import DocListContainer from '../containers/doc_list_container'
 import NavContainer from '../containers/nav_container';
 import { Redirect } from 'react-router-dom';
-import "ace-builds";
-import "ace-builds/webpack-resolver";
 
 class Dash extends React.Component {
   constructor(props) {
@@ -19,7 +18,8 @@ class Dash extends React.Component {
     <div className="dash">
       <NavContainer/>
       <div className="gray-area">
-      <DashButtons/>
+      <DashButtonRow/>
+      <DocListContainer/>
       </div>
     </div>
     )

@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware } from 'redux';
-import thunk from "redux-thunk";
-import  logger  from 'redux-logger';
-import { authReducer} from './reducers/auth_reducer';
+import thunk from 'redux-thunk';
+import logger from 'redux-logger';
+import rootReducer from './reducers/root_reducer';
 
-export const store = createStore(authReducer, { user: window.currentUser }, applyMiddleware(logger, thunk));
+export const store = createStore(rootReducer, { user: window.currentUser, documents: window.currentUser.documents }, applyMiddleware(logger, thunk));
