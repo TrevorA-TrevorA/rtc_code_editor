@@ -7,36 +7,51 @@ import { UPLOAD } from '../reducers/doc_reducer';
      this.addFile = this.addFile.bind(this);
    }
 
-  async addFile(e) {
+    async addFile(e) {
     const newDocs = e.currentTarget.files;
     const successfullyAddedDocs = [];
-    const url = `api/users/${this.props.user.id}/documents`
-    for (let i = 0; i < newDocs.length; i++) {
-      let doc = newDocs[i]
-      let reader = new FileReader();
-      reader.readAsText(doc)
-      const params = JSON.stringify({ document: {
-        size: (doc.size),
-        file_name:  doc.name,
-      }})
-      
-      const headers =  { "Content-Type": "application/json" }
-      const options = { body: params, method: 'POST', headers }
 
-      try {
-        const res = await fetch(url, options)
-        const json = await res.json()
-        if (!res.ok) throw new Error(res.statusText);
-        let { name, size } = doc;
-        let docRecord = { file_name: name, size, id: json.id }
-        docRecord.updated_at = json.updated_at;
-        successfullyAddedDocs.push(docRecord);
-      } catch(err) {
-        console.log(err);
+    const awaitSave = setInterval(() => {
+      if (successfullyAddedDocs.length < newDocs.length) return;
+      clearInterval(awaitSave);
+      fileUpload.value = ""
+      this.props.dispatch({ type: UPLOAD, documents: successfullyAddedDocs })
+    }, 100)
+
+    const url = `api/users/${this.props.user.id}/documents`;
+      for (let i = 0; i < newDocs.length; i++) {
+        let loading = true;
+        let doc = newDocs[i]
+        let reader = new FileReader();
+        reader.onload = () => loading = false;
+        reader.readAsText(doc)
+        let awaitFileRead = setInterval( async () => {
+          if (loading) return;
+          clearInterval(awaitFileRead);
+          const params = JSON.stringify({ document: {
+            size: (doc.size),
+            file_name:  doc.name,
+            content: reader.result
+          }})
+          
+          const headers =  { "Content-Type": "application/json" }
+          const options = { body: params, method: 'POST', headers }
+
+          try {
+            const res = await fetch(url, options)
+            const json = await res.json()
+            if (!res.ok) throw new Error(res.statusText);
+            let { name, size } = doc;
+            let docRecord = { file_name: name, size, id: json.id }
+            docRecord.updated_at = json.updated_at;
+            successfullyAddedDocs.push(docRecord);
+            
+          } catch(err) {
+            clearInterval(awaitSave);
+            console.log(err);
+          }
+        }, 100)
       }
-   }
-    fileUpload.value = ""
-    this.props.dispatch({ type: UPLOAD, documents: successfullyAddedDocs })
   }
 
    render() {
