@@ -6,7 +6,7 @@ import {
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  documents: state.docs,
+  documents: state.documents,
 });
 
 export const UploadButtonContainer = connect(mapStateToProps)(UploadButton);

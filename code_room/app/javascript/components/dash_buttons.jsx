@@ -9,27 +9,14 @@ import { UPLOAD } from '../reducers/doc_reducer';
 
     async addFile(e) {
     const newDocs = e.currentTarget.files;
-    const successfullyAddedDocs = [];
-
-    const awaitSave = setInterval(() => {
-      if (successfullyAddedDocs.length < newDocs.length) return;
-      clearInterval(awaitSave);
-      fileUpload.value = ""
-      this.props.dispatch({ type: UPLOAD, documents: successfullyAddedDocs })
-    }, 100)
 
     const url = `api/users/${this.props.user.id}/documents`;
       for (let i = 0; i < newDocs.length; i++) {
-        let loading = true;
         let doc = newDocs[i]
         let reader = new FileReader();
-        reader.onload = () => loading = false;
-        reader.readAsText(doc)
-        let awaitFileRead = setInterval( async () => {
-          if (loading) return;
-          clearInterval(awaitFileRead);
+        reader.onload = async () => {
           const params = JSON.stringify({ document: {
-            size: (doc.size),
+            size: doc.size,
             file_name:  doc.name,
             content: reader.result
           }})
@@ -44,13 +31,12 @@ import { UPLOAD } from '../reducers/doc_reducer';
             let { name, size } = doc;
             let docRecord = { file_name: name, size, id: json.id }
             docRecord.updated_at = json.updated_at;
-            successfullyAddedDocs.push(docRecord);
-            
+            this.props.dispatch({ type: UPLOAD, doc: docRecord })
           } catch(err) {
-            clearInterval(awaitSave);
             console.log(err);
           }
-        }, 100)
+        }
+        reader.readAsText(doc)
       }
   }
 
