@@ -11,7 +11,7 @@ class DocumentsController < ApplicationController
     end
   end
 
-  def delete
+  def destroy
     @document = Document.find_by(id: params[:id])
 
     if @document
@@ -24,6 +24,11 @@ class DocumentsController < ApplicationController
   def index
     @documents = Document.where(admin_id: request.path_parameters[:user_id])
 
+    if params[:ids]
+      ids = JSON.parse(Base64.decode64(params[:ids]))
+      @documents = @documents.select { |doc| ids.include?(doc.id) }
+    end
+    
     render json: @documents
   end
 

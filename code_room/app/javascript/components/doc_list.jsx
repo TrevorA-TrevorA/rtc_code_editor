@@ -1,24 +1,7 @@
 import React from 'react';
+import DocRowContainer from '../containers/doc_row_container';
 
-const FileOpenButton = props => {
-  return (
-    <button className="file-open-button">OPEN</button>
-  )
-}
-
-const DocRow = props => {
-  return(
-    <div className="doc-row">
-      <input type="checkbox"/>
-      <p className="file-name">{props.name}</p>
-      <p className="file-size">{props.size}</p>
-      <p className="file-date">{props.updated}</p>
-      <FileOpenButton/>
-    </div>
-  )
-}
-
-const DocListHeader = props => {
+const DocListHeader = () => {
   return (
     <div className="doc-row">
       <input type="checkbox"/>
@@ -48,8 +31,9 @@ const DocList = props => {
         const date = dateFormat
         .format(new Date(file.updated_at))
         .replaceAll(/\//g, "-")
-        return <DocRow
-        key={file.file_name} 
+        return <DocRowContainer
+        key={file.file_name}
+        docId={file.id}
         name={file.file_name}
         size={file.size}
         updated={date}
