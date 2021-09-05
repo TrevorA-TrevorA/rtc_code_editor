@@ -4,7 +4,15 @@ import DocRowContainer from '../containers/doc_row_container';
 const DocListHeader = () => {
   return (
     <div className="doc-row">
-      <input type="checkbox"/>
+      <input onClick={
+        (e) => {
+          $("input[type='checkbox']").each((i, c) => {
+            if (!i) return;
+            if (e.target.checked !== c.checked) c.click();
+          })
+        }
+      } 
+      type="checkbox"/>
       <p className="file-name">Name</p>
       <p className="file-size">Size (Bytes)</p>
       <p className="file-date">Updated</p>

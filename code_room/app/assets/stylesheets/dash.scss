@@ -1,10 +1,10 @@
 .dash {
   padding: 0 2vw;
-  height: 100%;
   font-family: Montserrat, Arial, Helvetica, sans-serif;
 }
 
 .nav-menu {
+  font-family: Montserrat, Arial, Helvetica, sans-serif;
   display: flex;
   justify-content: space-between;
   * { display: inline-block; margin: 0; }
@@ -18,13 +18,8 @@ a {
   color: inherit;
 }
 
-#ace-editor {
-  position: absolute;
-  top: 7.708333333333334vw;
-  left: 4.635416666666667vw;
-}
-
 .gray-area {
+  position: relative;
   padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
   margin: 4.583333333333333vw 3.229166666666667vw 3.3854166666666665vw;
   background-color: #F3F6F9;
@@ -37,10 +32,15 @@ a {
   flex-grow: 1;
 }
 
+#docList {
+  max-height: 25.208333333333332vw;
+  overflow: auto;
+}
+
 .dash-button-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 6.406249999999999vw;
+  margin-bottom: 4vw;
   column-gap: 1.0416666666666665vw;
 }
 

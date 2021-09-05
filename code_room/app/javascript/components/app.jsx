@@ -4,6 +4,7 @@ import { store } from '../store';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import DashContainer from '../containers/dash_container';
+import Room from './room';
 
 class App extends React.Component {
   render() {

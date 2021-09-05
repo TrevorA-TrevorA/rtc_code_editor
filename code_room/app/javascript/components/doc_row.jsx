@@ -1,13 +1,20 @@
 import React from 'react';
 import { SELECT, DESELECT } from '../reducers/selection_reducer'
 
-const FileOpenButton = () => {
+const FileOpenButton = props => {
+    
   return (
-    <button className="file-open-button">OPEN</button>
+    <button 
+    onClick={props.callback} 
+    className="file-open-button">OPEN</button>
   )
 }
 
 const DocRow = props => {
+  const openRoom = () => {
+    location.assign(`/doc/${props.docId}/room`)
+  }
+
   return(
     <div className="doc-row">
       <input onChange={(e) => {
@@ -20,7 +27,7 @@ const DocRow = props => {
       <p className="file-name">{props.name}</p>
       <p className="file-size">{props.size}</p>
       <p className="file-date">{props.updated}</p>
-      <FileOpenButton/>
+      <FileOpenButton callback={openRoom}/>
     </div>
   )
 }
