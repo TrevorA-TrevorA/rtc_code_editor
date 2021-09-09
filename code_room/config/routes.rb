@@ -1,12 +1,10 @@
 Rails.application.routes.draw do
   scope path: :api, defaults: { format: 'json' } do
-    resources :users, only: [:create, :show, :destroy, :index] do
-      resources :documents, shallow: true do
-      end
+    resources :users, only: [:create, :show, :destroy, :index], shallow: true do
+      resources :documents
+      resources :collaborations, only: [:create, :destroy, :index]
     end
     
-    resources :rooms, only: [:create, :show, :destroy]
-
     resource :session, only: [:create, :destroy]
   end
 

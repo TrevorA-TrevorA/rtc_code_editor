@@ -19,10 +19,15 @@ a {
 }
 
 .gray-area {
-  position: relative;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  position: absolute;
   padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
-  margin: 4.583333333333333vw 3.229166666666667vw 3.3854166666666665vw;
+  margin: 5vw 3.229166666666667vw 3.3854166666666665vw;
   background-color: #F3F6F9;
+  height: 44.53125;
 }
 
 .dash-button {
@@ -34,6 +39,7 @@ a {
 
 #docList {
   max-height: 25.208333333333332vw;
+  margin-top: 6.354166666666666vw;
   overflow: auto;
 }
 
@@ -55,7 +61,7 @@ a {
   align-items: center;
   min-height: 5.104166666666667vw;
   font-size: 15px;
-  border: 0.26041666666666663 solid #F3F6F9;
+  border: 0.26041666666666663vw solid #F3F6F9;
   background-color: #FFFFFF;
   input[type="checkbox"] {
     position: absolute;

@@ -10,11 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_29_232907) do
+ActiveRecord::Schema.define(version: 2021_09_09_002325) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "collaborations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "editor_id", null: false
+    t.uuid "document_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["document_id"], name: "index_collaborations_on_document_id"
+    t.index ["editor_id"], name: "index_collaborations_on_editor_id"
+  end
 
   create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "file_name", null: false
@@ -23,18 +32,8 @@ ActiveRecord::Schema.define(version: 2021_08_29_232907) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.float "size", null: false
+    t.text "pending_revisions"
     t.index ["admin_id"], name: "index_documents_on_admin_id"
-  end
-
-  create_table "rooms", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name", null: false
-    t.uuid "admin_id", null: false
-    t.integer "collabs", array: true
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.uuid "document_id", null: false
-    t.index ["admin_id"], name: "index_rooms_on_admin_id"
-    t.index ["document_id"], name: "index_rooms_on_document_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -48,7 +47,7 @@ ActiveRecord::Schema.define(version: 2021_08_29_232907) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "collaborations", "documents"
+  add_foreign_key "collaborations", "users", column: "editor_id"
   add_foreign_key "documents", "users", column: "admin_id"
-  add_foreign_key "rooms", "documents"
-  add_foreign_key "rooms", "users", column: "admin_id"
 end

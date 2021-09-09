@@ -59,7 +59,6 @@ class Room extends React.Component {
     }).then(json => {
       const content = json.content;
       const mode = this.getEditorMode(json.file_name);
-      console.log(mode)
       this.setState({ editorText: "\n" + content, editorMode: mode })
     }).catch(err => console.log(err))
   }

@@ -7,12 +7,6 @@ class User < ApplicationRecord
   validates :password, presence: { on: create }, length: { minimum: 8 }
   after_initialize :ensure_session_token
 
-  has_many :rooms,
-           class_name: 'Room',
-           foreign_key: :admin_id,
-           primary_key: :id,
-           dependent: :destroy
-
   has_many :documents,
            class_name: 'Document',
            foreign_key: :admin_id,
