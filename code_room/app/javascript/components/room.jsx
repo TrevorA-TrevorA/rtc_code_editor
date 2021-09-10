@@ -1,6 +1,7 @@
 import React from 'react';
 import NavContainer from '../containers/nav_container'
 import AceEditor from 'react-ace';
+import ChatBox from './chat_box';
 import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
@@ -67,7 +68,7 @@ class Room extends React.Component {
     return (
     <div className="room">
       <NavContainer/>
-      <div className="gray-area">
+      <div className="gray-area doc-room">
       <AceEditor
       height="37.708333333333336vw"
       width="55.46875vw"
@@ -76,6 +77,7 @@ class Room extends React.Component {
       keyboardHandler="vscode"
       value={this.state.editorText}
       />
+      <ChatBox/>
       </div>
     </div>
     )

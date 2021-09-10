@@ -18,6 +18,37 @@ a {
   color: inherit;
 }
 
+#chatBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 37.708333333333336vw;
+  width: 28.740625vw;
+  background-color: #FFFFFF;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+#chatBoxHeader {
+  height: 4.067708333333333vw;
+  background-color: #000000;
+}
+
+#chatInput {
+  resize: none;
+  border: none;
+  padding: .5em;
+  font-size: 20px;
+  height: 4.067708333333333vw;
+}
+
+#chatBody {
+  flex-grow: 1;
+}
+
+#chatInput:focus {
+  outline: none;
+}
+
 .gray-area {
   top: 0;
   right: 0;
@@ -28,6 +59,11 @@ a {
   margin: 5vw 3.229166666666667vw 3.3854166666666665vw;
   background-color: #F3F6F9;
   height: 44.53125;
+}
+
+.doc-room {
+  display: flex;
+  justify-content: space-between;
 }
 
 .dash-button {
