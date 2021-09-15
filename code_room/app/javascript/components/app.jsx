@@ -4,7 +4,7 @@ import { store } from '../store';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import DashContainer from '../containers/dash_container';
-import Room from './room';
+import RoomContainer from '../containers/room_container';
 
 class App extends React.Component {
   render() {
@@ -15,7 +15,7 @@ class App extends React.Component {
       <Switch>
         <Route exact path="/" render={() => <HomeContainer/>}/>
         <Route exact path="/dash" render={() => <DashContainer/>}/>
-        <Route exact path="/doc/:docId/room" render={() => <Room/>}/>
+        <Route exact path="/doc/:docId/room" render={() => <RoomContainer/>}/>
       </Switch>
     </BrowserRouter>
   </Provider>

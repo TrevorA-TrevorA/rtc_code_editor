@@ -77,7 +77,7 @@ class Room extends React.Component {
       keyboardHandler="vscode"
       value={this.state.editorText}
       />
-      <ChatBox/>
+      <ChatBox user={this.props.user}/>
       </div>
     </div>
     )
