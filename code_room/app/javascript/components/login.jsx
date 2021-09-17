@@ -1,6 +1,6 @@
 import React from 'react';
 import { LOGIN } from '../reducers/auth_reducer';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 class Login extends React.Component {
   constructor(props) {
@@ -50,6 +50,7 @@ class Login extends React.Component {
           <input type="password" onChange={this.update} value={this.state.password}/>
           <input type="submit" value="sign in"/>
         </form>
+        <Link to="/sign-up">create account</Link>
       </div>
     )
   }

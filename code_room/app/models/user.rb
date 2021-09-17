@@ -13,6 +13,16 @@ class User < ApplicationRecord
            primary_key: :id,
            dependent: :destroy
 
+  has_many :collaborations,
+  class_name: 'Collaboration',
+  foreign_key: :editor_id,
+  primary_key: :id,
+  dependent: :destroy
+
+  has_many :editable_documents,
+  through: :collaborations,
+  source:  :document
+
 
   def self.find_by_credentials(email, password)
     user = User.find_by(email: email)

@@ -5,7 +5,7 @@ import consumer from "./consumer"
       chatLog: [],
       
       connected() {
-        console.log("connected...")
+        console.log("chat channel connected...")
         // Called when the subscription is ready for use on the server
       },
 

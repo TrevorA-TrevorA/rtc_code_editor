@@ -1,7 +1,7 @@
 import React from 'react';
 import DocRowContainer from '../containers/doc_row_container';
 
-const DocListHeader = () => {
+const DocListHeader = props => {
   return (
     <div className="doc-row">
       <input onClick={
@@ -16,6 +16,8 @@ const DocListHeader = () => {
       <p className="file-name">Name</p>
       <p className="file-size">Size (Bytes)</p>
       <p className="file-date">Updated</p>
+      <p className="access-status">Access</p>
+      <p className="doc-row-rightmost">Total: {props.docCount}</p>
     </div>
   )
 }
@@ -31,11 +33,16 @@ const DocList = props => {
     hour12: true
   }
 
+  const docs = props.documents;
+  const editables = props.editables;
+
   const dateFormat = new Intl.DateTimeFormat("en-US", options)
   return (
     <div id="docList">
-      <DocListHeader/>
-      {props.documents.map(file => {
+      <DocListHeader docCount={docs.concat(editables).length}/>
+      <div id="docListBody">
+      {[docs, editables].map(list => {
+        return list.map((file, _, arr) => {
         const date = dateFormat
         .format(new Date(file.updated_at))
         .replaceAll(/\//g, "-")
@@ -44,9 +51,11 @@ const DocList = props => {
         docId={file.id}
         name={file.file_name}
         size={file.size}
+        accessStatus={ arr === docs ? "Admin" : "Co-Editor" }
         updated={date}
         />
-      })}
+      })})}
+      </div>
     </div>
   )
 }

@@ -60,7 +60,7 @@ a {
   padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
   margin: 5vw 3.229166666666667vw 3.3854166666666665vw;
   background-color: #F3F6F9;
-  height: 44.53125;
+  overflow: hidden;
 }
 
 .doc-room {
@@ -76,9 +76,16 @@ a {
 }
 
 #docList {
+  display: flex;
+  flex-direction: column;
   max-height: 25.208333333333332vw;
   margin-top: 6.354166666666666vw;
+  overflow: hidden;
+}
+
+#docListBody {
   overflow: auto;
+  flex-grow: 1
 }
 
 .dash-button-row {
@@ -99,7 +106,7 @@ a {
   align-items: center;
   min-height: 5.104166666666667vw;
   font-size: 15px;
-  border: 0.26041666666666663vw solid #F3F6F9;
+  border-bottom: 0.5208333333333333vw solid #F3F6F9;
   background-color: #FFFFFF;
   input[type="checkbox"] {
     position: absolute;
@@ -110,19 +117,28 @@ a {
 .file-name {
   position: absolute;
   left: 5.729166666666666vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 25%;
+  padding: 0;
 }
 
 .file-size {
   position: absolute;
-  left: 31.145833333333332vw;
+  left: 30vw;
 }
 
 .file-date {
   position: absolute;
-  left: 52.03124999999999vw;
+  left: 47vw;
 }
 
-.file-open-button {
+.access-status {
+  position: absolute;
+  left: 68vw;
+}
+
+.doc-row-rightmost {
   position: absolute;
   right: 2.3958333333333335vw;
 }

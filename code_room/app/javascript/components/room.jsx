@@ -1,10 +1,12 @@
 import React from 'react';
+import connectToDoc from '../channels/doc_channel';
 import NavContainer from '../containers/nav_container'
 import AceEditor from 'react-ace';
 import ChatBox from './chat_box';
 import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
+window.AceEditor = AceEditor;
 
 class Room extends React.Component {
   constructor(props) {
@@ -12,8 +14,25 @@ class Room extends React.Component {
     this.getEditorMode = this.getEditorMode.bind(this);
     this.state = { 
       editorText: "",
-      editorMode: "javascript"
+      editorMode: "javascript",
+      initialState: true
     }
+
+    this.receiveEdit = this.receiveEdit.bind(this);
+    this.broadcastEdit = this.broadcastEdit.bind(this);
+    this.docSubscription = connectToDoc(this.receiveEdit.bind(this));
+    window.room = this;
+  }
+
+  broadcastEdit(content) {
+    this.docSubscription.send({message: content});
+  }
+
+  receiveEdit(data) {
+    this.setState({
+      editorText: data.message,
+      initialState: false
+    })
   }
 
   getEditorMode(fileName) {
@@ -49,6 +68,7 @@ class Room extends React.Component {
   }
 
   componentDidMount() {
+    if (!this.state.initialState) return;
     const docId = this.props.match.params.docId;
     const url = `/api/documents/${docId}`;
     fetch(url).then(res => {
@@ -70,11 +90,14 @@ class Room extends React.Component {
       <NavContainer/>
       <div className="gray-area doc-room">
       <AceEditor
+      onChange={this.broadcastEdit}
       height="37.708333333333336vw"
       width="55.46875vw"
       mode={this.state.editorMode}
       theme="terminal"
+      ref="aceEditor"
       keyboardHandler="vscode"
+      onCursorChange={(selection) => console.log(selection.getCursor())}
       value={this.state.editorText}
       />
       <ChatBox user={this.props.user}/>

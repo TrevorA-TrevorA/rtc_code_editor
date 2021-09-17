@@ -1,1 +1,1 @@
-json.extract! user, :id, :username, :documents
+json.extract! user, :id, :username, :documents, :editable_documents

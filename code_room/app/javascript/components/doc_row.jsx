@@ -6,7 +6,7 @@ const FileOpenButton = props => {
   return (
     <button 
     onClick={props.callback} 
-    className="file-open-button">OPEN</button>
+    className="doc-row-rightmost">OPEN</button>
   )
 }
 
@@ -24,9 +24,10 @@ const DocRow = props => {
       }}
       type="checkbox"
       />
-      <p className="file-name">{props.name}</p>
+      <p className="file-name" title={props.name}>{props.name}</p>
       <p className="file-size">{props.size}</p>
       <p className="file-date">{props.updated}</p>
+      <p className="access-status">{props.accessStatus}</p>
       <FileOpenButton callback={openRoom}/>
     </div>
   )

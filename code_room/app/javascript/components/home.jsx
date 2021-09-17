@@ -7,7 +7,6 @@ class Home extends React.Component {
     super(props)
   }
   render() {
-    console.log(this.props.user)
     return this.props.user ? <Redirect to="/dash"/> : <LoginContainer/>;
   }
 }
