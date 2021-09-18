@@ -6,7 +6,6 @@ import ChatBox from './chat_box';
 import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
-window.AceEditor = AceEditor;
 
 class Room extends React.Component {
   constructor(props) {
@@ -15,24 +14,56 @@ class Room extends React.Component {
     this.state = { 
       editorText: "",
       editorMode: "javascript",
-      initialState: true
+      initialState: true,
     }
 
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
     this.docSubscription = connectToDoc(this.receiveEdit.bind(this));
+    this.editorRef = React.createRef();
+    this.updateCursor = this.updateCursor.bind(this);
+    this.getTotalLines = this.getTotalLines.bind(this);
+    this.activeLineIndex = 0;
+    this.totalLines = 0;
     window.room = this;
   }
 
+  getTotalLines() {
+    return this.editorRef.current.editor.session.doc.$lines.length;
+  }
+
   broadcastEdit(content) {
-    this.docSubscription.send({message: content});
+    this.docSubscription.send({
+      changeIndex: this.activeLineIndex, 
+      senderId: this.props.user.id,
+      message: content
+    });
   }
 
   receiveEdit(data) {
+    const { column } = this.editorRef.current.editor.getCursorPosition()
     this.setState({
       editorText: data.message,
       initialState: false
     })
+
+    this.compensateCursor(data, column)
+    this.totalLines = this.getTotalLines();
+  }
+
+  compensateCursor(data, column) {
+    if (data.senderId === this.props.user.id) return;
+    if (data.changeIndex > this.activeLineIndex) return;
+    const lines = data.message.split("\n")
+    const newLineCount = lines.length;
+    const delta = newLineCount - this.totalLines;
+    const newRow = this.activeLineIndex + delta;
+    this.editorRef.current.editor.moveCursorTo(newRow, column)
+  }
+
+  updateCursor() {
+    const newIndex = this.editorRef.current.editor.getCursorPosition().row;
+    this.activeLineIndex = newIndex
   }
 
   getEditorMode(fileName) {
@@ -69,6 +100,7 @@ class Room extends React.Component {
 
   componentDidMount() {
     if (!this.state.initialState) return;
+
     const docId = this.props.match.params.docId;
     const url = `/api/documents/${docId}`;
     fetch(url).then(res => {
@@ -81,6 +113,7 @@ class Room extends React.Component {
       const content = json.content;
       const mode = this.getEditorMode(json.file_name);
       this.setState({ editorText: "\n" + content, editorMode: mode })
+      this.totalLines = this.getTotalLines();
     }).catch(err => console.log(err))
   }
   
@@ -91,13 +124,13 @@ class Room extends React.Component {
       <div className="gray-area doc-room">
       <AceEditor
       onChange={this.broadcastEdit}
+      onCursorChange={this.updateCursor}
       height="37.708333333333336vw"
       width="55.46875vw"
       mode={this.state.editorMode}
       theme="terminal"
-      ref="aceEditor"
+      ref={this.editorRef}
       keyboardHandler="vscode"
-      onCursorChange={(selection) => console.log(selection.getCursor())}
       value={this.state.editorText}
       />
       <ChatBox user={this.props.user}/>
