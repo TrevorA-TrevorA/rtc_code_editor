@@ -38,9 +38,12 @@ class Room extends React.Component {
       senderId: this.props.user.id,
       message: content
     });
+    
+    this.setState({editorText: content});
   }
 
   receiveEdit(data) {
+    if (data.senderId === this.props.user.id) return;
     const { column } = this.editorRef.current.editor.getCursorPosition()
     this.setState({
       editorText: data.message,
