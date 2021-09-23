@@ -19,54 +19,94 @@ class Room extends React.Component {
 
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
-    this.docSubscription = connectToDoc(this.receiveEdit.bind(this));
+    this.docSubscription = connectToDoc(this.receiveEdit.bind(this), this.getCurrentRow.bind(this));
+    this.ensureDeltaOrder = this.ensureDeltaOrder.bind(this);
     this.editorRef = React.createRef();
-    this.updateCursor = this.updateCursor.bind(this);
-    this.getTotalLines = this.getTotalLines.bind(this);
-    this.activeLineIndex = 0;
-    this.totalLines = 0;
+    this.broadcastChange = true;
+    this.offsetDelta = this.offsetDelta.bind(this);
+    this.deltaHistory = [];
+    this.localDeltaHistory = [];
+    this.userPositions = {};
     window.room = this;
   }
 
-  getTotalLines() {
-    return this.editorRef.current.editor.session.doc.$lines.length;
-  }
+  broadcastEdit(content, event) {
+    const time = Date.now();
+    window.changeEvent = event;
+    if (!this.broadcastChange) return;
 
-  broadcastEdit(content) {
-    this.docSubscription.send({
-      changeIndex: this.activeLineIndex, 
+    const delta = {
+      time,
       senderId: this.props.user.id,
-      message: content
-    });
-    
+      changeData: event
+    }
+
+    this.docSubscription.send(delta);
+    this.localDeltaHistory.push(delta);
+    this.deltaHistory.push(delta);
     this.setState({editorText: content});
   }
 
   receiveEdit(data) {
     if (data.senderId === this.props.user.id) return;
-    const { column } = this.editorRef.current.editor.getCursorPosition()
+    const editorDoc = this.editorRef.current.editor.session.doc;
+    let delta = data.changeData;
+    let currRow = this.userPositions[data.senderId];
+    console.log(currRow);
+    let rowDiff = delta.end.row - delta.start.row;
+    delta.start.row = currRow;
+    delta.end.row = currRow + rowDiff;
+    this.ensureDeltaOrder(data);
+    const newContent = editorDoc.getValue();
+
     this.setState({
-      editorText: data.message,
+      editorText: newContent,
       initialState: false
     })
-
-    this.compensateCursor(data, column)
-    this.totalLines = this.getTotalLines();
   }
 
-  compensateCursor(data, column) {
+  ensureDeltaOrder(data) {
+    this.broadcastChange = false;
+    const editorDoc = this.editorRef.current.editor.session.doc;
+    const popped = [];
+    while (this.deltaHistory.length && this.deltaHistory.slice(-1)[0].time > data.time) {
+      const prev = this.deltaHistory.pop();
+      editorDoc.revertDelta(prev.changeData);
+      popped.push(prev);
+    }
+
+    editorDoc.applyDelta(data.changeData);
+    this.deltaHistory.push(data)
+
+    while (popped.length) {
+      const next = popped.pop();
+      editorDoc.applyDelta(next.changeData);
+      this.deltaHistory.push(next);
+    }
+
+    this.broadcastChange = true;
+  }
+
+  getCurrentRow(data) {
+    console.log(data)
+    this.userPositions[data.senderId] = data.row;
     if (data.senderId === this.props.user.id) return;
-    if (data.changeIndex > this.activeLineIndex) return;
-    const lines = data.message.split("\n")
-    const newLineCount = lines.length;
-    const delta = newLineCount - this.totalLines;
-    const newRow = this.activeLineIndex + delta;
-    this.editorRef.current.editor.moveCursorTo(newRow, column)
+
+    $(".ace_text-layer").find('div').css({backgroundColor: ""})
+    const rowElement = $(".ace_text-layer").find('div')[data.row]
+    if (rowElement) rowElement.style.backgroundColor = "rgba(255, 0, 0, 0.3)"
   }
 
-  updateCursor() {
-    const newIndex = this.editorRef.current.editor.getCursorPosition().row;
-    this.activeLineIndex = newIndex
+  offsetDelta(e) {
+    this.docSubscription.send({ senderId: this.props.user.id, row: e.lead.row })
+    const lastDelta = this.localDeltaHistory.slice(-1)[0];
+    if (!lastDelta) return;
+    const start = lastDelta.changeData.start.row;
+    if (start !== lastDelta.changeData.end.row) return;
+    if (Date.now() - lastDelta.time < 500 && start) {
+      lastDelta.changeData.start.row = e.lead.row;
+      lastDelta.changeData.end.row = e.lead.row;
+    }
   }
 
   getEditorMode(fileName) {
@@ -116,7 +156,6 @@ class Room extends React.Component {
       const content = json.content;
       const mode = this.getEditorMode(json.file_name);
       this.setState({ editorText: "\n" + content, editorMode: mode })
-      this.totalLines = this.getTotalLines();
     }).catch(err => console.log(err))
   }
   
@@ -127,7 +166,7 @@ class Room extends React.Component {
       <div className="gray-area doc-room">
       <AceEditor
       onChange={this.broadcastEdit}
-      onCursorChange={this.updateCursor}
+      onCursorChange={this.offsetDelta}
       height="37.708333333333336vw"
       width="55.46875vw"
       mode={this.state.editorMode}

@@ -55,7 +55,7 @@ class ChatBox extends React.Component {
       <div id="chatBox">
         <div id="chatBoxHeader"></div>
         <ChatBody uid={this.props.user.id} chatLog={this.state.chatLog}/>
-        <textarea id="chatInput"></textarea>
+        <textarea id="chatInput" placeholder="Say something."></textarea>
       </div>
     )
   }
