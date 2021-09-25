@@ -9,6 +9,7 @@ import SignUpContainer from '../containers/sign_up_container';
 window.store = store;
 
 class App extends React.Component {
+  
   render() {
     return (
   <Provider store={store}>

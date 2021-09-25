@@ -13,7 +13,7 @@ const DocListHeader = props => {
         }
       } 
       type="checkbox"/>
-      <p className="file-name">Name</p>
+      <p className="file-name">File Name</p>
       <p className="file-size">Size (Bytes)</p>
       <p className="file-date">Updated</p>
       <p className="access-status">Access</p>

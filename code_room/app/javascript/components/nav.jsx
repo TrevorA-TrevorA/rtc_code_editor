@@ -14,16 +14,25 @@ class Nav extends React.Component {
     .then(res => {
       if (res.ok) {
         this.props.dispatch({ type: LOGOUT })
+        location.replace("/");
       } else {
         throw new Error(res.statusText)
       }
-    }).catch(error => console.log(error.message));
+    })
+    .catch(error => console.log(error.message));
   }
   
   render() {
+    if (!this.props.user) {
+      return <Redirect to="/"/>
+    }
+    
     return(
     <div className="nav-menu">
-      <h5>Welcome, {this.props.user.username}</h5>
+      <div className="avatar-and-name">
+        <img className="avatar" src={`https://www.gravatar.com/avatar/${this.props.user.gravatarHash}`}></img>
+        <h5>Welcome, {this.props.user.username}</h5>
+      </div>
       <Link to="/" onClick={this.logout}>Logout</Link>
     </div>
     )

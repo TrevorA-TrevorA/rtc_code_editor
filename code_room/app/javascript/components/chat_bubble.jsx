@@ -13,13 +13,16 @@ class ChatBubble extends React.Component {
     const colorClass = this.props.self ? "self" : "other"
     return (
       <div className={"chat-bubble " + colorClass}>
-        <p key="user">{this.props.user}</p>
-        <p key="message">{this.props.message}</p>
+        <div className="chat-name-time-row">
+        <p key="user" className="chat-user-name">{this.props.user}</p>
         <p 
-        className="time-stamp" 
+        className="chat-time-stamp" 
         key="time">
-        {this.props.time}
+        {new Date(this.props.time).toLocaleTimeString("en-US", {timeStyle: "short"})}
         </p>
+        </div>
+        <p key="message">{this.props.message}</p>
+        
       </div>
     )
   }

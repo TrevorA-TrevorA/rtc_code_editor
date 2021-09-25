@@ -1,19 +1,36 @@
 import React from 'react';
 import connectToChat from '../channels/chat_channel';
 import ChatBody from './chat_body';
+import ChatBoxHeader from './chat_box_header';
+import { Redirect } from 'react-router';
 
 class ChatBox extends React.Component {
   constructor(props) {
-    super(props)
-    this.subscription = connectToChat(this.receiveChat.bind(this));
+    super(props);
+
+    const callbacks = [
+      this.receiveChat.bind(this), 
+      this.sendArrivalNotice.bind(this),
+      this.sendExitNotice.bind(this),
+      this.getHeaderMessage.bind(this)
+    ]
+    
+    this.subscription = connectToChat(...callbacks);
     this.sendChat = this.sendChat.bind(this);
-    this.state = { chatLog: [] }
+    this.state = { chatLog: [], headerMessage: "", headerMessageTime: null }
+    window.subscription = this.subscription
   }
 
   receiveChat(chats) {
     this.setState({
-      chatLog: chats
+      chatLog: chats,
     })
+  }
+
+  getHeaderMessage(data) {
+    if (data.senderId === this.props.user.id) return;
+
+    this.setState({ headerMessage: data.headerMessage, headerMessageTime: Date.now() });
   }
 
   componentDidMount() {
@@ -40,8 +57,31 @@ class ChatBox extends React.Component {
     chatInput.addEventListener("keyup", shiftUp);
   }
 
+  componentWillUnmount() {
+    this.subscription.unsubscribe();
+  }
+
+  sendArrivalNotice() {
+    const arrivalNotice = { 
+      senderId: this.props.user.id,
+      headerMessage: this.props.user.username + " has arrived." 
+    }
+
+    this.subscription.send(arrivalNotice);
+  }
+
+  sendExitNotice() {
+    const exitNotice = { 
+      senderId: this.props.user.id, 
+      headerMessage: this.props.user.username + " has exited." 
+    }
+
+    this.subscription.send(exitNotice);
+  }
+
   sendChat(e) {
     const message = e.currentTarget.value;
+    if (!message) return;
     const user = this.props.user;
     const options = { month: "numeric", day: "numeric", year: "numeric" }
     const time = new Date().toLocaleTimeString('en-US', options)
@@ -51,11 +91,18 @@ class ChatBox extends React.Component {
   }
 
   render() {
+    if (!this.props.user) {
+      return <Redirect to="/"/>
+    }
+
     return (
       <div id="chatBox">
-        <div id="chatBoxHeader"></div>
+        <ChatBoxHeader 
+        headerMessage={this.state.headerMessage}
+        headerMessageTime={this.state.headerMessageTime}
+        />
         <ChatBody uid={this.props.user.id} chatLog={this.state.chatLog}/>
-        <textarea id="chatInput" placeholder="Say something."></textarea>
+        <textarea id="chatInput" placeholder="     Say something."></textarea>
       </div>
     )
   }

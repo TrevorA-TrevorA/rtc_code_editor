@@ -4,7 +4,7 @@ class User < ApplicationRecord
   has_secure_password
   validates_presence_of :email, :username, :session_token
   validates_uniqueness_of :email, :session_token
-  validates :password, presence: { on: create }, length: { minimum: 8 }
+  validates :password, presence: { on: create }, length: { on: create, minimum: 8 }
   after_initialize :ensure_session_token
 
   has_many :documents,

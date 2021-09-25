@@ -1,22 +1,32 @@
 import consumer from "./consumer"
 
-   const connectToChat = (callback) => {
+   const connectToChat = (
+     getChat, 
+     sendArrivalNotice, 
+     sendExitNotice, 
+     getHeaderMessage
+     ) => {
+       
     return consumer.subscriptions.create("ChatChannel", {
       chatLog: [],
       
       connected() {
         console.log("chat channel connected...")
-        // Called when the subscription is ready for use on the server
+        sendArrivalNotice()
       },
 
       disconnected() {
-        // Called when the subscription has been terminated by the server
+        sendExitNotice();
       },
 
       received(data) {
-        console.log(data)
+        if (data.headerMessage) {
+          getHeaderMessage(data);
+          return;
+        }
+
         this.chatLog.push(data);
-        callback(this.chatLog);
+        getChat(this.chatLog);
       }
     });
   }

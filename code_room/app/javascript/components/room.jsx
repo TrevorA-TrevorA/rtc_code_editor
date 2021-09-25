@@ -6,6 +6,7 @@ import ChatBox from './chat_box';
 import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router';
 
 class Room extends React.Component {
   constructor(props) {
@@ -26,7 +27,6 @@ class Room extends React.Component {
     this.offsetDelta = this.offsetDelta.bind(this);
     this.deltaHistory = [];
     this.localDeltaHistory = [];
-    this.userPositions = {};
     window.room = this;
   }
 
@@ -47,15 +47,13 @@ class Room extends React.Component {
     this.setState({editorText: content});
   }
 
+  componentWillUnmount() {
+    this.docSubscription.unsubscribe();
+  }
+
   receiveEdit(data) {
     if (data.senderId === this.props.user.id) return;
     const editorDoc = this.editorRef.current.editor.session.doc;
-    let delta = data.changeData;
-    let currRow = this.userPositions[data.senderId];
-    console.log(currRow);
-    let rowDiff = delta.end.row - delta.start.row;
-    delta.start.row = currRow;
-    delta.end.row = currRow + rowDiff;
     this.ensureDeltaOrder(data);
     const newContent = editorDoc.getValue();
 
@@ -88,8 +86,6 @@ class Room extends React.Component {
   }
 
   getCurrentRow(data) {
-    console.log(data)
-    this.userPositions[data.senderId] = data.row;
     if (data.senderId === this.props.user.id) return;
 
     $(".ace_text-layer").find('div').css({backgroundColor: ""})
@@ -160,6 +156,11 @@ class Room extends React.Component {
   }
   
   render() {
+    if (!this.props.user) {
+      this.docSubscription.unsubscribe();
+      return <Redirect to="/"/>
+    }
+    
     return (
     <div className="room">
       <NavContainer/>
