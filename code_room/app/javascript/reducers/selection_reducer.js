@@ -1,15 +1,15 @@
 export const SELECT = 'SELECT';
 export const DESELECT = 'DESELECT';
 
-const selectionReducer = (selectedDocIds = [], action) => {
+const selectionReducer = (selectedDocs = [], action) => {
   switch(action.type) {
     case SELECT:
-      return [...selectedDocIds, action.docId]
+      return [...selectedDocs, action.doc]
     case DESELECT:
-      const newSelectedList = selectedDocIds.filter(docId => docId !== action.docId)
+      const newSelectedList = selectedDocs.filter(doc => doc.id !== action.doc.id)
       return newSelectedList;
     default:
-      return selectedDocIds;
+      return selectedDocs;
   }
 }
 

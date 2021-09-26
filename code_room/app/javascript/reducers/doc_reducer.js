@@ -10,7 +10,7 @@ export const docReducer = (docState = [], action) => {
     case UPLOAD:
       return [action.doc, ...docState]
     case DELETE:
-      const newList = docState.filter(doc => doc.id !== action.docId);
+      const newList = docState.filter(doc => doc.id !== action.doc.id);
       return newList
     default:
       return docState;

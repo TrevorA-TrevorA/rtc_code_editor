@@ -49,7 +49,7 @@ const DocList = props => {
         .replaceAll(/\//g, "-")
         return <DocRowContainer
         key={uuid()}
-        docId={file.id}
+        doc={file}
         name={file.file_name}
         size={file.size}
         accessStatus={ arr === docs ? "Admin" : "Co-Editor" }

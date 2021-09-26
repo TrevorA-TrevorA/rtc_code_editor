@@ -2,15 +2,15 @@ import { DELETE } from '../reducers/doc_reducer'
 import { DESELECT } from '../reducers/selection_reducer';
 
 const deleteDocuments = () => (dispatch, getState) => {
-  const docIds = getState().selected;
+  const docs = getState().selected;
 
-  docIds.forEach(docId => {
-    const url = `api/documents/${docId}`;
+  docs.forEach(doc => {
+    const url = `api/documents/${doc.id}`;
     fetch(url, { method: DELETE })
     .then(res => {
       if (res.ok) {
-        dispatch({ type: DELETE, docId })
-        dispatch({ type: DESELECT, docId })
+        dispatch({ type: DELETE, doc })
+        dispatch({ type: DESELECT, doc })
       } else {
         throw new Error(res.statusText)
       }

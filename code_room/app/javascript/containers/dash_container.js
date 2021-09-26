@@ -3,6 +3,7 @@ import Dash from '../components/dash';
 
 const mapStateToProps = (state) => ({
   user: state.user,
+  selected: state.selected
 });
 
 const DashContainer = connect(mapStateToProps)(Dash);

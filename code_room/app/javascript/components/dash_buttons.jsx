@@ -37,22 +37,9 @@ export class DownloadButton extends React.Component {
       link.remove()
     }
 
-    const docIds = this.props.selected;
-    const encoded = window.btoa(JSON.stringify(docIds));
-    const url = `api/users/${this.props.user.id}/documents?ids=${encoded}`
-    fetch(url, { headers: { "Content-Type": "application/json" } })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(res.statusText)
-      } else {
-        return res.json()
-      }
-    })
-    .then(json => {
-      const docs = json;
-      docs.forEach(doc => {
-        download(doc.file_name, doc.content);
-      })
+    const docs = this.props.selected;
+    docs.forEach(doc => {
+      download(doc.file_name, doc.content);
     })
   }
 
@@ -73,8 +60,8 @@ export const DeleteButton = props => {
   )
 }
 
-export const ManageEditorsButton = () => {
+export const ManageEditorsButton = props => {
   return (
-    <button className="dash-button">EDITORS</button>
+    <button onClick={props.callback} className="dash-button">EDITORS</button>
   )
 }
