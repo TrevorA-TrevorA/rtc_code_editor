@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { LOGOUT } from '../reducers/auth_reducer'
+import md5 from 'md5';
 
 class Nav extends React.Component {
   constructor(props) {
@@ -26,11 +27,13 @@ class Nav extends React.Component {
     if (!this.props.user) {
       return <Redirect to="/"/>
     }
-    
+
+    const hash = md5(this.props.user.email);
+    const imURL = `https://www.gravatar.com/avatar/${hash}?d=mp`
     return(
     <div className="nav-menu">
       <div className="avatar-and-name">
-        <img className="avatar" src={`https://www.gravatar.com/avatar/${this.props.user.gravatarHash}`}></img>
+        <img className="avatar" src={imURL}></img>
         <h5>Welcome, {this.props.user.username}</h5>
       </div>
       <Link to="/" onClick={this.logout}>Logout</Link>

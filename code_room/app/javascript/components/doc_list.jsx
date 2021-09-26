@@ -1,5 +1,6 @@
 import React from 'react';
 import DocRowContainer from '../containers/doc_row_container';
+import { v4 as uuid } from 'uuid';
 
 const DocListHeader = props => {
   return (
@@ -47,7 +48,7 @@ const DocList = props => {
         .format(new Date(file.updated_at))
         .replaceAll(/\//g, "-")
         return <DocRowContainer
-        key={file.file_name}
+        key={uuid()}
         docId={file.id}
         name={file.file_name}
         size={file.size}

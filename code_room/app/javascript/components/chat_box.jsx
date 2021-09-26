@@ -64,7 +64,8 @@ class ChatBox extends React.Component {
   sendArrivalNotice() {
     const arrivalNotice = { 
       senderId: this.props.user.id,
-      headerMessage: this.props.user.username + " has arrived." 
+      headerMessage: this.props.user.username + " has arrived.",
+      arrival: true
     }
 
     this.subscription.send(arrivalNotice);
@@ -73,7 +74,8 @@ class ChatBox extends React.Component {
   sendExitNotice() {
     const exitNotice = { 
       senderId: this.props.user.id, 
-      headerMessage: this.props.user.username + " has exited." 
+      headerMessage: this.props.user.username + " has exited.",
+      exit: true
     }
 
     this.subscription.send(exitNotice);

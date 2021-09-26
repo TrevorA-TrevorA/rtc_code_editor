@@ -5,10 +5,13 @@ const FileOpenButton = props => {
     
   return (
     <button 
-    onClick={props.callback} 
-    className="doc-row-rightmost">OPEN</button>
+    onClick={props.callback}
+    className="doc-row-rightmost">
+      OPEN
+    </button>
   )
 }
+
 
 const DocRow = props => {
   const openRoom = () => {

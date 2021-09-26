@@ -2,6 +2,8 @@
 
 class Document < ApplicationRecord
   validates_presence_of :file_name, :admin_id
+  validates :file_name, uniqueness: { scope: :admin_id, 
+  message: "already exists" }
 
   belongs_to :admin,
              class_name: 'User',

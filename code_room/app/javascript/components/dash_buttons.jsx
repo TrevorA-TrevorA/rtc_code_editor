@@ -75,6 +75,6 @@ export const DeleteButton = props => {
 
 export const ManageEditorsButton = () => {
   return (
-    <button className="dash-button">CO-EDITORS</button>
+    <button className="dash-button">EDITORS</button>
   )
 }

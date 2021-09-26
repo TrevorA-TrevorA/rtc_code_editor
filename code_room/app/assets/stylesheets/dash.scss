@@ -135,7 +135,7 @@ a {
 
 .dash-button {
   height: 5.9375vw;
-  background-color: #394D6D;
+  background-color: rgba(0, 0, 0, 1);
   color: #FFFFFF;
   flex-grow: 1;
 }
@@ -204,6 +204,7 @@ a {
 }
 
 .doc-row-rightmost {
+  column-gap: .5vw;
   position: absolute;
   right: 2.3958333333333335vw;
 }

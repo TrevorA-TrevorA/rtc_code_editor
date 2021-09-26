@@ -7,7 +7,7 @@ class DocumentsController < ApplicationController
     if @document.save
       render status: 201, json: @document
     else
-      render status: 400
+      render status: 400, json: { errors: @document.errors.full_messages }
     end
   end
 
