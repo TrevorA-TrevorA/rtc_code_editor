@@ -3,6 +3,17 @@
 class UsersController < ApplicationController
   before_action :confirm_logged_in, except: [:new, :create]
 
+  def index
+    pattern = params[:q]
+
+    @users = User.where("username ILIKE ?", "#{pattern}%")
+    if @users
+      render "api/users/index"
+    else
+      render status: 404
+    end
+  end
+
   def show
     @user = User.find_by(id: params[:id])
 

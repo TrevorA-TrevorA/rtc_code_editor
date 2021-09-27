@@ -108,8 +108,8 @@ a {
 }
 
 .chat-user-name {
-  font-weight: 400;
-  font-style: italic;
+  font-weight: 300;
+  font-size: 12px;
 }
 
 #chatInput:focus {
@@ -228,7 +228,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1vw;
+  padding: 2vw;
   width: 40%;
   border-left: 5px solid #F3F6F9;
 }
@@ -255,12 +255,24 @@ a {
 .doc-selector:focus {
   outline: none;
 }
+.user-search-result {
+  display: flex;
+  align-items: center;
+  column-gap: 1vw;
+}
+
+.user-search-results {
+  padding-top: 1vw;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+}
 
 .editor-search {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1vw;
+  padding: 2vw;
   flex-grow: 1;
 }
 
@@ -300,6 +312,7 @@ a {
   display: flex;
   align-items: center;
   column-gap: 1vw;
+  border-bottom: 1px solid #FFFFFF;
 }
 
 .chat-bubble.self {
@@ -315,6 +328,7 @@ a {
   font-weight: 400;
   font-size: 10px;
   line-height: 12px;
+  white-space: nowrap;
 }
 
 .avatar-and-name {
