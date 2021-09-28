@@ -1,6 +1,7 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import md5 from 'md5';
+import EditorInviteButton from './editor_invite_button';
 
 class CollabManager extends React.Component {
   constructor(props) {
@@ -30,7 +31,6 @@ class CollabManager extends React.Component {
 
 
   render() {
-    console.log("re-rendering")
     return (
       <div id="collab">
         <button onClick={this.props.callback} id="closeCollab">X</button>
@@ -46,6 +46,7 @@ class CollabManager extends React.Component {
              const imURL = `https://www.gravatar.com/avatar/${hash}?d=mp`
             return (
               <div key={uuid()} className="user-search-result">
+                <EditorInviteButton buttonText="Invite"/>
                 <img className="avatar" src={imURL}/>
                 <p>{user.username}</p>
               </div>

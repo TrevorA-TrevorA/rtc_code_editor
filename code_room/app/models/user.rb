@@ -19,9 +19,19 @@ class User < ApplicationRecord
   primary_key: :id,
   dependent: :destroy
 
-  has_many :editable_documents,
+  has_many :collab_documents,
   through: :collaborations,
   source:  :document
+
+  def accepted_collab_documents
+    accepted_cols = self.collaborations.select { |col| col.accepted == true }
+    accepted_cols.map { |col| col.document }
+  end
+
+  def pending_collab_documents
+    accepted_cols = self.collaborations.select { |col| col.accepted == false }
+    accepted_cols.map { |col| col.document }
+  end
 
 
   def self.find_by_credentials(email, password)

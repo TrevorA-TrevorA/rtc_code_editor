@@ -1,4 +1,15 @@
 class CollaborationsController < ApplicationController
+  def index
+    @collaborations = Collaboration.where(editor_id: request.path_parameters[:user_id])
+    render json: @collaborations
+  end
+
+  def update
+    @collaboration = Collaboration.find(params[:id])
+    @collaboration.update(accepted: true)
+    render json: @collaboration
+  end
+  
   def create
     @collaboration = Collaboration.new(collaboration_params)
 
@@ -10,7 +21,7 @@ class CollaborationsController < ApplicationController
   end
   
   
-  def delete
+  def destroy
     @collaboration = Collaboration.find(params[:id])
 
     if @collaboration
@@ -19,11 +30,5 @@ class CollaborationsController < ApplicationController
     else
       render status: 404
     end
-  end
-  
-  
-  def index
-    @collaborations = Collaboration.where(editor_id: request.path_parameters[:user_id])
-    render json: @collaborations
   end
 end

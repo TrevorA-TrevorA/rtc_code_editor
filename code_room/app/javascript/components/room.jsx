@@ -18,9 +18,11 @@ class Room extends React.Component {
       initialState: true,
     }
 
+    const callbacks = [this.receiveEdit.bind(this), this.getCurrentRow.bind(this), this.sendInitialPosition.bind(this)]
+
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
-    this.docSubscription = connectToDoc(this.receiveEdit.bind(this), this.getCurrentRow.bind(this));
+    this.docSubscription = connectToDoc(...callbacks);
     this.ensureDeltaOrder = this.ensureDeltaOrder.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
@@ -93,6 +95,11 @@ class Room extends React.Component {
     if (rowElement) rowElement.style.backgroundColor = "rgba(255, 0, 0, 0.3)"
   }
 
+  sendInitialPosition() {
+    const row = this.editorRef.current.editor.getCursorPosition().row
+    this.docSubscription.send({ senderId: this.props.user.id, row });
+  }
+
   offsetDelta(e) {
     this.docSubscription.send({ senderId: this.props.user.id, row: e.lead.row })
     const lastDelta = this.localDeltaHistory.slice(-1)[0];
@@ -139,7 +146,6 @@ class Room extends React.Component {
 
   componentDidMount() {
     if (!this.state.initialState) return;
-
     const docId = this.props.match.params.docId;
     const url = `/api/documents/${docId}`;
     fetch(url).then(res => {

@@ -1,5 +1,5 @@
 class Collaboration < ApplicationRecord
-  validates_presence_of :editor_id, :document_id
+  validates_presence_of :editor_id, :document_id, :accepted
 
   belongs_to :editor,
   class_name: 'User',

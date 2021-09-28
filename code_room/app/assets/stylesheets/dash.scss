@@ -109,7 +109,7 @@ a {
 
 .chat-user-name {
   font-weight: 300;
-  font-size: 12px;
+  font-size: 10px;
 }
 
 #chatInput:focus {
@@ -310,9 +310,8 @@ a {
 
 .chat-name-time-row {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   column-gap: 1vw;
-  border-bottom: 1px solid #FFFFFF;
 }
 
 .chat-bubble.self {
@@ -329,6 +328,8 @@ a {
   font-size: 10px;
   line-height: 12px;
   white-space: nowrap;
+  position: relative;
+  z-index: 2;
 }
 
 .avatar-and-name {

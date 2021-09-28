@@ -1,9 +1,10 @@
 import consumer from "./consumer"
 
-   const connectToDoc = (editCallback, cursorPosCallback) => {
+   const connectToDoc = (editCallback, cursorPosCallback, connectCallback) => {
     return consumer.subscriptions.create("DocChannel", {
       connected() {
         console.log("doc channel connected...")
+        connectCallback();
       },
 
       disconnected() {
