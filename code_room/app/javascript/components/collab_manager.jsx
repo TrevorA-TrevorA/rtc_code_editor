@@ -1,7 +1,6 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
-import md5 from 'md5';
-import EditorInviteButton from './editor_invite_button';
+import UserSearchResult from './user_search_result';
 
 class CollabManager extends React.Component {
   constructor(props) {
@@ -29,6 +28,9 @@ class CollabManager extends React.Component {
     }
   }
 
+  inviteEditor() {
+
+  }
 
   render() {
     return (
@@ -42,15 +44,8 @@ class CollabManager extends React.Component {
         <div className="user-search-results">
           {this.state.userSearchResults.map(user => {
             if (user.id === this.props.user.id) return;
-             const hash = md5(user.email);
-             const imURL = `https://www.gravatar.com/avatar/${hash}?d=mp`
-            return (
-              <div key={uuid()} className="user-search-result">
-                <EditorInviteButton buttonText="Invite"/>
-                <img className="avatar" src={imURL}/>
-                <p>{user.username}</p>
-              </div>
-            )
+            if (user.accepted_collab_documents.includes(this.state.selectedDoc)) return;
+            return <UserSearchResult key={uuid()} user={user} doc={this.state.selectedDoc}/>
           })}
         </div>
         </div>

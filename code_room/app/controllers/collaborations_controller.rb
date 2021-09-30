@@ -11,10 +11,12 @@ class CollaborationsController < ApplicationController
   end
   
   def create
-    @collaboration = Collaboration.new(collaboration_params)
+    editor_id = params[:user_id]
+    document_id = params[:collaboration][:document_id];
+    @collaboration = Collaboration.new(editor_id: editor_id, document_id: document_id, accepted: false);
 
-    if @collaboration.save
-      render status: 201
+    if @collaboration.save!
+      render status: 201, json: @collaboration
     else
       render status: 400
     end
@@ -22,13 +24,19 @@ class CollaborationsController < ApplicationController
   
   
   def destroy
-    @collaboration = Collaboration.find(params[:id])
+    collab_id = request.path_parameters[:id]
+    @collaboration = Collaboration.find(collab_id)
 
     if @collaboration
       @collaboration.destroy
-      render status: 200
+      render status: 200, json: { status: 200, collaboration_id: collab_id }
     else
-      render status: 404
+      render status: 404, json: { status: 404 }
     end
+  end
+
+
+  def collaboration_params
+    params.require(:collaboration).permit(:editor_id, :document_id, :accepted)
   end
 end
