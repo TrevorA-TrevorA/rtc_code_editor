@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { LOGOUT } from '../reducers/auth_reducer'
 import md5 from 'md5';
+import Notifications from './notifications';
 
 class Nav extends React.Component {
   constructor(props) {
@@ -36,7 +37,10 @@ class Nav extends React.Component {
         <img className="avatar" src={imURL}></img>
         <h5>Welcome, {this.props.user.username}</h5>
       </div>
-      <Link to="/" onClick={this.logout}>Logout</Link>
+      <div className="right-nav">
+        <Notifications/>
+        <Link to="/" onClick={this.logout}>Logout</Link>
+      </div>
     </div>
     )
   }

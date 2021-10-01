@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     resources :users, only: [:create, :show, :destroy, :index], shallow: true do
       resources :documents
       resources :collaborations, only: [:index, :update, :create, :destroy]
+      resources: :notifications, only: [:create, :update, :destroy]
     end
     
     resource :session, only: [:create, :destroy]

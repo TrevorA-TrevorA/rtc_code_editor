@@ -23,6 +23,11 @@ class User < ApplicationRecord
   through: :collaborations,
   source:  :document
 
+  has_many :notifications,
+  class_name: 'Notification',
+  primary_key: :id,
+  foreign_key: :recipient_id
+
   def accepted_collab_documents
     accepted_cols = self.collaborations.select { |col| col.accepted == true }
     accepted_cols.map { |col| col.document }

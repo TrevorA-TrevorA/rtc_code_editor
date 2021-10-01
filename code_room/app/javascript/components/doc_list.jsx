@@ -13,7 +13,8 @@ const DocListHeader = props => {
           })
         }
       } 
-      type="checkbox"/>
+      type="checkbox"
+      autoComplete="off"/>
       <p className="file-name">File Name</p>
       <p className="file-size">Size (Bytes)</p>
       <p className="file-date">Updated</p>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_28_020624) do
+ActiveRecord::Schema.define(version: 2021_10_01_004701) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -37,6 +37,17 @@ ActiveRecord::Schema.define(version: 2021_09_28_020624) do
     t.index ["admin_id"], name: "index_documents_on_admin_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.boolean "read?", default: false, null: false
+    t.string "notification_type", null: false
+    t.uuid "recipient_id", null: false
+    t.uuid "document_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["document_id"], name: "index_notifications_on_document_id"
+    t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "username", null: false
     t.string "password_digest", null: false
@@ -51,4 +62,6 @@ ActiveRecord::Schema.define(version: 2021_09_28_020624) do
   add_foreign_key "collaborations", "documents"
   add_foreign_key "collaborations", "users", column: "editor_id"
   add_foreign_key "documents", "users", column: "admin_id"
+  add_foreign_key "notifications", "documents"
+  add_foreign_key "notifications", "users", column: "recipient_id"
 end

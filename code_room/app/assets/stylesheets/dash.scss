@@ -169,7 +169,7 @@ a {
   display: flex;
   position: relative;
   align-items: center;
-  min-height: 5.104166666666667vw;
+  min-height: 4.6vw;
   font-size: 15px;
   border-bottom: 0.5208333333333333vw solid #F3F6F9;
   background-color: #FFFFFF;
@@ -177,6 +177,20 @@ a {
     position: absolute;
     left: 1.5625vw;
   }
+}
+
+.right-nav {
+  display: flex;
+  column-gap: 2vw;
+}
+
+#notifications {
+  height: 2vw;
+  cursor: pointer;
+}
+
+.notifications-icon {
+  height: 100%;
 }
 
 .file-name {
@@ -191,6 +205,17 @@ a {
 .file-size {
   position: absolute;
   left: 30vw;
+}
+
+.notification-badge {
+  position: absolute;
+  height: 2vw;
+  width: 2vw;
+  top:0;
+  right: -1vw;
+  background-color: #FF0000;
+  color: #FFFFFF;
+  border-radius: 50%;
 }
 
 .file-date {
