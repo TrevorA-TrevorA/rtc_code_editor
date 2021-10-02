@@ -38,7 +38,7 @@ class Nav extends React.Component {
         <h5>Welcome, {this.props.user.username}</h5>
       </div>
       <div className="right-nav">
-        <Notifications/>
+        <Notifications user={this.props.user}/>
         <Link to="/" onClick={this.logout}>Logout</Link>
       </div>
     </div>

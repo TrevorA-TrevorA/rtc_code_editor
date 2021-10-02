@@ -1,11 +1,13 @@
 import React from 'react';
 import md5 from 'md5';
+import connectToNotifications from '../channels/notifications_channel';
 
  window.UserSearchResults = [];
 
 class UserSearchResult extends React.Component {
   constructor(props) {
     super(props);
+    this.notificationSub = connectToNotifications(this.props.user);
     this.state = { 
       invited: (this.props.user.pending_collab_documents.some(doc => {
         return doc.id === this.props.doc.id;
@@ -16,6 +18,10 @@ class UserSearchResult extends React.Component {
     this.inviteUser = this.inviteUser.bind(this);
     this.rescindInvitation = this.rescindInvitation.bind(this);
     UserSearchResults.push(this);
+  }
+
+  componentWillUnmount() {
+    this.notificationSub.unsubscribe();
   }
 
   inviteUser() {
@@ -44,6 +50,18 @@ class UserSearchResult extends React.Component {
     .then(json => {
       this.collaborations.push(json);
       this.setState({ invited: true })
+      const notification = { 
+        recipient_id: this.props.user.id,
+        read: false,
+        notification_type: "collaboration_request",
+        details: {
+          document_id: this.props.doc.id,
+          document_admin: this.props.self.username,
+          file_name: this.props.doc.file_name
+        }
+      }
+
+      this.notificationSub.send(notification)
     })
     .catch(error => console.log(error));
   }
@@ -82,6 +100,11 @@ class UserSearchResult extends React.Component {
   }
 
   render() {
+    if (!this.props.user) {
+      this.notificationSub.unsubscribe();
+      return <Redirect to="/"/>
+    }
+
     const hash = md5(this.props.user.email);
     const imURL = `https://www.gravatar.com/avatar/${hash}?d=mp`
     const buttonText = this.state.invited ? "Rescind" : "Invite";

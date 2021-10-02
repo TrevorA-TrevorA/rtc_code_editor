@@ -25,6 +25,7 @@ const DocListHeader = props => {
 }
 
 const DocList = props => {
+  window.docListProps = props;
   const options = {
     month: "2-digit",
     day: "2-digit",

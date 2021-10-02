@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_01_004701) do
+ActiveRecord::Schema.define(version: 2021_10_02_014104) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "hstore"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
@@ -38,13 +39,12 @@ ActiveRecord::Schema.define(version: 2021_10_01_004701) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.boolean "read?", default: false, null: false
+    t.boolean "read", default: false, null: false
     t.string "notification_type", null: false
     t.uuid "recipient_id", null: false
-    t.uuid "document_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["document_id"], name: "index_notifications_on_document_id"
+    t.hstore "details"
     t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
   end
 
@@ -62,6 +62,5 @@ ActiveRecord::Schema.define(version: 2021_10_01_004701) do
   add_foreign_key "collaborations", "documents"
   add_foreign_key "collaborations", "users", column: "editor_id"
   add_foreign_key "documents", "users", column: "admin_id"
-  add_foreign_key "notifications", "documents"
   add_foreign_key "notifications", "users", column: "recipient_id"
 end

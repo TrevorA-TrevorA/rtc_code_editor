@@ -28,10 +28,6 @@ class CollabManager extends React.Component {
     }
   }
 
-  inviteEditor() {
-
-  }
-
   render() {
     return (
       <div id="collab">
@@ -45,15 +41,30 @@ class CollabManager extends React.Component {
           {this.state.userSearchResults.map(user => {
             if (user.id === this.props.user.id) return;
             if (user.accepted_collab_documents.includes(this.state.selectedDoc)) return;
-            return <UserSearchResult key={uuid()} user={user} doc={this.state.selectedDoc}/>
+            return <UserSearchResult 
+            key={uuid()} 
+            self={this.props.user} 
+            user={user} 
+            doc={this.state.selectedDoc}/>
           })}
         </div>
         </div>
         <div className="collab-details">
-        <select className="doc-selector">
-            {this.props.selected.map((doc, i) => {
+        <select
+        value={this.state.selectedDoc.id}
+        className="doc-selector"
+         onChange={(e) => {
+           const newSelected = this.props.selected.find(doc => doc.id === e.target.value);
+           this.setState({ selectedDoc: newSelected })
+            }
+          }>
+            {this.props.selected.map((doc) => {
               return (
-                <option key={uuid()} defaultValue={!i} value={doc.id}>{doc.file_name}</option>
+                <option
+                key={uuid()}
+                value={doc.id}>
+                  {doc.file_name}
+                </option>
               )
             })}
           </select>

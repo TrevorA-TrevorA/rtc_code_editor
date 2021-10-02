@@ -1,7 +1,7 @@
 import consumer from "./consumer"
 
-const connectNotifications = (user) => {
-  consumer.subscriptions.create({ channel: "NotificationsChannel", id: user.id }, {
+const connectToNotifications = (user, receiveNotifications) => {
+  return consumer.subscriptions.create({ channel: "NotificationsChannel", id: user.id }, {
     connected() {
       // Called when the subscription is ready for use on the server
     },
@@ -11,9 +11,11 @@ const connectNotifications = (user) => {
     },
 
     received(data) {
+      if (!receiveNotifications) return;
+      receiveNotifications(data);
       // Called when there's incoming data on the websocket for this channel
     }
   });
 }
 
-export default connectNotifications;
+export default connectToNotifications;
