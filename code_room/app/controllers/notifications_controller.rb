@@ -22,6 +22,15 @@ class NotificationsController < ApplicationController
   
   def update
     @notification = Notification.find(params[:id])
-    @notification.update(read?: true)
+    @notification.update(read: true)
+  end
+
+  def update_all
+    @notifications = Notification.where(recipient_id: params[:user_id], read: false)
+     if @notifications.update_all(read: true)
+      render json: @notifications
+     else
+      render status: 400, json: { status: 400 }
+     end
   end
 end

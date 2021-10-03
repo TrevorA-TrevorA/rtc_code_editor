@@ -19,7 +19,7 @@ const rootReducer = (state, action) => {
     case LOGIN:
       const user = action.user;
       const documents = user.documents;
-      const editables = user.editable_documents;
+      const editables = user.accepted_collab_documents;
       const selected = [];
       return { user, documents, editables, selected };
     case LOGOUT:

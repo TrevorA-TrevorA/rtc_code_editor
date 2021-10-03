@@ -5,9 +5,10 @@ Rails.application.routes.draw do
       resources :collaborations, only: [:index, :update, :create, :destroy]
       resources :notifications, only: [:create, :update, :destroy]
     end
-    
     resource :session, only: [:create, :destroy]
   end
+
+  patch "api/users/:user_id/notifications" => "notifications#update_all"
 
   root "static#index"
   get "*path" => "static#index"

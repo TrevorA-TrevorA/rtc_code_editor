@@ -1,8 +1,7 @@
 import React from 'react';
 import notificationsIcon from 'images/notifications-icon.png';
 import connectToNotifications from '../channels/notifications_channel';
-import Notification from './notification';
-import { v4 as uuid } from 'uuid';
+import NotificationsList from './notifications_list';
 
 class Notifications extends React.Component {
   constructor(props) {
@@ -12,7 +11,9 @@ class Notifications extends React.Component {
       readNotifications: [],
       viewing: false
     }
-    
+    this.viewNotifications = this.viewNotifications.bind(this)
+    this.closeNotifications = this.closeNotifications.bind(this)
+    this.markAllAsRead = this.markAllAsRead.bind(this)
     this.subscription = connectToNotifications(this.props.user, this.receiveNotifications.bind(this));
     window.notificationsSub = this.subscription;
     window.notifications = this;
@@ -47,39 +48,62 @@ class Notifications extends React.Component {
     })
   }
 
+  markAllAsRead() {
+    const user_id = this.props.user.id;
+    const url = `/api/users/${user_id}/notifications`
+    const options = {
+      method: "PATCH",
+      headers: {
+        'Content-Type': 'applicaton/json'
+      }
+    }
+
+    fetch(url, options)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      } else {
+        return res.json()
+      }
+    }).catch(error => console.log(error));
+  }
+
   viewNotifications() {
     this.setState({ viewing: true })
-    setTimeout(() => {
-      const unread = this.state.unreadNotifications;
+    if (this.state.unreadNotifications.length) {
+      this.markAllAsRead();
+    }
+  }
+
+  closeNotifications() {
+    const unread = this.state.unreadNotifications;
       let read = this.state.readNotifications;
       read = unread.concat(read);
       this.setState({
         unreadNotifications: [],
-        readNotifications: read
+        readNotifications: read,
+        viewing: false
       })
-    }, 1000)
   }
 
   render() {
+    const callback = this.state.viewing ? this.closeNotifications : this.viewNotifications
     const unread = this.state.unreadNotifications;
     const read = this.state.readNotifications;
     return(
-      <div id="notifications">
+      <div onClick={callback} id="notifications">
         { 
           !unread.length || this.state.viewing ? null :
           <div className="notification-badge">{unread.length}</div> 
         }
         <img className="notifications-icon" src={notificationsIcon}/>
-        { this.state.viewing ?
-          <div className="notification-list">
-          { [unread, read].map(list => {
-            return list.map((notif, _, arr) => {
-              const readStatus = arr === read ? true : false;
-              return <Notification key={uuid()} read={readStatus} notification={notif}/>
-            })
-          }) }
-        </div> :
-        null
+        { 
+        this.state.viewing ? 
+        <NotificationsList 
+        read={read} 
+        unread={unread}
+        closeList={this.closeNotifications}/> : 
+        null 
         }
       </div>
     )

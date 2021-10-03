@@ -19,10 +19,10 @@ class Notification extends React.Component {
 
     return (
       <div ref={this.ref} className="notification">
-        <p>
+        <p className="notification-message">
           {notification.details.document_admin} has invited you to edit {notification.details.file_name}
         </p>
-        <div>
+        <div className="response-button-row">
           <button>Accept</button>
           <button>Decline</button>
         </div>

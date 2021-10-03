@@ -208,15 +208,25 @@ a {
   left: 30vw;
 }
 
-.notification {
+.response-button-row {
   display: flex;
+  justify-content: space-around;
+}
+
+.notification {
+  padding: 5%;
+  display: flex;
+  row-gap: 1vw;
   flex-direction: column;
+  width: 100%
 }
 
 .notification-list {
   position: absolute;
   top: 2vw;
   right: 0;
+  z-index: 1;
+  background-color: #FFFFFF;
 }
 
 .notification-badge {
