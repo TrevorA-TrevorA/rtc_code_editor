@@ -6,8 +6,9 @@ const NotificationsList = props => {
   const { read, unread, closeList } = props;
   
   useEffect(() => {
+    const notificationContent = Array.from($("#notifications").find("*"));
     $(document).on("click", (e) => {
-      if (Array.from($("#notifications").find("*")).includes(e.target)) return;
+      if (notificationContent.includes(e.target)) return;
       closeList();
     })
 

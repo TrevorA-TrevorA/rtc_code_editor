@@ -91,12 +91,14 @@ class Notifications extends React.Component {
     const unread = this.state.unreadNotifications;
     const read = this.state.readNotifications;
     return(
-      <div onClick={callback} id="notifications">
+      <div id="notifications">
+        <div onClick={callback} className="notifications-icon-container">
         { 
           !unread.length || this.state.viewing ? null :
           <div className="notification-badge">{unread.length}</div> 
         }
         <img className="notifications-icon" src={notificationsIcon}/>
+        </div>
         { 
         this.state.viewing ? 
         <NotificationsList 
