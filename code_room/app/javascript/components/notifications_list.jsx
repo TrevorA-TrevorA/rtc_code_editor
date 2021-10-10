@@ -20,7 +20,11 @@ const NotificationsList = props => {
       { [unread, read].map(list => {
         return list.map((notif, _, arr) => {
           const readStatus = arr === read ? true : false;
-          return <Notification key={uuid()} read={readStatus} notification={notif}/>
+          return <Notification key={uuid()} 
+          read={readStatus}
+          closeListIfEmpty={props.closeListIfEmpty}
+          delist={props.delist}
+          notification={notif}/>
         })
       }) }
     </div>

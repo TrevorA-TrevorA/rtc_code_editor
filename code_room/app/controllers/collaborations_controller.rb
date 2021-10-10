@@ -7,7 +7,8 @@ class CollaborationsController < ApplicationController
   def update
     @collaboration = Collaboration.find(params[:id])
     @collaboration.update(accepted: true)
-    render json: @collaboration
+    @document = Document.find(@collaboration.document_id)
+    render json: { collaboration: @collaboration, document: @document }
   end
   
   def create

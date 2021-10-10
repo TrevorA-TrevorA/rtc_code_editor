@@ -125,7 +125,7 @@ a {
   padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
   margin: 6vw 3.229166666666667vw 3.3854166666666665vw;
   background-color: #F3F6F9;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .doc-room {
@@ -451,4 +451,18 @@ a {
   height: 3vw;
   width: 3vw;
   border-radius: 50%;
+}
+
+.doc-editor {
+  height: 37.708333333333336vw;
+  width: 55.46875vw;
+  min-width: 500px;
+}
+
+@media only screen and (max-width: 1000px) {
+  #chatBox { display: none; }
+  .doc-editor { 
+    width: 100%;
+    height: 100%;
+  }
 }

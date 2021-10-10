@@ -48,6 +48,7 @@ class UserSearchResult extends React.Component {
       return res.json();
     })
     .then(json => {
+      const collab_id = json.id;
       this.collaborations.push(json);
       this.setState({ invited: true })
       const notification = { 
@@ -55,6 +56,7 @@ class UserSearchResult extends React.Component {
         read: false,
         notification_type: "collaboration_request",
         details: {
+          collaboration_id: collab_id,
           document_id: this.props.doc.id,
           document_admin: this.props.self.username,
           file_name: this.props.doc.file_name
@@ -67,6 +69,14 @@ class UserSearchResult extends React.Component {
   }
 
   rescindInvitation() {
+    this.notificationSub.send({
+      notification_type: "rescind",
+      details: {
+        document_id: this.props.doc.id, 
+      },
+      recipient_id: this.props.user.id
+    })
+    
     const collabId = this.collaborations.find(col => {
       return col.document_id === this.props.doc.id;
     }).id

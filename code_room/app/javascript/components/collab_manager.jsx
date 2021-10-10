@@ -40,7 +40,9 @@ class CollabManager extends React.Component {
         <div className="user-search-results">
           {this.state.userSearchResults.map(user => {
             if (user.id === this.props.user.id) return;
-            if (user.accepted_collab_documents.includes(this.state.selectedDoc)) return;
+            if (user.accepted_collab_documents.some(doc => {
+              return doc.id === this.state.selectedDoc.id;
+            })) return;
             return <UserSearchResult 
             key={uuid()} 
             self={this.props.user} 

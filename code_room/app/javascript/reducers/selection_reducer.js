@@ -1,7 +1,7 @@
 export const SELECT = 'SELECT';
 export const DESELECT = 'DESELECT';
 
-const selectionReducer = (selectedDocs = [], action) => {
+export const selectionReducer = (selectedDocs = [], action) => {
   switch(action.type) {
     case SELECT:
       return [...selectedDocs, action.doc]
@@ -12,5 +12,3 @@ const selectionReducer = (selectedDocs = [], action) => {
       return selectedDocs;
   }
 }
-
-export default selectionReducer;

@@ -171,17 +171,19 @@ class Room extends React.Component {
     <div className="room">
       <NavContainer/>
       <div className="gray-area doc-room">
-      <AceEditor
-      onChange={this.broadcastEdit}
-      onCursorChange={this.offsetDelta}
-      height="37.708333333333336vw"
-      width="55.46875vw"
-      mode={this.state.editorMode}
-      theme="terminal"
-      ref={this.editorRef}
-      keyboardHandler="vscode"
-      value={this.state.editorText}
-      />
+      <div className="doc-editor">
+        <AceEditor
+        onChange={this.broadcastEdit}
+        onCursorChange={this.offsetDelta}
+        height="100%"
+        width="100%"
+        mode={this.state.editorMode}
+        theme="terminal"
+        ref={this.editorRef}
+        keyboardHandler="vscode"
+        value={this.state.editorText}
+        />
+      </div>
       <ChatBox user={this.props.user}/>
       </div>
     </div>

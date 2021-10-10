@@ -39,6 +39,14 @@ const DocList = props => {
   const docs = props.documents;
   const editables = props.editables;
 
+  if (docs.length > 1) {
+    docs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+  }
+
+  if (editables.length > 1) {
+    editables.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+  }
+
   const dateFormat = new Intl.DateTimeFormat("en-US", options)
   return (
     <div id="docList">

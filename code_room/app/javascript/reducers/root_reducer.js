@@ -1,32 +1,35 @@
-import { combineReducers } from 'redux'
-import { authReducer } from './auth_reducer'
-import { docReducer } from './doc_reducer'
-import { collabReducer } from './collab_reducer';
-import selectionReducer from './selection_reducer';
-import { LOGIN, LOGOUT } from './auth_reducer'
-
-
-
-const appReducer = combineReducers({ 
-  user: authReducer,
-  documents: docReducer,
-  editables: collabReducer,
-  selected: selectionReducer
-})
+import { authReducer, LOGIN, LOGOUT } from './auth_reducer'
+import { docReducer, UPLOAD, DELETE } from './doc_reducer'
+import { ADD_COLLABORATION, collabReducer, REMOVE_COLLABORATION } from './collab_reducer';
+import { selectionReducer, SELECT, DESELECT } from './selection_reducer';
 
 const rootReducer = (state, action) => {
+  const newState = {};
+  Object.assign(newState, state);
+
   switch(action.type) {
-    case LOGIN:
-      const user = action.user;
-      const documents = user.documents;
-      const editables = user.accepted_collab_documents;
-      const selected = [];
-      return { user, documents, editables, selected };
+    case LOGIN: 
+      return authReducer(null, action);
     case LOGOUT:
-      console.log("here")
-      return { user: null, documents: [], editables: [], selected: []}
+      return authReducer(null, action);
+    case UPLOAD:
+      newState.documents = docReducer(state.documents, action);
+      return newState;
+    case DELETE:
+      newState.documents = docReducer(state.documents, action);
+      return newState;
+    case ADD_COLLABORATION:
+      return collabReducer(state, action);
+    case REMOVE_COLLABORATION:
+      return collabReducer(state, action);
+    case SELECT:
+      newState.selected = selectionReducer(state.selected, action)
+      return newState;
+    case DESELECT:
+      newState.selected = selectionReducer(state.selected, action)
+      return newState;
     default:
-      return appReducer(state, action);
+      return state;
   }
 }
 
