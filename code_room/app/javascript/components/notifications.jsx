@@ -2,7 +2,7 @@ import React from 'react';
 import notificationsIcon from 'images/notifications-icon.png';
 import connectToNotifications from '../channels/notifications_channel';
 import NotificationsList from './notifications_list';
-import { SendNotification } from '../context/send_notification';
+import { NotificationUtilities } from '../context/notification_utilities';
 
 class Notifications extends React.Component {
   constructor(props) {
@@ -13,18 +13,59 @@ class Notifications extends React.Component {
       viewing: false
     }
 
+    this.totalNotifications = this.totalNotifications.bind(this);
+    this.sendNotification = this.sendNotification.bind(this);
+    this.removeNotification = this.removeNotification.bind(this);
+    this.clearAll = this.clearAll.bind(this);
     this.closeListIfEmpty = this.closeListIfEmpty.bind(this);
     this.viewNotifications = this.viewNotifications.bind(this)
     this.closeNotifications = this.closeNotifications.bind(this)
     this.markAllAsRead = this.markAllAsRead.bind(this)
     this.subscription = connectToNotifications(this.props.user, this.receiveNotifications.bind(this));
     this.delist = this.delist.bind(this);
-    window.notificationsSub = this.subscription;
-    window.notifications = this;
+    this.utilities = {
+      sendNotification: this.sendNotification,
+      clearAll: this.clearAll
+    }
   }
 
   componentWillUnmount() {
     this.subscription.unsubscribe();
+  }
+
+  totalNotifications() {
+    const { unreadNotifications, readNotifications } = this.state;
+    return unreadNotifications.length + readNotifications.length;
+  }
+
+  clearAll() {
+    const url = `api/users/${this.props.user.id}/notifications`;
+    fetch(url, { method: 'DELETE' })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+        return;
+      }
+      
+      this.setState({
+        unreadNotifications: [],
+        readNotifications: [],
+        viewing: false
+      })
+  }).catch(error => console.log(error))
+  }
+
+  removeNotification(notification) {
+    const url = `/api/notifications/${notification.id}`;
+    const options = { method: 'DELETE' }
+    this.delist(notification);
+
+    fetch(url, options)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+    }).catch(error => console.log(error));
   }
 
   delist(data) {
@@ -75,6 +116,13 @@ class Notifications extends React.Component {
   }
 
   markAllAsRead() {
+    const { unreadNotifications, readNotifications } = this.state;
+    const read = unreadNotifications.concat(readNotifications);
+    // silent state change
+    setTimeout(() => {
+      this.state.unreadNotifications = [];
+      this.state.readNotifications = read;
+    }, 1000);
     const user_id = this.props.user.id;
     const url = `/api/users/${user_id}/notifications`
     const options = {
@@ -104,7 +152,7 @@ class Notifications extends React.Component {
   closeListIfEmpty() {
     const unreadCount = this.state.unreadNotifications.length;
     const readCount = this.state.readNotifications.length;
-    if (unreadCount + readCount === 1) {
+    if (unreadCount + readCount === 0) {
       this.closeNotifications();
     }
   }
@@ -120,12 +168,16 @@ class Notifications extends React.Component {
       })
   }
 
+  sendNotification(n) {
+    this.subscription.send(n)
+  }
+
   render() {
     const callback = this.state.viewing ? this.closeNotifications : this.viewNotifications
     const unread = this.state.unreadNotifications;
     const read = this.state.readNotifications;
     return(
-      <SendNotification.Provider value={(n) => this.subscription.send(n)}>
+      <NotificationUtilities.Provider value={this.utilities}>
       <div id="notifications">
         <div onClick={callback} className="notifications-icon-container">
         { 
@@ -135,17 +187,18 @@ class Notifications extends React.Component {
         <img className="notifications-icon" src={notificationsIcon}/>
         </div>
         { 
-        this.state.viewing ? 
-        <NotificationsList 
-        read={read} 
-        unread={unread}
-        closeListIfEmpty={this.closeListIfEmpty}
-        delist={this.delist}
-        closeList={this.closeNotifications}/> : 
-        null 
+          this.state.viewing ? 
+          <NotificationsList 
+          read={read} 
+          unread={unread}
+          closeListIfEmpty={this.closeListIfEmpty}
+          delist={this.delist}
+          clearAll={this.clearAll}
+          closeList={this.closeNotifications}/> :
+          null 
         }
       </div>
-      </SendNotification.Provider>
+      </NotificationUtilities.Provider>
     )
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ADD_COLLABORATION } from '../reducers/collab_reducer';
-import { SendNotification } from '../context/send_notification';
+import { NotificationUtilities } from '../context/notification_utilities';
 
 class CollabRequest extends React.Component {
   constructor(props) {
@@ -12,9 +12,10 @@ class CollabRequest extends React.Component {
     window.collabRequest = this;
   }
 
-  static contextType = SendNotification;
+  static contextType = NotificationUtilities;
 
   componentDidUpdate() {
+    const shouldClose = $(".notification").length === 1;
     if (this.state.answered) {
       const notif = this.ref.current;
       $(notif).find("*").css({ opacity: 0 });
@@ -22,7 +23,7 @@ class CollabRequest extends React.Component {
       setTimeout(() => {
         $(notif).css({display: "none"})
         this.removeNotification()
-        this.props.closeListIfEmpty();
+        if (shouldClose) this.props.closeListIfEmpty();
       }, 300)
 
       const acceptance = {
@@ -35,7 +36,7 @@ class CollabRequest extends React.Component {
         }
       }
 
-      this.context(acceptance);
+      this.context.sendNotification(acceptance);
     }
   }
 
@@ -87,7 +88,7 @@ class CollabRequest extends React.Component {
 
     const notificationMessage = `${notification.details.document_admin} has invited you to edit ${notification.details.file_name}`;
     return (
-      <div ref={this.ref} className={"notification" + colorClass}>
+      <div ref={this.ref} className={"notification collab-request" + colorClass}>
         <div className="notification-message-container">
         <h4 className="notification-message"
           title={notificationMessage}

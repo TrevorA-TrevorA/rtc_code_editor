@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   end
 
   patch "api/users/:user_id/notifications" => "notifications#update_all"
+  delete "api/users/:user_id/notifications" => "notifications#destroy_all"
 
   root "static#index"
   get "*path" => "static#index"

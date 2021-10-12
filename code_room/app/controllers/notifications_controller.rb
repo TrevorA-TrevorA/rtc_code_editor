@@ -19,6 +19,11 @@ class NotificationsController < ApplicationController
       render json: { status: 404 }
     end
   end
+
+  def destroy_all
+    @notifications = Notification.where(recipient_id: params[:user_id]);
+    @notifications.destroy_all;
+  end
   
   def update
     @notification = Notification.find(params[:id])
