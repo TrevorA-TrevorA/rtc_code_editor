@@ -8,12 +8,12 @@ class Notifications extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      unreadNotifications: [],
-      readNotifications: [],
+      notifications: [],
       viewing: false
     }
 
     this.totalNotifications = this.totalNotifications.bind(this);
+    this.totalUnread = this.totalUnread.bind(this);
     this.sendNotification = this.sendNotification.bind(this);
     this.removeNotification = this.removeNotification.bind(this);
     this.clearAll = this.clearAll.bind(this);
@@ -34,8 +34,11 @@ class Notifications extends React.Component {
   }
 
   totalNotifications() {
-    const { unreadNotifications, readNotifications } = this.state;
-    return unreadNotifications.length + readNotifications.length;
+    return this.state.notifications.length;
+  }
+
+  totalUnread() {
+    return this.state.notifications.filter(notif => !notif.read).length;
   }
 
   clearAll() {
@@ -48,8 +51,7 @@ class Notifications extends React.Component {
       }
       
       this.setState({
-        unreadNotifications: [],
-        readNotifications: [],
+        notifications: [],
         viewing: false
       })
   }).catch(error => console.log(error))
@@ -70,19 +72,14 @@ class Notifications extends React.Component {
 
   delist(data) {
     const notifId = data.rescind ? data.rescind.id : data.id;
-    const unread = this.state.unreadNotifications;
-    const read = this.state.readNotifications;
-    let notif = unread.find(notif => notif.id === notifId);
+    const notifications = this.state.notifications;
+    let notif = notifications.find(notif => notif.id === notifId);
     if (notif) {
-      unread.splice(unread.indexOf(notif), 1)
-      this.setState({ unreadNotifications: unread })
-    } else {
-      notif = read.find(notif => notif.id === notifId);
-      if (!notif) return;
-      read.splice(unread.indexOf(notif), 1);
-      this.setState({ readNotifications: read });
-    }
-    if (read.length + unread.length === 0) this.closeNotifications();
+      notifications.splice(notifications.indexOf(notif), 1)
+      this.setState({ notifications: notifications })
+    } 
+
+    if (!notifications.length) this.closeNotifications();
   }
 
   receiveNotifications(data) {
@@ -92,37 +89,21 @@ class Notifications extends React.Component {
     }
 
     if (data.new_notification) {
-      const unread = this.state.unreadNotifications;
-      unread.unshift(data.new_notification)
-      this.setState({ unreadNotifications: unread })
+      const { notifications } = this.state;
+      notifications.unshift(data.new_notification)
+      this.setState({ notifications: notifications })
       return;
     }
 
-    const read = [];
-    const unread = [];
-    data.notifications.forEach(not => {
-      not.read ? read.push(not) : unread.push(not);
-    });
-
-    [read, unread].forEach(notList => {
-      if (!notList.length) return;
-      notList.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-    });
+    const { notifications } = data
+    notifications.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 
     this.setState({
-      readNotifications: read,
-      unreadNotifications: unread
+      notifications: notifications
     })
   }
 
   markAllAsRead() {
-    const { unreadNotifications, readNotifications } = this.state;
-    const read = unreadNotifications.concat(readNotifications);
-    // silent state change
-    setTimeout(() => {
-      this.state.unreadNotifications = [];
-      this.state.readNotifications = read;
-    }, 1000);
     const user_id = this.props.user.id;
     const url = `/api/users/${user_id}/notifications`
     const options = {
@@ -139,31 +120,29 @@ class Notifications extends React.Component {
       } else {
         return res.json()
       }
-    }).catch(error => console.log(error));
+    }).then(json => {
+      notifications.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+      setTimeout(() => this.setState({ notifications: json }), 1500);
+    })
+    .catch(error => console.log(error));
   }
 
   viewNotifications() {
+    if (!this.totalNotifications()) return;
     this.setState({ viewing: true })
-    if (this.state.unreadNotifications.length) {
+    if (this.state.notifications.some(notif => !notif.read)) {
       this.markAllAsRead();
     }
   }
 
   closeListIfEmpty() {
-    const unreadCount = this.state.unreadNotifications.length;
-    const readCount = this.state.readNotifications.length;
-    if (unreadCount + readCount === 0) {
+    if (!this.state.notifications.length) {
       this.closeNotifications();
     }
   }
 
   closeNotifications() {
-    const unread = this.state.unreadNotifications;
-      let read = this.state.readNotifications;
-      read = unread.concat(read);
       this.setState({
-        unreadNotifications: [],
-        readNotifications: read,
         viewing: false
       })
   }
@@ -173,24 +152,22 @@ class Notifications extends React.Component {
   }
 
   render() {
+    const unreadCount = this.totalUnread();
     const callback = this.state.viewing ? this.closeNotifications : this.viewNotifications
-    const unread = this.state.unreadNotifications;
-    const read = this.state.readNotifications;
     return(
       <NotificationUtilities.Provider value={this.utilities}>
       <div id="notifications">
         <div onClick={callback} className="notifications-icon-container">
         { 
-          !unread.length || this.state.viewing ? null :
-          <div className="notification-badge">{unread.length}</div> 
+          !unreadCount || this.state.viewing ? null :
+          <div className="notification-badge">{unreadCount}</div> 
         }
         <img className="notifications-icon" src={notificationsIcon}/>
         </div>
         { 
           this.state.viewing ? 
           <NotificationsList 
-          read={read} 
-          unread={unread}
+          notifications={this.state.notifications}
           closeListIfEmpty={this.closeListIfEmpty}
           delist={this.delist}
           clearAll={this.clearAll}

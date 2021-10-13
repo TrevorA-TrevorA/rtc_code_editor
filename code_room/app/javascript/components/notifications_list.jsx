@@ -4,21 +4,18 @@ import NotificationButtons from './notification_buttons';
 import { v4 as uuid } from 'uuid';
 
 const NotificationsList = props => {
-  const { read, unread, closeList } = props;
-  const count = read.length + unread.length;
+  const { closeList } = props;
+  const count = props.notifications.length;
   
   const notifications = (
-    [unread, read].map(list => {
-      return list.map((notif, _, arr) => {
-        const readStatus = arr === read ? true : false;
+        props.notifications.map((notif) => {
+        const readStatus = notif.read;
         return <Notification key={uuid()} 
         read={readStatus}
         closeListIfEmpty={props.closeListIfEmpty}
         delist={props.delist}
         notification={notif}/>
-      })
-    })
-  ).flat();
+      }))
 
   useEffect(() => {
     const notificationContent = Array.from($("#notifications").find("*"));

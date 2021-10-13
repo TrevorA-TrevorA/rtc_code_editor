@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CollabRequestContainer from '../containers/collab_request_container';
 import { v4 as uuid } from 'uuid';
 
 const Notification = props => {
   const notification_type = props.notification.notification_type;
-  const colorClass = !props.read ? " unread" : "";
+  let colorClass = !props.read ? " unread" : "";
 
   switch(notification_type) {
     case "collaboration_request":
