@@ -223,6 +223,7 @@ a {
 }
 
 .notification {
+  position: relative;
   font-size: 14px;
   padding: 15px;
   display: flex;
@@ -240,6 +241,20 @@ a {
 
 .collab-request {
   row-gap: 10px;
+}
+
+.notification-close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  height: 10px;
+  width: 10px;
+  opacity: 0;
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+  }
 }
 
 .notification.unread {
@@ -280,6 +295,24 @@ a {
   background-color: transparent;
   border: none;
   cursor: pointer;
+}
+
+.notifications-modal {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  position: fixed;
+  top: 20%;
+  left: 30%;
+  right: 30%;
+  padding: 20px 0;
+  z-index: 1;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+}
+
+.modal {
+  align-items: start;
 }
 
 .notification-list {

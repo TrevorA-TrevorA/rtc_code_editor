@@ -7,9 +7,7 @@ class CollabRequest extends React.Component {
     super(props)
     this.state = { answered: false }
     this.ref = React.createRef();
-    this.removeNotification = this.removeNotification.bind(this);
     this.acceptEditAccess = this.acceptEditAccess.bind(this);
-    window.collabRequest = this;
   }
 
   static contextType = NotificationUtilities;
@@ -22,8 +20,8 @@ class CollabRequest extends React.Component {
       $(notif).animate({height: 0, padding: "0px 15px"}, 300);
       setTimeout(() => {
         $(notif).css({display: "none"})
-        this.removeNotification()
-        if (shouldClose) this.props.closeListIfEmpty();
+        this.context.removeNotification(this.props.notification)
+        if (shouldClose) this.context.closeListIfEmpty();
       }, 300)
 
       const acceptance = {
@@ -38,19 +36,6 @@ class CollabRequest extends React.Component {
 
       this.context.sendNotification(acceptance);
     }
-  }
-
-  removeNotification() {
-    const url = `/api/notifications/${this.props.notification.id}`;
-    const options = { method: 'DELETE' }
-    this.props.delist(this.props.notification);
-
-    fetch(url, options)
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(res.statusText);
-      }
-    }).catch(error => console.log(error));
   }
 
 
@@ -84,7 +69,7 @@ class CollabRequest extends React.Component {
 
   render() {
     const notification = this.props.notification;
-    const colorClass = !this.props.read ? " unread" : "";
+    const colorClass = !this.props.notification.read ? " unread" : "";
 
     const notificationMessage = `${notification.details.document_admin} has invited you to edit ${notification.details.file_name}`;
     return (

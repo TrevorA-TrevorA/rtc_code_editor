@@ -2,6 +2,7 @@ import React from 'react';
 import notificationsIcon from 'images/notifications-icon.png';
 import connectToNotifications from '../channels/notifications_channel';
 import NotificationsList from './notifications_list';
+import NotificationsModal from './notifications_modal';
 import { NotificationUtilities } from '../context/notification_utilities';
 
 class Notifications extends React.Component {
@@ -9,24 +10,28 @@ class Notifications extends React.Component {
     super(props)
     this.state = {
       notifications: [],
-      viewing: false
+      viewing: false,
+      modalOpen: false
     }
 
     this.totalNotifications = this.totalNotifications.bind(this);
     this.totalUnread = this.totalUnread.bind(this);
-    this.sendNotification = this.sendNotification.bind(this);
-    this.removeNotification = this.removeNotification.bind(this);
-    this.clearAll = this.clearAll.bind(this);
-    this.closeListIfEmpty = this.closeListIfEmpty.bind(this);
     this.viewNotifications = this.viewNotifications.bind(this)
     this.closeNotifications = this.closeNotifications.bind(this)
     this.markAllAsRead = this.markAllAsRead.bind(this)
     this.subscription = connectToNotifications(this.props.user, this.receiveNotifications.bind(this));
     this.delist = this.delist.bind(this);
     this.utilities = {
-      sendNotification: this.sendNotification,
-      clearAll: this.clearAll
+      sendNotification: this.sendNotification.bind(this),
+      clearAll: this.clearAll.bind(this),
+      removeNotification: this.removeNotification.bind(this),
+      closeListIfEmpty: this.closeListIfEmpty.bind(this),
+      closeNotifications: this.closeNotifications,
+      delist: this.delist,
+      openModal: this.openModal.bind(this),
+      closeModal: this.closeModal.bind(this),
     }
+    window.notificationsComponent = this;
   }
 
   componentWillUnmount() {
@@ -121,7 +126,7 @@ class Notifications extends React.Component {
         return res.json()
       }
     }).then(json => {
-      notifications.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+      json.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
       setTimeout(() => this.setState({ notifications: json }), 1500);
     })
     .catch(error => console.log(error));
@@ -139,6 +144,14 @@ class Notifications extends React.Component {
     if (!this.state.notifications.length) {
       this.closeNotifications();
     }
+  }
+
+  openModal() {
+    this.setState({ modalOpen: true })
+  }
+
+  closeModal() {
+    this.setState({ modalOpen: false })
   }
 
   closeNotifications() {
@@ -168,11 +181,13 @@ class Notifications extends React.Component {
           this.state.viewing ? 
           <NotificationsList 
           notifications={this.state.notifications}
-          closeListIfEmpty={this.closeListIfEmpty}
-          delist={this.delist}
-          clearAll={this.clearAll}
-          closeList={this.closeNotifications}/> :
+          /> :
           null 
+        }
+        {
+          this.state.modalOpen && this.state.notifications.length ? 
+          <NotificationsModal notifications={this.state.notifications}/> : 
+          null
         }
       </div>
       </NotificationUtilities.Provider>

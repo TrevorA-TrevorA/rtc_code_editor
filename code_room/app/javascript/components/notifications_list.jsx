@@ -1,19 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import Notification from './notification';
 import NotificationButtons from './notification_buttons';
 import { v4 as uuid } from 'uuid';
+import { NotificationUtilities } from '../context/notification_utilities';
 
 const NotificationsList = props => {
-  const { closeList } = props;
+  const { closeNotifications } = useContext(NotificationUtilities)
   const count = props.notifications.length;
   
   const notifications = (
         props.notifications.map((notif) => {
-        const readStatus = notif.read;
-        return <Notification key={uuid()} 
-        read={readStatus}
-        closeListIfEmpty={props.closeListIfEmpty}
-        delist={props.delist}
+        return <Notification key={uuid()}
+        modal={false}
         notification={notif}/>
       }))
 
@@ -21,11 +19,24 @@ const NotificationsList = props => {
     const notificationContent = Array.from($("#notifications").find("*"));
     $(document).on("click", (e) => {
       if (notificationContent.includes(e.target)) return;
-      closeList();
+      closeNotifications();
     })
 
+    
     if ($(".notification").length) {
-      $(".notification").get(-1).style.borderBottom = "none";
+      const first = $(".notification-list").find(".notification").get(0);
+      const last = $(".notification-list").find(".notification").get(-1);
+
+      $(first).css({
+        borderTopLeftRadius: "10px",
+        borderTopRightRadius: "10px"
+      });
+
+      $(last).css({
+        borderBottomLeftRadius: "10px",
+        borderBottomRightRadius: "10px",
+        border: "none"
+      })
     }
 
     return () => $(document).off("click");

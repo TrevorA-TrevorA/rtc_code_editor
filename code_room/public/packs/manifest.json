@@ -7,8 +7,8 @@
   "apache_conf.js": "/packs/c0fb340b9971e7ff1b98fb165be186b5.js",
   "apex.js": "/packs/19bfd278c6e1c0f46b149ce9173527c7.js",
   "applescript.js": "/packs/89ba96be3d6994c4088b3653aca99ca3.js",
-  "application.js": "/packs/js/application-532a89bcbac1782d633b.js",
-  "application.js.map": "/packs/js/application-532a89bcbac1782d633b.js.map",
+  "application.js": "/packs/js/application-42d75f63df664782cf0d.js",
+  "application.js.map": "/packs/js/application-42d75f63df664782cf0d.js.map",
   "aql.js": "/packs/1e1e3fb95b062afd6874477dc414c1ea.js",
   "asciidoc.js": "/packs/f3936e8ffb862bcb74dcd7e69dd2dd4e.js",
   "asl.js": "/packs/10ad974b562e86adb3b7f5b720d70ec8.js",
@@ -45,18 +45,18 @@
   "entrypoints": {
     "application": {
       "js": [
-        "/packs/js/application-532a89bcbac1782d633b.js"
+        "/packs/js/application-42d75f63df664782cf0d.js"
       ],
       "js.map": [
-        "/packs/js/application-532a89bcbac1782d633b.js.map"
+        "/packs/js/application-42d75f63df664782cf0d.js.map"
       ]
     },
     "server_rendering": {
       "js": [
-        "/packs/js/server_rendering-5f84c5a6d8337d6c83f0.js"
+        "/packs/js/server_rendering-0a153d820b5851048eee.js"
       ],
       "js.map": [
-        "/packs/js/server_rendering-5f84c5a6d8337d6c83f0.js.map"
+        "/packs/js/server_rendering-0a153d820b5851048eee.js.map"
       ]
     }
   },
@@ -139,6 +139,7 @@
   "matlab.js": "/packs/6df8df2544686783d174d8c57439d7fe.js",
   "maze.js": "/packs/6c9ab15812e2423cc849561632f4f62c.js",
   "media/images/notifications-icon.png": "/packs/media/images/notifications-icon-c70674c4.png",
+  "media/images/xgraphic.png": "/packs/media/images/xgraphic-ddba6c3e.png",
   "mediawiki.js": "/packs/3cd99d77c94b08d9221853f47b0c6d61.js",
   "mel.js": "/packs/e9e5e366f27773eb6dbeaa6d9b91b137.js",
   "mixal.js": "/packs/cb58f9232dd95737ba424ebc76e327a1.js",
@@ -353,8 +354,8 @@
   "scala.js": "/packs/13e59d60b69ec4958e23dd936b2296cf.js",
   "scheme.js": "/packs/9bfd0b8fa253fdca76e9b059f4b84ff4.js",
   "scss.js": "/packs/8f089d891b0d3cc89366462aa635dfa6.js",
-  "server_rendering.js": "/packs/js/server_rendering-5f84c5a6d8337d6c83f0.js",
-  "server_rendering.js.map": "/packs/js/server_rendering-5f84c5a6d8337d6c83f0.js.map",
+  "server_rendering.js": "/packs/js/server_rendering-0a153d820b5851048eee.js",
+  "server_rendering.js.map": "/packs/js/server_rendering-0a153d820b5851048eee.js.map",
   "sh.js": "/packs/324b6179bd4016b1a8f7bf5313963777.js",
   "sjs.js": "/packs/0667ec19f79667a7afcafacc472ecd78.js",
   "slim.js": "/packs/1d7f460dcbb592df54ec8144692c4623.js",
