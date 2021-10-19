@@ -309,6 +309,8 @@ a {
   z-index: 1;
   background-color: #FFFFFF;
   box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+  max-height: 60%;
+  overflow: auto;
 }
 
 .modal {

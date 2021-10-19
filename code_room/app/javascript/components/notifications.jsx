@@ -155,6 +155,8 @@ class Notifications extends React.Component {
   }
 
   closeNotifications() {
+    if (!this.state.viewing) return;
+
       this.setState({
         viewing: false
       })
