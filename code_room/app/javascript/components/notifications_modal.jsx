@@ -4,7 +4,7 @@ import Notification from './notification'
 import { NotificationUtilities } from '../context/notification_utilities';
 
 const NotificationsModal = props => {
-  const { closeModal, closeNotifications } = useContext(NotificationUtilities);
+  const { closeModal, closeNotifications, clearAll } = useContext(NotificationUtilities);
   const notifications = (
     props.notifications.map((notif) => {
     return <Notification key={uuid()}
@@ -26,7 +26,12 @@ const NotificationsModal = props => {
   
   return (
     <div id="notificationsModal" className="notifications-modal">
-      {notifications}
+      <div className="notifications-modal-list">
+        {notifications}
+      </div>
+      <div className="notification-buttons-container">
+        <button onClick={clearAll} className="notification-button">clear all</button>
+      </div>
     </div>
   )
 }
