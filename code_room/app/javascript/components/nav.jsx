@@ -3,11 +3,21 @@ import { Link, Redirect } from 'react-router-dom';
 import { LOGOUT } from '../reducers/auth_reducer'
 import md5 from 'md5';
 import Notifications from './notifications';
+import AvatarChange from './avatar_change';
 
 class Nav extends React.Component {
   constructor(props) {
     super(props)
     this.logout = this.logout.bind(this);
+    this.state = { changeAvatar: false };
+  }
+
+  closeAvatarForm = () => {
+    this.setState({ changeAvatar: false })
+  }
+
+  openAvatarForm = () => {
+    this.setState({ changeAvatar: true })
   }
 
   logout(e) {
@@ -34,13 +44,19 @@ class Nav extends React.Component {
     return(
     <div className="nav-menu">
       <div className="avatar-and-name">
-        <img className="avatar" src={imURL}></img>
+        <img onClick={this.openAvatarForm.bind(this)} 
+        className="avatar" alt="user avatar" src={imURL}/>
         <h5>Welcome, {this.props.user.username}</h5>
       </div>
       <div className="right-nav">
         <Notifications user={this.props.user}/>
         <Link to="/" onClick={this.logout}>Logout</Link>
       </div>
+        { 
+          this.state.changeAvatar ?
+          <AvatarChange user={this.props.user} closeForm={this.closeAvatarForm.bind(this)}/> : 
+          null 
+        }
     </div>
     )
   }

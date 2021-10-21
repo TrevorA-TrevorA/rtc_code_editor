@@ -40,6 +40,17 @@ class UsersController < ApplicationController
     end
   end
 
+  def update
+    @user = User.find_by(id: params[:id])
+    avatar_url = params[:avatar_url]
+
+    if @user.update(avatar_url: avatar_url)
+      render json: {avatar_url: avatar_url}
+    else
+      render json: { status: 400 }, status: 400
+    end
+  end
+
   def destroy
     @user = User.find_by(id: params[:id])
     @user.destroy
