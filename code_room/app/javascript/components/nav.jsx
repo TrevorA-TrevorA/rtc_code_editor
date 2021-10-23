@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { LOGOUT } from '../reducers/auth_reducer'
-import md5 from 'md5';
+import { GravatarUrl } from '../context/gravatar_url';
 import Notifications from './notifications';
 import AvatarChangeContainer from '../containers/avatar_change_container';
 
 class Nav extends React.Component {
+  static contextType = GravatarUrl;
+  
   constructor(props) {
     super(props)
     this.logout = this.logout.bind(this);
@@ -39,8 +41,7 @@ class Nav extends React.Component {
       return <Redirect to="/"/>
     }
 
-    const hash = md5(this.props.user.email);
-    const imURL = this.props.avatarUrl || `https://www.gravatar.com/avatar/${hash}?d=mp`
+    const imURL = this.props.avatarUrl || this.context(this.props.user.email);
     return(
     <div className="nav-menu">
       <div className="avatar-and-name">

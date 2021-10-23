@@ -10,12 +10,14 @@ class NotificationsChannel < ApplicationCable::Channel
       document_id = data["details"]["document_id"]
       recipient_id = Document.find(document_id).admin_id
       data["recipient_id"] = recipient_id
-      editor_name = User.find(data["details"]["editor_id"]).username
+      editor = User.find(data["details"]["editor_id"])
+      editor_name = editor.username
       file_name = data["details"]["file_name"]
       message = "#{editor_name}\n has accepted your invitation to edit\n #{file_name}"
       data["details"]["message"] = message
       @notification = Notification.create(data)
       ActionCable.server.broadcast("notifications_channel_#{data["recipient_id"]}", { new_notification: @notification })
+      ActionCable.server.broadcast("editors_channel_#{document_id}", { new_editor: editor })
       return
     end
     

@@ -1,10 +1,12 @@
 import React from 'react';
-import md5 from 'md5';
+import { GravatarUrl } from '../context/gravatar_url';
 import connectToNotifications from '../channels/notifications_channel';
 
  window.UserSearchResults = [];
 
 class UserSearchResult extends React.Component {
+  static contextType = GravatarUrl;
+  
   constructor(props) {
     super(props);
     this.notificationSub = connectToNotifications(this.props.user);
@@ -115,8 +117,7 @@ class UserSearchResult extends React.Component {
       return <Redirect to="/"/>
     }
 
-    const hash = md5(this.props.user.email);
-    const imURL = `https://www.gravatar.com/avatar/${hash}?d=mp`
+    const imURL = this.props.user.avatar_url || this.context(this.props.user.email);
     const buttonText = this.state.invited ? "Rescind" : "Invite";
     const callback = this.state.invited ? this.rescindInvitation : this.inviteUser;
 

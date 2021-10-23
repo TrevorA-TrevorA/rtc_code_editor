@@ -1,6 +1,7 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import UserSearchResult from './user_search_result';
+import EditorList from './editor_list';
 
 class CollabManager extends React.Component {
   constructor(props) {
@@ -11,6 +12,10 @@ class CollabManager extends React.Component {
       userSearchResults: []
     };
     window.CollabManager = this;
+  }
+
+  getEditors() {
+
   }
 
   async searchUsers(e) {
@@ -52,10 +57,10 @@ class CollabManager extends React.Component {
         </div>
         </div>
         <div className="collab-details">
-        <select
-        value={this.state.selectedDoc.id}
-        className="doc-selector"
-         onChange={(e) => {
+          <select
+          value={this.state.selectedDoc.id}
+          className="doc-selector"
+          onChange={(e) => {
            const newSelected = this.props.selected.find(doc => doc.id === e.target.value);
            this.setState({ selectedDoc: newSelected })
             }
@@ -70,6 +75,7 @@ class CollabManager extends React.Component {
               )
             })}
           </select>
+          <EditorList document_id={this.state.selectedDoc.id}/>
         </div>
       </div>
     )
