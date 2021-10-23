@@ -6,4 +6,5 @@ json.extract! @user,
               :collab_documents,
               :accepted_collab_documents, 
               :pending_collab_documents, 
-              :email
+              :email,
+              :avatar_url

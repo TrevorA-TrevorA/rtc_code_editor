@@ -3,7 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { LOGOUT } from '../reducers/auth_reducer'
 import md5 from 'md5';
 import Notifications from './notifications';
-import AvatarChange from './avatar_change';
+import AvatarChangeContainer from '../containers/avatar_change_container';
 
 class Nav extends React.Component {
   constructor(props) {
@@ -40,7 +40,7 @@ class Nav extends React.Component {
     }
 
     const hash = md5(this.props.user.email);
-    const imURL = `https://www.gravatar.com/avatar/${hash}?d=mp`
+    const imURL = this.props.avatarUrl || `https://www.gravatar.com/avatar/${hash}?d=mp`
     return(
     <div className="nav-menu">
       <div className="avatar-and-name">
@@ -54,7 +54,7 @@ class Nav extends React.Component {
       </div>
         { 
           this.state.changeAvatar ?
-          <AvatarChange user={this.props.user} closeForm={this.closeAvatarForm.bind(this)}/> : 
+          <AvatarChangeContainer closeForm={this.closeAvatarForm.bind(this)}/> : 
           null 
         }
     </div>

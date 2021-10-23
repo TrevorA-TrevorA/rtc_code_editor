@@ -309,17 +309,22 @@ a {
   border-radius: 10px;
   align-items: center;
   padding: 5%;
-  row-gap: 10px;
+  row-gap: 15px;
   top: 20%;
   left: 30%;
   right: 30%;
   z-index: 1;
   background-color: #FFFFFF;
   box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+  h4 {
+    font-weight: 400;
+  }
 }
 
 #avatarUrlForm, #avatarUrlForm:focus {
   color: #000000;
+  border: none;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
 }
 
 .notifications-modal {
@@ -534,6 +539,7 @@ a {
   height: 3vw;
   width: 3vw;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .doc-editor {

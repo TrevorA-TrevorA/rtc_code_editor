@@ -7,4 +7,5 @@ json.array! @users do |user|
   json.collab_documents user.collab_documents
   json.accepted_collab_documents user.accepted_collab_documents
   json.pending_collab_documents user.pending_collab_documents
+  json.avatar_url user.avatar_url
 end

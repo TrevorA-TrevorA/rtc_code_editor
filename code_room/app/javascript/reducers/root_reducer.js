@@ -2,6 +2,8 @@ import { authReducer, LOGIN, LOGOUT } from './auth_reducer'
 import { docReducer, UPLOAD, DELETE } from './doc_reducer'
 import { ADD_COLLABORATION, collabReducer, REMOVE_COLLABORATION } from './collab_reducer';
 import { selectionReducer, SELECT, DESELECT } from './selection_reducer';
+export const UPDATE_AVATAR_URL = "UPDATE AVATAR URL";
+export const DELETE_AVATAR_URL = "DELETE AVATAR URL";
 
 const rootReducer = (state, action) => {
   const newState = {};
@@ -27,6 +29,12 @@ const rootReducer = (state, action) => {
       return newState;
     case DESELECT:
       newState.selected = selectionReducer(state.selected, action)
+      return newState;
+    case UPDATE_AVATAR_URL:
+      newState.avatarUrl = action.url;
+      return newState;
+    case DELETE_AVATAR_URL:
+      newState.avatarUrl = null;
       return newState;
     default:
       return state;
