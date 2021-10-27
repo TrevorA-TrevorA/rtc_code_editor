@@ -29,6 +29,7 @@ class Room extends React.Component {
     this.offsetDelta = this.offsetDelta.bind(this);
     this.deltaHistory = [];
     this.localDeltaHistory = [];
+    this.pending = [];
     window.room = this;
   }
 
@@ -37,10 +38,19 @@ class Room extends React.Component {
     window.changeEvent = event;
     if (!this.broadcastChange) return;
 
+    const editor = this.editorRef.current.editor;
+    let currentLine;
+    if (event.lines.length === 1) {
+      currentLine = editor.session.doc.$lines[event.start.row].slice(0,-1);
+    } else {
+      currentLine = editor.session.doc.$lines[event.start.row];
+    }
+
     const delta = {
       time,
       senderId: this.props.user.id,
-      changeData: event
+      changeData: event,
+      currentLine
     }
 
     this.docSubscription.send(delta);
@@ -56,13 +66,57 @@ class Room extends React.Component {
   receiveEdit(data) {
     if (data.senderId === this.props.user.id) return;
     const editorDoc = this.editorRef.current.editor.session.doc;
-    this.ensureDeltaOrder(data);
+    this.ensureCorrectRow(data)
+    //this.ensureDeltaOrder(data);
     const newContent = editorDoc.getValue();
 
     this.setState({
       editorText: newContent,
       initialState: false
     })
+  }
+
+  ensureCorrectRow(data) {
+    this.pending.push(data);
+    while (this.pending.length) {
+      const editorDoc = this.editorRef.current.editor.session.doc;
+      const data = this.pending.shift();
+      this.broadcastChange = false;
+      if (!this.deltaHistory.length) {
+        editorDoc.applyDelta(data.changeData);
+        this.deltaHistory.push(data)
+        this.broadcastChange = true;
+        return;
+      }
+
+      const lastDelta = this.deltaHistory.slice(-1)[0];
+      // corrective conditions
+      const diffOrigin = lastDelta.senderId !== data.senderId;
+      const mistimed = lastDelta.time > data.time;
+      const higherIdx = data.changeData.start.row > lastDelta.changeData.start.row;
+      if (diffOrigin && mistimed && higherIdx) {
+        const lastDelta = this.deltaHistory.slice(-1)[0];
+        const diff = lastDelta.changeData.lines.length - 1;
+        console.log(diff);
+        switch(lastDelta.changeData.action) {
+          case "insert":
+            data.changeData.start.row += diff;
+            data.changeData.end.row += diff;
+            break;
+          case "remove":
+            data.changeData.start.row -= diff;
+            data.changeData.end.row -= diff;
+            break;
+          default:
+            break;
+        }
+      }
+      editorDoc.applyDelta(data.changeData);
+      this.deltaHistory.push(data)
+    }
+
+   
+    this.broadcastChange = true;
   }
 
   ensureDeltaOrder(data) {
@@ -90,9 +144,9 @@ class Room extends React.Component {
   getCurrentRow(data) {
     if (data.senderId === this.props.user.id) return;
 
-    $(".ace_text-layer").find('div').css({backgroundColor: ""})
-    const rowElement = $(".ace_text-layer").find('div')[data.row]
-    if (rowElement) rowElement.style.backgroundColor = "rgba(255, 0, 0, 0.3)"
+    // $(".ace_text-layer").find('div').css({backgroundColor: ""})
+    // const rowElement = $(".ace_text-layer").find('div')[data.row]
+    // if (rowElement) rowElement.style.backgroundColor = "rgba(255, 0, 0, 0.3)"
   }
 
   sendInitialPosition() {
@@ -174,7 +228,7 @@ class Room extends React.Component {
       <div className="doc-editor">
         <AceEditor
         onChange={this.broadcastEdit}
-        onCursorChange={this.offsetDelta}
+        //onCursorChange={this.offsetDelta}
         height="100%"
         width="100%"
         mode={this.state.editorMode}
