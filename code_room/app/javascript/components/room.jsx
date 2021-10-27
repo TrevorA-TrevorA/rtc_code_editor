@@ -114,8 +114,7 @@ class Room extends React.Component {
       editorDoc.applyDelta(data.changeData);
       this.deltaHistory.push(data)
     }
-
-   
+    
     this.broadcastChange = true;
   }
 
@@ -152,18 +151,6 @@ class Room extends React.Component {
   sendInitialPosition() {
     const row = this.editorRef.current.editor.getCursorPosition().row
     this.docSubscription.send({ senderId: this.props.user.id, row });
-  }
-
-  offsetDelta(e) {
-    this.docSubscription.send({ senderId: this.props.user.id, row: e.lead.row })
-    const lastDelta = this.localDeltaHistory.slice(-1)[0];
-    if (!lastDelta) return;
-    const start = lastDelta.changeData.start.row;
-    if (start !== lastDelta.changeData.end.row) return;
-    if (Date.now() - lastDelta.time < 500 && start) {
-      lastDelta.changeData.start.row = e.lead.row;
-      lastDelta.changeData.end.row = e.lead.row;
-    }
   }
 
   getEditorMode(fileName) {
@@ -228,7 +215,6 @@ class Room extends React.Component {
       <div className="doc-editor">
         <AceEditor
         onChange={this.broadcastEdit}
-        //onCursorChange={this.offsetDelta}
         height="100%"
         width="100%"
         mode={this.state.editorMode}
