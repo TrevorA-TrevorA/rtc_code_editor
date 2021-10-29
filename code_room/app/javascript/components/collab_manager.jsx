@@ -14,10 +14,6 @@ class CollabManager extends React.Component {
     window.CollabManager = this;
   }
 
-  getEditors() {
-
-  }
-
   async searchUsers(e) {
     if (!e.target.value) {
       this.setState({userSearchResults: []})

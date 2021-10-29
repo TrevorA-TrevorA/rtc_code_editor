@@ -26,7 +26,6 @@ class Room extends React.Component {
     this.ensureDeltaOrder = this.ensureDeltaOrder.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
-    this.offsetDelta = this.offsetDelta.bind(this);
     this.deltaHistory = [];
     this.localDeltaHistory = [];
     this.pending = [];
@@ -92,12 +91,11 @@ class Room extends React.Component {
       const lastDelta = this.deltaHistory.slice(-1)[0];
       // corrective conditions
       const diffOrigin = lastDelta.senderId !== data.senderId;
-      const mistimed = lastDelta.time > data.time;
+      const mistimed = lastDelta.time < data.time
       const higherIdx = data.changeData.start.row > lastDelta.changeData.start.row;
       if (diffOrigin && mistimed && higherIdx) {
         const lastDelta = this.deltaHistory.slice(-1)[0];
         const diff = lastDelta.changeData.lines.length - 1;
-        console.log(diff);
         switch(lastDelta.changeData.action) {
           case "insert":
             data.changeData.start.row += diff;

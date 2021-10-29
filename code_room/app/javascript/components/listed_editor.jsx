@@ -6,7 +6,10 @@ const ListedEditor = props => {
   
   return (
     <div className="listed-editor">
-      <button className="remove-editor-button">Remove</button>
+      <button onClick={() => props.removeEditor(props.editor)} 
+      className="remove-editor-button">
+        Remove
+      </button>
       <img src={props.editor.avatar_url || gravatar(props.editor.email)} className="avatar"/>
       <p>{props.editor.username}</p>
     </div>

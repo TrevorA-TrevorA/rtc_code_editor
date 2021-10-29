@@ -15,7 +15,7 @@ const AvatarChange = props => {
       return;
     };
 
-    const userUrl = `api/users/${props.user.id}`
+    const userUrl = `/api/users/${props.user.id}`
     const options = {
       method: "PATCH",
       headers: {
