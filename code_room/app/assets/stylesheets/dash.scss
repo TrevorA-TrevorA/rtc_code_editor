@@ -8,8 +8,9 @@
   justify-content: space-between;
   * { display: inline-block; margin: 0; }
   font-size: 16.6px;
-  padding: 2vw;
+  padding: 1vw 2vw;
   margin: 0 3.229166666666667vw;
+  align-items: center;
 }
 
 a {
@@ -545,8 +546,8 @@ a {
 }
 
 .avatar {
-  height: 3vw;
-  width: 3vw;
+  height: 3.5vw;
+  width: 3.5vw;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -563,6 +564,8 @@ a {
 }
 
 .doc-editor {
+  display: flex;
+  flex-direction: column;
   height: 37.708333333333336vw;
   width: 55.46875vw;
   min-width: 500px;

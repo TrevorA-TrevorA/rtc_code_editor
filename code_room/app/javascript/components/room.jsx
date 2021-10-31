@@ -205,7 +205,7 @@ class Room extends React.Component {
       this.docSubscription.unsubscribe();
       return <Redirect to="/"/>
     }
-    
+
     return (
     <div className="room">
       <NavContainer/>

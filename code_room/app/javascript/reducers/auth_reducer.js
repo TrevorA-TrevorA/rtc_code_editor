@@ -9,7 +9,15 @@ export const authReducer = (_, action) => {
       const editables = user.accepted_collab_documents;
       const collaborations = user.collaborations;
       const selected = [];
-      return { user, documents, editables, collaborations, selected };
+      const avatarUrl = action.user.avatar_url;
+      return { 
+        user, 
+        documents, 
+        editables, 
+        collaborations, 
+        selected, 
+        avatarUrl 
+      };
     case LOGOUT: 
       return { 
         user: null, 

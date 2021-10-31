@@ -47,7 +47,7 @@ class Nav extends React.Component {
       <div className="avatar-and-name">
         <img onClick={this.openAvatarForm.bind(this)} 
         className="avatar" alt="user avatar" src={imURL}/>
-        <h5>Welcome, {this.props.user.username}</h5>
+        <h5>{this.props.user.username}</h5>
       </div>
       <div className="right-nav">
         <Notifications user={this.props.user}/>

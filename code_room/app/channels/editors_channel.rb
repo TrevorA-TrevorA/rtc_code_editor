@@ -1,7 +1,8 @@
 class EditorsChannel < ApplicationCable::Channel
   def subscribed
     stream_from "editors_channel_#{params[:document_id]}"
-    @editors = Collaboration.where(document_id: params[:document_id]).map do |collab|
+    @editors = Collaboration.where(document_id: params[:document_id], accepted: true)
+    .map do |collab|
       User.find(collab.editor_id)
       .attributes
       .slice('id', 'username', 'avatar_url', 'email')
