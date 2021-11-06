@@ -9,7 +9,13 @@ class EditorsChannel < ApplicationCable::Channel
       .merge('collab_id' => collab.id)
     end
     
-    ActionCable.server.broadcast("editors_channel_#{params[:document_id]}", { editors: @editors })
+    editor_info = { editors: @editors }
+    if !params[:admin]
+      document = Document.find(params[:document_id])
+      editor_info[:admin] = User.find(document.admin_id)
+    end
+
+    ActionCable.server.broadcast("editors_channel_#{params[:document_id]}", editor_info)
   end
 
   def unsubscribed

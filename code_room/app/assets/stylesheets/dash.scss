@@ -25,7 +25,7 @@ a {
   height: 37.708333333333336vw;
   width: 28.740625vw;
   background-color: #FFFFFF;
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
 }
 
 #chatBoxHeader {
@@ -563,12 +563,18 @@ a {
   font-size: 12px;
 }
 
+.profiler-results {
+  display: none;
+}
+
+
 .doc-editor {
   display: flex;
   flex-direction: column;
   height: 37.708333333333336vw;
   width: 55.46875vw;
   min-width: 500px;
+  box-shadow: 0 4px 5px 1px rgba(64,60,67,.3);
 }
 
 @media only screen and (max-width: 1000px) {
@@ -578,3 +584,4 @@ a {
     height: 100%;
   }
 }
+

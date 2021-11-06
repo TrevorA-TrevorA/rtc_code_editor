@@ -12,6 +12,7 @@ class CollabManager extends React.Component {
       userSearchResults: []
     };
     window.CollabManager = this;
+    this.isAdmin = false;
   }
 
   async searchUsers(e) {
@@ -30,6 +31,12 @@ class CollabManager extends React.Component {
   }
 
   render() {
+    if (this.props.user.documents.some(doc => {
+      return doc.id === this.state.selectedDoc.id;
+    })) {
+      this.isAdmin = true;
+    }
+
     return (
       <div id="collab">
         <button onClick={this.props.callback} id="closeCollab">X</button>
@@ -71,7 +78,7 @@ class CollabManager extends React.Component {
               )
             })}
           </select>
-          <EditorList document_id={this.state.selectedDoc.id}/>
+          <EditorList isAdmin={this.isAdmin} document_id={this.state.selectedDoc.id}/>
         </div>
       </div>
     )

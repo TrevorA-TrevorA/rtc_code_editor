@@ -1,7 +1,11 @@
 import consumer from "./consumer"
 
-const connectToEditors = (docId, receiveEditors) => {
-  return consumer.subscriptions.create({ channel: "EditorsChannel", document_id: docId}, {
+const connectToEditors = (docId, receiveEditors, isAdmin) => {
+  return consumer.subscriptions.create({ 
+    channel: "EditorsChannel", 
+    document_id: docId, 
+    admin: isAdmin
+  }, {
     connected() {
       // Called when the subscription is ready for use on the server
     },

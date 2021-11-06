@@ -91,7 +91,7 @@ class Room extends React.Component {
       const lastDelta = this.deltaHistory.slice(-1)[0];
       // corrective conditions
       const diffOrigin = lastDelta.senderId !== data.senderId;
-      const mistimed = lastDelta.time < data.time
+      const mistimed = lastDelta.time > data.time
       const higherIdx = data.changeData.start.row > lastDelta.changeData.start.row;
       if (diffOrigin && mistimed && higherIdx) {
         const lastDelta = this.deltaHistory.slice(-1)[0];

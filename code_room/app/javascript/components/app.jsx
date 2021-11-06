@@ -1,16 +1,13 @@
 import React from 'react';
-import HomeContainer from '../containers/home_container';
-import { store } from '../store';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { store } from '../store';
 import DashContainer from '../containers/dash_container';
 import RoomContainer from '../containers/room_container';
 import SignUpContainer from '../containers/sign_up_container';
-window.store = store;
+import HomeContainer from '../containers/home_container';
 
-class App extends React.Component {
-  render() {
-    return (
+const App = () => (
   <Provider store={store}>
     <BrowserRouter>
       <Switch>
@@ -21,7 +18,6 @@ class App extends React.Component {
       </Switch>
     </BrowserRouter>
   </Provider>
-    )}
-}
+    )
 
 export default App;

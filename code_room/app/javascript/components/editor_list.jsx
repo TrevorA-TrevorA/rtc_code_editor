@@ -4,10 +4,10 @@ import ListedEditor from './listed_editor';
 import { v4 as uuid } from 'uuid';
 
 const EditorList = props => {
-  const subscription = connectToEditors(props.document_id, receiveEditors)
-  console.log(subscription);
+  const subscription = connectToEditors(props.document_id, receiveEditors, props.isAdmin)
 
-  const [editors, setEditors] = useState([])
+  let [editors, setEditors] = useState([]);
+  let [admin, setAdmin] = useState(null);
 
   useEffect(() => {
     return () => subscription.unsubscribe();
@@ -32,18 +32,33 @@ const EditorList = props => {
       setEditors([...editors, data.new_editor]);
       return;
     }
-    console.log(data.editors)
+
+    console.log(data.admin);
+    if (data.admin) setAdmin(data.admin);
+
     setEditors(data.editors);
   }
-  
+
   return (
     <div className="editor-list">
+      {
+        admin ?
+        <ListedEditor 
+          key={uuid()}
+          editor={admin}
+          editorIsAdmin={true}
+          selfIsAdmin={props.isAdmin}
+        /> :
+        null
+      }
       { 
       editors.map(editor => {
         return <ListedEditor 
         key={uuid()}
         removeEditor={removeEditor}
-        editor={editor} 
+        editor={editor}
+        editorIsAdmin={false}
+        selfIsAdmin={props.isAdmin}
         />
       }) 
       }
