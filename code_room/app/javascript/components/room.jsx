@@ -3,6 +3,7 @@ import connectToDoc from '../channels/doc_channel';
 import NavContainer from '../containers/nav_container'
 import AceEditor from 'react-ace';
 import ChatBox from './chat_box';
+import DocHeader from './doc_header'
 import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
@@ -16,13 +17,15 @@ class Room extends React.Component {
       editorText: "",
       editorMode: "javascript",
       initialState: true,
+      docTitle: ''
     }
 
+    
     const callbacks = [this.receiveEdit.bind(this), this.getCurrentRow.bind(this), this.sendInitialPosition.bind(this)]
-
+    this.docId = this.props.match.params.docId;
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
-    this.docSubscription = connectToDoc(...callbacks);
+    this.docSubscription = connectToDoc(this.docId,...callbacks);
     this.ensureDeltaOrder = this.ensureDeltaOrder.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
@@ -196,7 +199,11 @@ class Room extends React.Component {
     }).then(json => {
       const content = json.content;
       const mode = this.getEditorMode(json.file_name);
-      this.setState({ editorText: "\n" + content, editorMode: mode })
+      this.setState({ 
+        editorText: "\n" + content, 
+        editorMode: mode,
+        docTitle: json.file_name
+      })
     }).catch(err => console.log(err))
   }
   
@@ -211,9 +218,10 @@ class Room extends React.Component {
       <NavContainer/>
       <div className="gray-area doc-room">
       <div className="doc-editor">
+        <DocHeader docTitle={this.state.docTitle}/>
         <AceEditor
         onChange={this.broadcastEdit}
-        height="100%"
+        height="90%"
         width="100%"
         mode={this.state.editorMode}
         theme="terminal"

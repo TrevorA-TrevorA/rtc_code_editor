@@ -8,9 +8,9 @@
   justify-content: space-between;
   * { display: inline-block; margin: 0; }
   font-size: 16.6px;
-  padding: 1vw 2vw;
-  margin: 0 3.229166666666667vw;
+  padding: 1vw 5.229166666666667vw;
   align-items: center;
+  background-color: #FFF
 }
 
 a {
@@ -22,8 +22,8 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 37.708333333333336vw;
-  width: 28.740625vw;
+  height: 70vh;
+  width: 25%;
   background-color: #FFFFFF;
   filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
 }
@@ -34,6 +34,7 @@ a {
   height: 4.067708333333333vw;
   background-color: #000000;
   padding: .5vw;
+  box-shadow: 0 0 5px #FFF;
 }
 
 #chatInput {
@@ -100,8 +101,8 @@ a {
   border-bottom-left-radius: 10px;
 }
 
-.chat-header-text {
-  font-size: 1.5vw;
+.chat-header-text, .doc-header-text {
+  font-size: 20px;
   color: #FFFFFF;
   font-family: 'Courier New', Courier, monospace;
   font-weight: 500;
@@ -131,7 +132,14 @@ a {
 
 .doc-room {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  background-color: transparent;
+}
+
+.room {
+  height: 100%;
+  width: 100%;
+  background-color: rgba(12,21,37,0.95);
 }
 
 .dash-button {
@@ -567,14 +575,21 @@ a {
   display: none;
 }
 
+.doc-header {
+  display: flex;
+  flex-grow: 1;
+  padding: 0 20px;
+  background-color: #000000;
+}
+
 
 .doc-editor {
   display: flex;
   flex-direction: column;
-  height: 37.708333333333336vw;
-  width: 55.46875vw;
+  height: 70vh;
+  width: 70%;
   min-width: 500px;
-  box-shadow: 0 4px 5px 1px rgba(64,60,67,.3);
+  box-shadow: 0 0 5px #FFF;
 }
 
 @media only screen and (max-width: 1000px) {
