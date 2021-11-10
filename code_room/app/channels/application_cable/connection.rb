@@ -3,7 +3,8 @@ module ApplicationCable
     identified_by :current_user
 
     def connect
-      self.current_user = current_user
+      session_token = @request.session[:session_token]
+      self.current_user = User.find_by(session_token: session_token)
     end
   end
 end

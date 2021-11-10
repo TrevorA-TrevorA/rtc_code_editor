@@ -16,6 +16,10 @@ class Document < ApplicationRecord
   primary_key: :id,
   dependent: :destroy
 
+  has_many :active_editors,
+  through: :document_connections,
+  source: :user
+
   has_many :editors,
   through: :collaborations,
   source: :user

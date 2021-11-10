@@ -12,6 +12,11 @@ import consumer from "./consumer"
       },
 
       received(data) {
+        if (data.editors) {
+          console.log(data)
+          return;
+        }
+        
         data.changeData ? editCallback(data) : cursorPosCallback(data)
       }
     });
