@@ -3,10 +3,11 @@ class DocChannel < ApplicationCable::Channel
     stream_from "doc_channel_#{params[:document_id]}"
     doc_connection_params = { 
       editor_id: connection.current_user.id, 
-      document_id: params[:document_id] 
+      document_id: params[:document_id]
     }
-
-    @doc_connection = DocumentConnection.create!(doc_connection_params)
+    
+    DocumentConnection.where(doc_connection_params).destroy_all
+    @doc_connection = DocumentConnection.create(doc_connection_params)
     broadcast_active_editors
   end
 
@@ -17,7 +18,6 @@ class DocChannel < ApplicationCable::Channel
   def unsubscribed
     @doc_connection.destroy
     broadcast_active_editors
-    # Any cleanup needed when channel is unsubscribed
   end
 
   private

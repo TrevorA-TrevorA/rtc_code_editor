@@ -4,7 +4,6 @@ import DocListContainer from '../containers/doc_list_container'
 import NavContainer from '../containers/nav_container';
 import { Redirect } from 'react-router-dom';
 import CollabManagerContainer from '../containers/collab_manager_container';
-import { GravatarUrl } from '../context/gravatar_url';
 
 class Dash extends React.Component {
   constructor(props) {

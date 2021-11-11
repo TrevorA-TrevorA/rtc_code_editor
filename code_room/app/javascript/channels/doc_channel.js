@@ -1,10 +1,10 @@
 import consumer from "./consumer"
 
-   const connectToDoc = (docId, editCallback, cursorPosCallback, connectCallback) => {
+   const connectToDoc = (docId, callbacks) => {
     return consumer.subscriptions.create({channel: "DocChannel", document_id: docId}, {
       connected() {
         console.log("doc channel connected...")
-        connectCallback();
+        callbacks.connect();
       },
 
       disconnected() {
@@ -13,11 +13,11 @@ import consumer from "./consumer"
 
       received(data) {
         if (data.editors) {
-          console.log(data)
+          callbacks.editorList(data);
           return;
         }
         
-        data.changeData ? editCallback(data) : cursorPosCallback(data)
+        data.changeData ? callbacks.edit(data) : callbacks.cursor(data)
       }
     });
   }

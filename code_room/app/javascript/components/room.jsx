@@ -17,15 +17,22 @@ class Room extends React.Component {
       editorText: "",
       editorMode: "javascript",
       initialState: true,
-      docTitle: ''
+      docTitle: '',
+      editorList: []
     }
 
     
-    const callbacks = [this.receiveEdit.bind(this), this.getCurrentRow.bind(this), this.sendInitialPosition.bind(this)]
+    const callbacks = {
+      edit: this.receiveEdit.bind(this), 
+      cursor: this.getCurrentRow.bind(this), 
+      connect: this.sendInitialPosition.bind(this),
+      editorList: this.editorListUpdate.bind(this)
+    }
+
     this.docId = this.props.match.params.docId;
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
-    this.docSubscription = connectToDoc(this.docId,...callbacks);
+    this.docSubscription = connectToDoc(this.docId, callbacks);
     this.ensureDeltaOrder = this.ensureDeltaOrder.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
@@ -117,6 +124,10 @@ class Room extends React.Component {
     }
     
     this.broadcastChange = true;
+  }
+
+  editorListUpdate(data) {
+    this.setState({editorList: data.editors })
   }
 
   ensureDeltaOrder(data) {
@@ -218,7 +229,10 @@ class Room extends React.Component {
       <NavContainer/>
       <div className="gray-area doc-room">
       <div className="doc-editor">
-        <DocHeader docTitle={this.state.docTitle}/>
+        <DocHeader 
+          editors={this.state.editorList} 
+          docTitle={this.state.docTitle}
+        />
         <AceEditor
         onChange={this.broadcastEdit}
         height="90%"
