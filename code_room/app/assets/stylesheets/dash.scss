@@ -10,7 +10,7 @@
   font-size: 16.6px;
   padding: 1vw 5.229166666666667vw;
   align-items: center;
-  background-color: #FFF
+  background-color: rgba(255,255,255,0.9)
 }
 
 a {
@@ -126,7 +126,7 @@ a {
   bottom: 0;
   position: absolute;
   padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
-  margin: 6vw 3.229166666666667vw 3.3854166666666665vw;
+  margin: 10vh 3.229166666666667vw 5vh;
   background-color: #F3F6F9;
   overflow: auto;
 }
@@ -140,7 +140,7 @@ a {
 .room {
   height: 100%;
   width: 100%;
-  background-color: rgba(12,21,37,0.95);
+  background-color: rgb(53,54,59);
 }
 
 .dash-button {
@@ -607,7 +607,7 @@ a {
   height: 70vh;
   width: 70%;
   min-width: 500px;
-  box-shadow: 0 0 5px #FFF;
+  box-shadow: 0 0 10px #FFF;
 }
 
 @media only screen and (max-width: 1000px) {
