@@ -1,16 +1,16 @@
 import React from 'react';
-import ChatBubble from './chat_bubble';
+import ChatBlock from './chat_block';
+import { v4 as uuid } from 'uuid';
 
 const ChatBody = (props) => {
   return (
     <div id="chatBody">
         {props.chatLog.map(chat => {
           return (
-            <ChatBubble 
-            key={chat.time}
-            user={chat.username} 
+            <ChatBlock
+            key={uuid()}
+            user={chat.user} 
             message={chat.message}
-            self={chat.uid === props.uid}
             time={chat.time}/>
           )
         })}

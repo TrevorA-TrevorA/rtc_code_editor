@@ -84,11 +84,10 @@ class ChatBox extends React.Component {
   sendChat(e) {
     const message = e.currentTarget.value;
     if (!message) return;
-    const user = this.props.user;
     const options = { month: "numeric", day: "numeric", year: "numeric" }
     const time = new Date().toLocaleTimeString('en-US', options)
 
-    this.subscription.send({ username: user.username, uid: user.id, message, time })
+    this.subscription.send({ user: this.props.user, message, time })
     e.currentTarget.value = "";
   }
 

@@ -24,15 +24,15 @@ a {
   justify-content: space-between;
   height: 70vh;
   width: 25%;
-  background-color: #FFF;
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+  background-color: rgb(60,64,70);
+  //filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
   box-shadow: 0 0 5px #FFF;
 }
 
 #chatBoxHeader {
   display: flex;
   justify-content: center;
-  height: 4.067708333333333vw;
+  height: 6vh;
   background-color: #000000;
   padding: .5vw;
 }
@@ -40,11 +40,19 @@ a {
 #chatInput {
   resize: none;
   border: none;
-  background-color: #FFF;
+  color: rgba(255,255,255,0.9);
+  background-color: rgb(60,64,70);
   padding: .5em;
+  font-size: 14px;
+  height: 6vh;
+  min-height: 6vh;
+  font-family: whitney, helvetica neue;
+}
+
+#chatInput::placeholder {
+  color: rgba(255,255,255,0.7);
   font-size: 16px;
-  height: 4.067708333333333vw;
-  min-height: 4.067708333333333vw;
+  font-family:'Courier New', Courier, monospace;
 }
 
 #chatBody {
@@ -52,7 +60,8 @@ a {
   flex-direction: column;
   flex-grow: 1;
   overflow: auto;
-  padding-top: 1vw;
+  row-gap: 2vh;
+  padding: 1.5vh 2vw 0.3vw 1.5vh;
 }
 
 .chat-bubble.self:before {
@@ -110,10 +119,10 @@ a {
   padding: 0;
 }
 
-.chat-user-name {
-  font-weight: 300;
-  font-size: 10px;
-}
+// .chat-user-name {
+//   font-weight: 300;
+//   font-size: 10px;
+// }
 
 #chatInput:focus {
   outline: none;
@@ -140,7 +149,7 @@ a {
 .room {
   height: 100%;
   width: 100%;
-  background-color: rgb(53,54,59);
+  background-color: rgb(46,49,54);
 }
 
 .dash-button {
@@ -532,6 +541,47 @@ a {
   }
 }
 
+.chatblock {
+  display: flex;
+  color: rgba(255,255,255,0.9);
+  align-items: flex-start;
+  column-gap: 1vw;
+  font-family: whitney, helvetica neue;
+}
+
+.chat-name-time {
+  column-gap: 1vw;
+  align-items: center;
+}
+
+.chat-username {
+  font-weight: 500;
+}
+
+.chat-message {
+  color: #DCDDDE;
+  font-weight: 400;
+}
+
+.timestamp {
+  font-size: 11px;
+  font-weight: lighter;
+  color: rgba(255,255,255,0.8);
+}
+
+.chat-text {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.25vh;
+  font-size: 14px;
+  p { margin: 0; }
+}
+
+.chat-name-time {
+  display: flex;
+  align-items: center;
+}
+
 .chat-name-time-row {
   display: flex;
   flex-direction: column;
@@ -569,10 +619,17 @@ a {
   object-fit: cover;
 }
 
+.avatar.chat {
+  height: 40px;
+  width: 40px;
+  min-width: 40px;
+  box-shadow: 0 0 2px #FFF;
+}
+
 .avatar.present {
   box-shadow: 0 0 5px #FFF;
-  height: 6.5vh;
-  width: 6.5vh;
+  height: 6vh;
+  width: 6vh;
 }
 
 .listed-editor {
@@ -607,7 +664,7 @@ a {
   height: 70vh;
   width: 70%;
   min-width: 500px;
-  box-shadow: 0 0 10px #FFF;
+  box-shadow: 0 0 5px #FFF;
 }
 
 @media only screen and (max-width: 1000px) {
