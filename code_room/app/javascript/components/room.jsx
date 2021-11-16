@@ -244,7 +244,7 @@ class Room extends React.Component {
         value={this.state.editorText}
         />
       </div>
-      <ChatBox user={this.props.user}/>
+      <ChatBox docId={this.docId} user={this.props.user}/>
       </div>
     </div>
     )

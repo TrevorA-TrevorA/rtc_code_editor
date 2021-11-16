@@ -47,7 +47,7 @@ class Notifications extends React.Component {
   }
 
   clearAll() {
-    const url = `api/users/${this.props.user.id}/notifications`;
+    const url = `/api/users/${this.props.user.id}/notifications`;
     fetch(url, { method: 'DELETE' })
     .then((res) => {
       if (!res.ok) {

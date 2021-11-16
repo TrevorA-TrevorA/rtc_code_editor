@@ -2,21 +2,15 @@ import consumer from "./consumer"
 
    const connectToChat = (
       getChat, 
-      sendArrivalNotice, 
-      sendExitNotice, 
-      getHeaderMessage
+      getHeaderMessage,
+      docId,
      ) => {
        
-    return consumer.subscriptions.create("ChatChannel", {
+    return consumer.subscriptions.create({channel: "ChatChannel", document_id: docId}, {
       chatLog: [],
 
       connected() {
         console.log("chat channel connected...")
-        sendArrivalNotice()
-      },
-
-      disconnected() {
-        sendExitNotice();
       },
 
       received(data) {

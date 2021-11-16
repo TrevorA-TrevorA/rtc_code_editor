@@ -9,8 +9,11 @@ class ChatBoxHeader extends React.Component {
     return next.headerMessageTime !== this.props.headerMessageTime;
   }
 
-  componentDidUpdate(prev) {
-  
+  componentDidUpdate() {
+    if (this.props.headerMessage.length > 18) {
+      $(".chat-header-text").css({ fontSize: 16 })
+    }
+
     $(".chat-header-text").css({ opacity: 1 })
 
     setTimeout(() => {

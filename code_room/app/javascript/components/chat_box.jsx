@@ -10,12 +10,10 @@ class ChatBox extends React.Component {
 
     const callbacks = [
       this.receiveChat.bind(this), 
-      this.sendArrivalNotice.bind(this),
-      this.sendExitNotice.bind(this),
       this.getHeaderMessage.bind(this)
     ]
     
-    this.subscription = connectToChat(...callbacks);
+    this.subscription = connectToChat(...callbacks, this.props.docId);
     this.sendChat = this.sendChat.bind(this);
     this.state = { chatLog: [], headerMessage: "", headerMessageTime: null }
     window.subscription = this.subscription

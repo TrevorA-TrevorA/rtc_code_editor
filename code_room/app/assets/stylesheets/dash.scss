@@ -26,7 +26,7 @@ a {
   width: 25%;
   background-color: rgb(60,64,70);
   //filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
-  box-shadow: 0 0 5px #FFF;
+  box-shadow: 0 0 2px #FFF;
 }
 
 #chatBoxHeader {
@@ -42,7 +42,7 @@ a {
   border: none;
   color: rgba(255,255,255,0.9);
   background-color: rgb(60,64,70);
-  padding: .5em;
+  padding: 1em;
   font-size: 14px;
   height: 6vh;
   min-height: 6vh;
@@ -117,6 +117,7 @@ a {
   font-family: 'Courier New', Courier, monospace;
   font-weight: 500;
   padding: 0;
+  text-align: center;
 }
 
 // .chat-user-name {
@@ -664,7 +665,7 @@ a {
   height: 70vh;
   width: 70%;
   min-width: 500px;
-  box-shadow: 0 0 5px #FFF;
+  box-shadow: 0 0 2px #FFF;
 }
 
 @media only screen and (max-width: 1000px) {
