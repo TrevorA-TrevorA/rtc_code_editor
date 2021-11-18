@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { LOGOUT } from '../reducers/auth_reducer'
 import { GravatarUrl } from '../context/gravatar_url';
-import Notifications from './notifications';
+import NotificationsContainer from '../containers/notifications_container';
 import AvatarChangeContainer from '../containers/avatar_change_container';
 
 class Nav extends React.Component {
@@ -50,7 +50,7 @@ class Nav extends React.Component {
         <h5>{this.props.user.username}</h5>
       </div>
       <div className="right-nav">
-        <Notifications user={this.props.user}/>
+        <NotificationsContainer/>
         <Link to="/" onClick={this.logout}>Logout</Link>
       </div>
         { 

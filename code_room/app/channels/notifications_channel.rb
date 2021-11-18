@@ -2,7 +2,9 @@ class NotificationsChannel < ApplicationCable::Channel
   def subscribed
     @notifications = Notification.where(recipient_id: params[:id])
     stream_from "notifications_channel_#{params[:id]}"
-    ActionCable.server.broadcast("notifications_channel_#{params[:id]}", { notifications: @notifications })
+    listable = @notifications.where.not(notification_type: "edit_activity")
+    edit_activity = @notifications.where(notification_type: "edit_activity")
+    ActionCable.server.broadcast("notifications_channel_#{params[:id]}", { notifications: listable, edit_activity: edit_activity })
   end
 
   def receive(data)

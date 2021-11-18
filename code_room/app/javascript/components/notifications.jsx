@@ -4,6 +4,7 @@ import connectToNotifications from '../channels/notifications_channel';
 import NotificationsList from './notifications_list';
 import NotificationsModal from './notifications_modal';
 import { NotificationUtilities } from '../context/notification_utilities';
+import { OPEN_CHANNEL, CLOSE_CHANNEL } from '../reducers/doc_connection_reducer';
 
 class Notifications extends React.Component {
   constructor(props) {
@@ -16,15 +17,17 @@ class Notifications extends React.Component {
 
     this.totalNotifications = this.totalNotifications.bind(this);
     this.totalUnread = this.totalUnread.bind(this);
-    this.viewNotifications = this.viewNotifications.bind(this)
-    this.closeNotifications = this.closeNotifications.bind(this)
-    this.markAllAsRead = this.markAllAsRead.bind(this)
+    this.viewNotifications = this.viewNotifications.bind(this);
+    this.setDocConnection = this.setDocConnection.bind(this);
+    this.closeNotifications = this.closeNotifications.bind(this);
+    this.markAllAsRead = this.markAllAsRead.bind(this);
+    this.removeNotification = this.removeNotification.bind(this);
     this.subscription = connectToNotifications(this.props.user, this.receiveNotifications.bind(this));
     this.delist = this.delist.bind(this);
     this.utilities = {
       sendNotification: this.sendNotification.bind(this),
       clearAll: this.clearAll.bind(this),
-      removeNotification: this.removeNotification.bind(this),
+      removeNotification: this.removeNotification,
       closeListIfEmpty: this.closeListIfEmpty.bind(this),
       closeNotifications: this.closeNotifications,
       delist: this.delist,
@@ -65,7 +68,9 @@ class Notifications extends React.Component {
   removeNotification(notification) {
     const url = `/api/notifications/${notification.id}`;
     const options = { method: 'DELETE' }
-    this.delist(notification);
+    if (notification.notification_type !== "edit_activity") {
+      this.delist(notification);
+    }
 
     fetch(url, options)
     .then(res => {
@@ -88,6 +93,7 @@ class Notifications extends React.Component {
   }
 
   receiveNotifications(data) {
+    console.log(data)
     if (data.rescind) {
       this.delist(data);
       return;
@@ -100,12 +106,38 @@ class Notifications extends React.Component {
       return;
     }
 
-    const { notifications } = data
+    const { edit_activity, notifications } = data;
+
+    if (edit_activity) {
+      this.setDocConnection(data)
+    }
+
+    if (!notifications) return;
+
     notifications.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 
     this.setState({
       notifications: notifications
     })
+  }
+
+  setDocConnection(data) {
+    data.edit_activity.forEach(notif => {
+    const docId = notif.details.document_id;
+      switch(notif.details.action) {
+        case "open channel":
+          this.props.dispatch({ type: OPEN_CHANNEL, docId  });
+          break;
+        case "close channel":
+          this.props.dispatch({ type: CLOSE_CHANNEL, docId  });
+          break;
+        default:
+          break;
+      }
+    
+      this.removeNotification(notif)
+    })
+      return;
   }
 
   markAllAsRead() {
