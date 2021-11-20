@@ -3,7 +3,7 @@ import consumer from "./consumer"
 const connectToNotifications = (user, receiveNotifications) => {
   return consumer.subscriptions.create({ channel: "NotificationsChannel", id: user.id }, {
     connected() {
-      // Called when the subscription is ready for use on the server
+      console.log("notifications channel connected")
     },
 
     disconnected() {

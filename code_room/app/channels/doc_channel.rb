@@ -1,15 +1,19 @@
 class DocChannel < ApplicationCable::Channel
   def subscribed
     stream_from "doc_channel_#{params[:document_id]}"
-    doc_connection_params = { 
-      editor_id: connection.current_user.id, 
-      document_id: params[:document_id]
-    }
-    
-    DocumentConnection.where(doc_connection_params).destroy_all
-    @doc_connection = DocumentConnection.create(doc_connection_params)
+    puts "#{connection.current_user.username} is subscribed"
+    if params[:editing]
+      doc_connection_params = { 
+        editor_id: connection.current_user.id, 
+        document_id: params[:document_id]
+      }
+      
+      DocumentConnection.where(doc_connection_params).destroy_all
+      @doc_connection = DocumentConnection.create(doc_connection_params)
+      send_initial_state
+    end
+
     broadcast_active_editors
-    send_edit_notification
   end
 
   def receive(data)
@@ -17,7 +21,7 @@ class DocChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    @doc_connection.destroy
+    @doc_connection.destroy if @doc_connection
     broadcast_active_editors
   end
 
@@ -34,22 +38,18 @@ class DocChannel < ApplicationCable::Channel
     ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", {editors: editors})
   end
 
-  def send_edit_notification
-    details = {  document_id: params[:document_id], action: "open channel" }
-    notif_params = { notification_type: "edit_activity", details: details }
-    admin_id = Document.find(params[:document_id]).admin_id
+  def send_initial_state
+    if DocumentConnection.where(document_id: params[:document_id]).length == 1
+      doc = Document.find(params[:document_id])
+      file_name = doc.file_name
+      content = doc.content
+      document = { content: content, file_name: file_name }
 
-    if connection.current_user.id != admin_id
-      notif_params[:recipient_id] = admin_id
-      notif = Notification.create(notif_params)
-      ActionCable.server.broadcast("notifications_channel_#{admin_id}", { edit_activity: [notif] })
+      ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", { document: document })
+      return
     end
 
-    Collaboration.where(document_id: params[:document_id]).each do |coll|
-      next if coll.editor_id == connection.current_user.id
-      notif_params[:recipient_id] = coll.editor_id
-      notif = Notification.create(notif_params)
-      ActionCable.server.broadcast("notifications_channel_#{coll.editor_id}", { edit_activity: [notif] })
-    end
+    syncRequest = {sender_id: connection.current_user.id, sync: true }
+    ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", syncRequest)
   end
 end

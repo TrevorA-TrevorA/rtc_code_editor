@@ -22,23 +22,17 @@ class Room extends React.Component {
     }
 
     
-    const callbacks = {
-      edit: this.receiveEdit.bind(this), 
-      cursor: this.getCurrentRow.bind(this), 
-      connect: this.sendInitialPosition.bind(this),
-      editorList: this.editorListUpdate.bind(this)
-    }
 
     this.docId = this.props.match.params.docId;
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
-    this.docSubscription = connectToDoc(this.docId, callbacks);
     this.ensureDeltaOrder = this.ensureDeltaOrder.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
     this.deltaHistory = [];
     this.localDeltaHistory = [];
     this.pending = [];
+    this.docSubscription;
     window.room = this;
   }
 
@@ -59,7 +53,8 @@ class Room extends React.Component {
       time,
       senderId: this.props.user.id,
       changeData: event,
-      currentLine
+      currentLine,
+      currentContent: content
     }
 
     this.docSubscription.send(delta);
@@ -73,6 +68,7 @@ class Room extends React.Component {
   }
 
   receiveEdit(data) {
+    console.log(data)
     if (data.senderId === this.props.user.id) return;
     const editorDoc = this.editorRef.current.editor.session.doc;
     this.ensureCorrectRow(data)
@@ -199,23 +195,41 @@ class Room extends React.Component {
 
   componentDidMount() {
     if (!this.state.initialState) return;
-    const docId = this.props.match.params.docId;
-    const url = `/api/documents/${docId}`;
-    fetch(url).then(res => {
-      if (!res.ok) {
-        throw new Error(res.statusText);
-      } else {
-        return res.json();
-      }
-    }).then(json => {
-      const content = json.content;
-      const mode = this.getEditorMode(json.file_name);
+    const callbacks = {
+      edit: this.receiveEdit.bind(this), 
+      cursor: this.getCurrentRow.bind(this), 
+      connect: this.sendInitialPosition.bind(this),
+      editorList: this.editorListUpdate.bind(this),
+      initialize: this.initializeDocument.bind(this),
+      sendState: this.sendState.bind(this),
+      syncState: this.syncState.bind(this)
+    }
+
+    this.docSubscription = connectToDoc(this.docId, true, callbacks);
+  }
+
+  initializeDocument(data) {
+    const { content, file_name } = data.document;
+    const mode = this.getEditorMode(file_name);
       this.setState({ 
-        editorText: "\n" + content, 
+        editorText: content, 
         editorMode: mode,
-        docTitle: json.file_name
+        docTitle: file_name
       })
-    }).catch(err => console.log(err))
+  }
+
+  sendState(data) {
+    if (data.sender_id === this.props.user.id) return;
+    this.docSubscription.send({
+      senderId: this.props.user.id, 
+      currentState: this.state
+    })
+  }
+
+  syncState(data) {
+    if (data.senderId === this.props.user.id) return;
+    console.log(data)
+    this.setState(() => data.currentState)
   }
   
   render() {

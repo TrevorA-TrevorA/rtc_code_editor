@@ -415,6 +415,11 @@ a {
   left: 47vw;
 }
 
+.active-editors {
+  display: flex;
+  column-gap: .5vw;
+}
+
 .access-status {
   position: absolute;
   left: 68vw;
@@ -481,6 +486,11 @@ a {
   min-width: 50%;
 }
 
+.avatar.doc-status {
+  height: 2vw;
+  width: 2vw;
+}
+
 .editor-search-bar:focus {
   color: #000000;
   outline: none;
@@ -511,7 +521,11 @@ a {
 }
 
 .doc-row-rightmost {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   column-gap: .5vw;
+  max-width: 13vw;
   position: absolute;
   right: 2.3958333333333335vw;
 }
@@ -592,6 +606,7 @@ a {
 .chat-bubble.self {
   background-color: #394D6D;
 }
+
 
 .chat-bubble.other {
   background-color: #272824;

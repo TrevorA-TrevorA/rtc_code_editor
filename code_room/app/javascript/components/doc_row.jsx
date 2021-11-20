@@ -1,27 +1,44 @@
 import React from 'react';
 import { SELECT, DESELECT } from '../reducers/selection_reducer'
-
-const FileOpenButton = props => {
-  return (
-    <button
-    className="doc-row-rightmost"
-    onClick={props.callback}>
-      OPEN
-    </button>
-  )
-}
-
+import { Link } from 'react-router-dom';
+import connectToDoc from '../channels/doc_channel';
+import { GravatarUrl } from '../context/gravatar_url';
+import { v4 as uuid } from 'uuid';
 
 class DocRow extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = { editorList: [], docState: "" }
+    this.subscription;
   }
 
-  render() {
-    const openRoom = () => {
-      location.assign(`/doc/${this.props.doc.id}/room`)
+  static contextType = GravatarUrl;
+
+  editorListUpdate(data) {
+    this.setState({editorList: data.editors })
+  }
+
+  componentWillUnmount() {
+    this.subscription.unsubscribe();
+  }
+
+  componentDidMount() {
+    const callbacks = {
+      edit: () => {}, 
+      cursor: () => {}, 
+      connect: () => {},
+      editorList: this.editorListUpdate.bind(this),
+      initialize: () => {},
+      sendState: () => {},
+      syncState: () => {}
     }
 
+    this.subscription = connectToDoc(this.props.doc.id, false, callbacks);
+  }
+
+
+  render() {
     return(
       <div className="doc-row">
         <input onChange={(e) => {
@@ -32,11 +49,30 @@ class DocRow extends React.Component {
         type="checkbox"
         autoComplete="off"
         />
-        <p className="file-name" title={this.props.name}>{this.props.name}</p>
-        <p className="file-size">{this.props.size}</p>
-        <p className="file-date">{this.props.updated}</p>
-        <p className="access-status">{this.props.accessStatus}</p>
-        <FileOpenButton callback={openRoom}/>
+        <div className="file-name" title={this.props.name}>{this.props.name}</div>
+        <div className="file-size">{this.props.size}</div>
+        <div className="file-date">{this.props.updated}</div>
+        <div className="access-status">{this.props.accessStatus}</div>
+        <div className="doc-row-rightmost">
+        <div className="active-editors">
+          {
+            this.state.editorList.map(editor => {
+              return <img
+              key={uuid()}
+              className="avatar doc-status"
+              src={editor.avatar_url || this.context(editor.email)}
+              title={editor.username}
+              />
+            })
+          }
+        </div>
+        <Link 
+          to={{
+            pathname: `/doc/${this.props.doc.id}/room`
+            }}>
+            <button>OPEN</button>
+        </Link>
+        </div>
       </div>
     )
   }

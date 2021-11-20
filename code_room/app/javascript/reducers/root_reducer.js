@@ -2,7 +2,6 @@ import { authReducer, LOGIN, LOGOUT } from './auth_reducer'
 import { docReducer, UPLOAD, DELETE } from './doc_reducer'
 import { ADD_COLLABORATION, collabReducer, REMOVE_COLLABORATION } from './collab_reducer';
 import { selectionReducer, SELECT, DESELECT } from './selection_reducer';
-import { OPEN_CHANNEL, CLOSE_CHANNEL, docConnectionReducer } from './doc_connection_reducer';
 export const UPDATE_AVATAR_URL = "UPDATE AVATAR URL";
 export const DELETE_AVATAR_URL = "DELETE AVATAR URL";
 
@@ -37,10 +36,6 @@ const rootReducer = (state, action) => {
     case DELETE_AVATAR_URL:
       newState.avatarUrl = null;
       return newState;
-    case OPEN_CHANNEL:
-      return docConnectionReducer(state, action)
-    case CLOSE_CHANNEL:
-      return docConnectionReducer(state, action)
     default:
       return state;
   }

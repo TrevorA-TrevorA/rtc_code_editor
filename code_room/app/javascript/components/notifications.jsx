@@ -4,7 +4,6 @@ import connectToNotifications from '../channels/notifications_channel';
 import NotificationsList from './notifications_list';
 import NotificationsModal from './notifications_modal';
 import { NotificationUtilities } from '../context/notification_utilities';
-import { OPEN_CHANNEL, CLOSE_CHANNEL } from '../reducers/doc_connection_reducer';
 
 class Notifications extends React.Component {
   constructor(props) {
@@ -18,7 +17,6 @@ class Notifications extends React.Component {
     this.totalNotifications = this.totalNotifications.bind(this);
     this.totalUnread = this.totalUnread.bind(this);
     this.viewNotifications = this.viewNotifications.bind(this);
-    this.setDocConnection = this.setDocConnection.bind(this);
     this.closeNotifications = this.closeNotifications.bind(this);
     this.markAllAsRead = this.markAllAsRead.bind(this);
     this.removeNotification = this.removeNotification.bind(this);
@@ -93,7 +91,6 @@ class Notifications extends React.Component {
   }
 
   receiveNotifications(data) {
-    console.log(data)
     if (data.rescind) {
       this.delist(data);
       return;
@@ -106,11 +103,7 @@ class Notifications extends React.Component {
       return;
     }
 
-    const { edit_activity, notifications } = data;
-
-    if (edit_activity) {
-      this.setDocConnection(data)
-    }
+    const { notifications } = data;
 
     if (!notifications) return;
 
@@ -119,25 +112,6 @@ class Notifications extends React.Component {
     this.setState({
       notifications: notifications
     })
-  }
-
-  setDocConnection(data) {
-    data.edit_activity.forEach(notif => {
-    const docId = notif.details.document_id;
-      switch(notif.details.action) {
-        case "open channel":
-          this.props.dispatch({ type: OPEN_CHANNEL, docId  });
-          break;
-        case "close channel":
-          this.props.dispatch({ type: CLOSE_CHANNEL, docId  });
-          break;
-        default:
-          break;
-      }
-    
-      this.removeNotification(notif)
-    })
-      return;
   }
 
   markAllAsRead() {

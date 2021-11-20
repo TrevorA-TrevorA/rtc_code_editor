@@ -13,8 +13,7 @@ const initialState = {
   collaborations, 
   editables,
   avatarUrl,
-  selected: [],
-  connectedDocs: []
+  selected: []
 }
 
 export const store = createStore(rootReducer, initialState, applyMiddleware(logger, thunk));
