@@ -8,6 +8,8 @@ import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
 import { Redirect } from 'react-router';
+import { UPDATE } from '../reducers/doc_reducer'
+import { UPDATE_EDITABLE } from '../reducers/collab_reducer'
 
 class Room extends React.Component {
   constructor(props) {
@@ -18,7 +20,8 @@ class Room extends React.Component {
       editorMode: "javascript",
       initialState: true,
       docTitle: '',
-      editorList: []
+      editorList: [],
+      savedState: ''
     }
 
     
@@ -67,6 +70,23 @@ class Room extends React.Component {
     this.docSubscription.unsubscribe();
   }
 
+  saveText() {
+    const content = this.state.editorText;
+    const size = new File([content], "").size;
+    const file_name = this.state.docTitle;
+    const body = JSON.stringify({ file_name, size, content })
+    const url = `/api/documents/${this.docId}`;
+    const headers = { 'Content-Type': 'application/json' }
+    fetch(url, { method: 'PATCH', headers, body })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(res.statusText)
+      }
+      return res.json();
+    }).then(json => console.log(json))
+    .catch(error => console.log(error))
+  }
+
   receiveEdit(data) {
     console.log(data)
     if (data.senderId === this.props.user.id) return;
@@ -79,6 +99,17 @@ class Room extends React.Component {
       editorText: newContent,
       initialState: false
     })
+  }
+
+  updateSavedState(data) {
+    if (data.admin) {
+      this.props.dispatch({ type: UPDATE, doc: data.saved_state })
+    } else {
+      this.props.dispatch({ type: UPDATE_EDITABLE, doc: data.saved_state })
+    }
+
+    this.setState({ savedState: data.saved_state.content })
+    console.log(data)
   }
 
   ensureCorrectRow(data) {
@@ -202,7 +233,8 @@ class Room extends React.Component {
       editorList: this.editorListUpdate.bind(this),
       initialize: this.initializeDocument.bind(this),
       sendState: this.sendState.bind(this),
-      syncState: this.syncState.bind(this)
+      syncState: this.syncState.bind(this),
+      save: this.updateSavedState.bind(this)
     }
 
     this.docSubscription = connectToDoc(this.docId, true, callbacks);
@@ -214,7 +246,8 @@ class Room extends React.Component {
       this.setState({ 
         editorText: content, 
         editorMode: mode,
-        docTitle: file_name
+        docTitle: file_name,
+        savedState: content
       })
   }
 
@@ -228,7 +261,6 @@ class Room extends React.Component {
 
   syncState(data) {
     if (data.senderId === this.props.user.id) return;
-    console.log(data)
     this.setState(() => data.currentState)
   }
   
@@ -238,9 +270,15 @@ class Room extends React.Component {
       return <Redirect to="/"/>
     }
 
+    const pendingChanges = this.state.editorText !== this.state.savedState;
+
     return (
     <div className="room">
-      <NavContainer/>
+      <NavContainer 
+      saveText={this.saveText.bind(this)} 
+      inRoom={true}
+      pendingChanges={pendingChanges}
+      />
       <div className="gray-area doc-room">
       <div className="doc-editor">
         <DocHeader 

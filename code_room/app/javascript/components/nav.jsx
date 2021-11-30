@@ -50,10 +50,20 @@ class Nav extends React.Component {
         <h5>{this.props.user.username}</h5>
       </div>
       <div className="right-nav">
+        { 
+        this.props.inRoom ?
+        <button 
+        onClick={this.props.saveText}
+        disabled={!this.props.pendingChanges}
+        className="save-button">
+          Save
+        </button> :
+        null
+         }
         <NotificationsContainer/>
         <Link to="/" onClick={this.logout}>Logout</Link>
       </div>
-        { 
+        {
           this.state.changeAvatar ?
           <AvatarChangeContainer closeForm={this.closeAvatarForm.bind(this)}/> : 
           null 

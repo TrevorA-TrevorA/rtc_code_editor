@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import connectToDoc from '../channels/doc_channel';
 import { GravatarUrl } from '../context/gravatar_url';
 import { v4 as uuid } from 'uuid';
+import { UPDATE_EDITABLE } from '../reducers/collab_reducer';
+import { UPDATE } from '../reducers/doc_reducer';
 
 class DocRow extends React.Component {
   constructor(props) {
@@ -31,10 +33,19 @@ class DocRow extends React.Component {
       editorList: this.editorListUpdate.bind(this),
       initialize: () => {},
       sendState: () => {},
-      syncState: () => {}
+      syncState: () => {},
+      save: this.updateSavedState.bind(this)
     }
 
     this.subscription = connectToDoc(this.props.doc.id, false, callbacks);
+  }
+
+  updateSavedState(data) {
+    if (data.admin) {
+      this.props.dispatch({ type: UPDATE, doc: data.saved_state })
+    } else {
+      this.props.dispatch({ type: UPDATE_EDITABLE, doc: data.saved_state })
+    }
   }
 
 

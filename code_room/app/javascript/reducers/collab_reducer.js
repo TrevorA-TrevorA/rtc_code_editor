@@ -1,5 +1,6 @@
 export const ADD_COLLABORATION = 'ADD_COLLABORATION';
 export const REMOVE_COLLABORATION = 'REMOVE_COLLABORATION';
+export const UPDATE_EDITABLE = 'UPDATE_EDITABLE';
 
 export const collabReducer = (state, action) => {
   const newState = {};
@@ -17,6 +18,11 @@ export const collabReducer = (state, action) => {
       const newCollabsList = collaborations.filter(col => col.id !== action.collaboration.id);
       newState.editables = newEditablesList;
       newState.collaborations = newCollabsList;
+      return newState;
+    case UPDATE_EDITABLE:
+      const updatedEditablesList = editables.filter(doc => doc.id !== action.doc.id);
+      updatedEditablesList.push(action.doc)
+      newState.editables = updatedEditablesList;
       return newState;
     default:
       return state;

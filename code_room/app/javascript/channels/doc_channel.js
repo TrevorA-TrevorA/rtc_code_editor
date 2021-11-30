@@ -17,6 +17,8 @@ import consumer from "./consumer"
       },
 
       received(data) {
+        if (data.saved_state) callbacks.save(data);
+        
         if (data.sync) {
           callbacks.sendState(data);
           return;

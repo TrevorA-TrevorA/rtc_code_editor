@@ -1,9 +1,14 @@
 import { authReducer, LOGIN, LOGOUT } from './auth_reducer'
-import { docReducer, UPLOAD, DELETE } from './doc_reducer'
-import { ADD_COLLABORATION, collabReducer, REMOVE_COLLABORATION } from './collab_reducer';
+import { docReducer, UPLOAD, DELETE, UPDATE } from './doc_reducer'
 import { selectionReducer, SELECT, DESELECT } from './selection_reducer';
 export const UPDATE_AVATAR_URL = "UPDATE AVATAR URL";
 export const DELETE_AVATAR_URL = "DELETE AVATAR URL";
+import { 
+  ADD_COLLABORATION, 
+  collabReducer, 
+  REMOVE_COLLABORATION,
+  UPDATE_EDITABLE
+} from './collab_reducer';
 
 const rootReducer = (state, action) => {
   const newState = {};
@@ -36,6 +41,11 @@ const rootReducer = (state, action) => {
     case DELETE_AVATAR_URL:
       newState.avatarUrl = null;
       return newState;
+    case UPDATE:
+      newState.documents = docReducer(state.documents, action);
+      return newState;
+    case UPDATE_EDITABLE:
+      return collabReducer(state, action);
     default:
       return state;
   }

@@ -49,7 +49,7 @@ class DocChannel < ApplicationCable::Channel
       return
     end
 
-    syncRequest = {sender_id: connection.current_user.id, sync: true }
+    syncRequest = { sender_id: connection.current_user.id, sync: true }
     ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", syncRequest)
   end
 end

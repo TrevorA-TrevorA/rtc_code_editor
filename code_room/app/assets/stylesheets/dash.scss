@@ -155,10 +155,12 @@ a {
 
 .dash-button {
   height: 5.9375vw;
-  background-color: rgba(0, 0, 0, 1);
-  color: #FFFFFF;
   flex-grow: 1;
+  border: 1px solid black;
+  background-color: transparent;
+  cursor: pointer;
 }
+
 
 #docList {
   display: flex;
