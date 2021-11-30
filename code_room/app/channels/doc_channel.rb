@@ -1,7 +1,7 @@
 class DocChannel < ApplicationCable::Channel
   def subscribed
     stream_from "doc_channel_#{params[:document_id]}"
-    puts "#{connection.current_user.username} is subscribed"
+    puts "doc channel streams: #{self.streams.length}"
     if params[:editing]
       doc_connection_params = { 
         editor_id: connection.current_user.id, 

@@ -102,7 +102,7 @@ class Room extends React.Component {
   }
 
   updateSavedState(data) {
-    if (data.admin) {
+    if (data.admin_id === this.props.user.id) {
       this.props.dispatch({ type: UPDATE, doc: data.saved_state })
     } else {
       this.props.dispatch({ type: UPDATE_EDITABLE, doc: data.saved_state })

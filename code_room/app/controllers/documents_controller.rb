@@ -46,9 +46,8 @@ class DocumentsController < ApplicationController
     @document = Document.find_by(id: params[:id])
 
     if @document.update(document_params)
-      admin = @document.admin_id == current_user
       render json: @document
-      data = { saved_state: @document, admin: admin }
+      data = { saved_state: @document, admin_id: @document.admin_id }
       ActionCable.server.broadcast("doc_channel_#{params[:id]}", data)
     else
       render status: 400
