@@ -261,7 +261,8 @@ class Room extends React.Component {
 
   syncState(data) {
     if (data.senderId === this.props.user.id) return;
-    this.setState(() => data.currentState)
+    const { editorMode, editorText, docTitle, savedState } = data.currentState;
+    this.setState({ editorMode, editorText, docTitle, savedState })
   }
   
   render() {

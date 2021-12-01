@@ -17,7 +17,10 @@ import consumer from "./consumer"
       },
 
       received(data) {
-        if (data.saved_state) callbacks.save(data);
+        if (data.saved_state) {
+          callbacks.save(data)
+          return;
+        }
         
         if (data.sync) {
           callbacks.sendState(data);
@@ -40,10 +43,13 @@ import consumer from "./consumer"
         }
         
         data.changeData ? callbacks.edit(data) : callbacks.cursor(data)
+      },
+
+      resubscribe() {
+        this.perform("subscribed");
       }
     });
   }
 
 
   export default connectToDoc;
-  window.consumer = consumer;

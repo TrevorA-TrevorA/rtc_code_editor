@@ -18,7 +18,8 @@ class DocRow extends React.Component {
   static contextType = GravatarUrl;
 
   editorListUpdate(data) {
-    this.setState({editorList: data.editors })
+    console.log("editorListUpdate called")
+    this.setState({ editorList: data.editors })
   }
 
   componentWillUnmount() {
@@ -38,6 +39,7 @@ class DocRow extends React.Component {
     }
 
     this.subscription = connectToDoc(this.props.doc.id, false, callbacks);
+    if (this.props.resubscribe) this.subscription.resubscribe()
   }
 
   updateSavedState(data) {

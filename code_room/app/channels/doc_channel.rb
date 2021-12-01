@@ -1,7 +1,6 @@
 class DocChannel < ApplicationCable::Channel
   def subscribed
     stream_from "doc_channel_#{params[:document_id]}"
-    puts "doc channel streams: #{self.streams.length}"
     if params[:editing]
       doc_connection_params = { 
         editor_id: connection.current_user.id, 
@@ -21,11 +20,20 @@ class DocChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    @doc_connection.destroy if @doc_connection
-    broadcast_active_editors
+    if @doc_connection
+      @doc_connection.destroy
+    else
+      doc_connection_params = { 
+        editor_id: connection.current_user.id, 
+        document_id: params[:document_id]
+      }
+      
+      DocumentConnection.where(doc_connection_params).destroy_all
+    end
+    
+    
+    broadcast_active_editors if params[:editing]
   end
-
-  private
 
   def broadcast_active_editors
     editors = DocumentConnection.where(document_id: params[:document_id])
@@ -37,6 +45,8 @@ class DocChannel < ApplicationCable::Channel
 
     ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", {editors: editors})
   end
+
+  private
 
   def send_initial_state
     if DocumentConnection.where(document_id: params[:document_id]).length == 1

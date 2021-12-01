@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DocRowContainer from '../containers/doc_row_container';
 import { v4 as uuid } from 'uuid';
 
@@ -36,6 +36,10 @@ const DocList = props => {
     hour12: true
   }
 
+  const [ resubscribe, setResubscribe] = useState(false);
+
+  useEffect(() => setResubscribe(true))
+
   const docs = props.documents;
   const editables = props.editables;
 
@@ -63,6 +67,7 @@ const DocList = props => {
         name={file.file_name}
         size={file.size}
         accessStatus={ arr === docs ? "Admin" : "Co-Editor" }
+        resubscribe={resubscribe}
         updated={date}
         />
       })})}
