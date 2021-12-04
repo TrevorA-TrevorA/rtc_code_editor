@@ -10,6 +10,7 @@ import { withRouter } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { UPDATE } from '../reducers/doc_reducer'
 import { UPDATE_EDITABLE } from '../reducers/collab_reducer'
+import { v4 as uuid } from 'uuid';
 
 class Room extends React.Component {
   constructor(props) {
@@ -36,12 +37,15 @@ class Room extends React.Component {
     this.localDeltaHistory = [];
     this.pending = [];
     this.docSubscription;
+    this.localPeers = {};
+    this.dataChannels = {};
+    this.backupConnection = true
+    this.deltaMap = {}
     window.room = this;
   }
 
   broadcastEdit(content, event) {
     const time = Date.now();
-    window.changeEvent = event;
     if (!this.broadcastChange) return;
 
     const editor = this.editorRef.current.editor;
@@ -54,13 +58,19 @@ class Room extends React.Component {
 
     const delta = {
       time,
+      deltaId: uuid(),
       senderId: this.props.user.id,
       changeData: event,
       currentLine,
       currentContent: content
     }
+    
+    this.docSubscription.send({backup: delta})
 
-    this.docSubscription.send(delta);
+    Object.values(this.dataChannels).forEach(channel => {
+      if (channel.readyState === "open") channel.send(JSON.stringify(delta));
+    });
+
     this.localDeltaHistory.push(delta);
     this.deltaHistory.push(delta);
     this.setState({editorText: content});
@@ -68,6 +78,8 @@ class Room extends React.Component {
 
   componentWillUnmount() {
     this.docSubscription.unsubscribe();
+    Object.values(this.dataChannels).forEach(channel => channel.close())
+    Object.values(this.localPeers).forEach(peer => peer.close())
   }
 
   saveText() {
@@ -87,9 +99,21 @@ class Room extends React.Component {
     .catch(error => console.log(error))
   }
 
-  receiveEdit(data) {
-    console.log(data)
+  mapRecentDeltas(data) {
+    this.deltaMap[data.deltaId] = data
+
+    setTimeout(() => {
+      delete this.deltaMap[data.deltaId]
+    }, 5000)
+  }
+
+  receiveEdit(editData) {
+    window.latestChange = editData;
+    if (!editData.backup && this.backupConnection) return;
+    let data = editData.backup ? editData.backup : JSON.parse(editData.data);
+    if (this.deltaMap[data.deltaId]) return;
     if (data.senderId === this.props.user.id) return;
+    this.mapRecentDeltas(data);
     const editorDoc = this.editorRef.current.editor.session.doc;
     this.ensureCorrectRow(data)
     //this.ensureDeltaOrder(data);
@@ -109,7 +133,6 @@ class Room extends React.Component {
     }
 
     this.setState({ savedState: data.saved_state.content })
-    console.log(data)
   }
 
   ensureCorrectRow(data) {
@@ -234,10 +257,11 @@ class Room extends React.Component {
       initialize: this.initializeDocument.bind(this),
       sendState: this.sendState.bind(this),
       syncState: this.syncState.bind(this),
-      save: this.updateSavedState.bind(this)
+      save: this.updateSavedState.bind(this),
+      initConnection: this.connectDataChannel.bind(this),
     }
 
-    this.docSubscription = connectToDoc(this.docId, true, callbacks);
+    this.docSubscription = connectToDoc(this.docId, true, callbacks, this.props.user.id);
   }
 
   initializeDocument(data) {
@@ -257,6 +281,127 @@ class Room extends React.Component {
       senderId: this.props.user.id, 
       currentState: this.state
     })
+  }
+
+  async connectDataChannel(data) {  
+    if (!data.join && data.recipientId !== this.props.user.id) return;
+    console.log(data)
+
+    const config = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    if (!this.localPeers[data.senderId]) {
+      console.log("creating new peer")
+      this.localPeers[data.senderId] = new RTCPeerConnection(config);
+    }
+    const connection = this.localPeers[data.senderId];
+    connection.ondatachannel = e => {
+      console.log("ondatachannel event triggered")
+      const dataChannel = e.channel;
+      dataChannel.onmessage = message => this.receiveEdit(message)
+      dataChannel.onopen = () => {
+        console.log("open");
+        this.backupConnection = !this.dataChannelsConnected()
+      }
+      dataChannel.onclose = () => {
+        this.backupConnection = !this.dataChannelsConnected();
+        console.log("closing datachannel")
+        delete this.localPeers[data.senderId]
+        delete this.dataChannels[data.senderId]
+      }
+      this.dataChannels[data.senderId] = dataChannel;
+    }
+
+    connection.onicecandidate = e => {
+      if (!e.candidate) return;
+      this.docSubscription.send({ 
+        iceCandidate: e.candidate,
+        senderId: this.props.user.id,
+        recipientId: data.senderId
+      })
+    }
+
+    connection.onconnectionstatechange = () => {
+      if (Object.values(this.localPeers).every(conn => conn.connectionState === 'connected')) {
+        this.backupConnection = false;
+        console.log("peers connected")
+      }  else  {
+        this.backupConnection = true;
+      }
+    }
+
+    connection.oniceconnectionstatechange = async () => {
+      if (["disconnected", "failed"].includes(connection.iceConnectionState)) {
+        connection.restartIce();
+
+        if (connection.localDescription === "offer") {
+          const newOffer = await connection.createOffer()
+          connection.setLocalDescription(newOffer)
+        }
+      }
+    }
+
+    if (data.join) {
+      const dataChannel = connection.createDataChannel(this.docId);
+      dataChannel.onopen = () => {
+        console.log("open");
+       this.backupConnection = !this.dataChannelsConnected();
+      }
+      dataChannel.onclose = () => {
+        this.backupConnection = !this.dataChannelsConnected();
+        console.log("closing data channel")
+        delete this.localPeers[data.senderId]
+        delete this.dataChannels[data.senderId]
+      }
+      dataChannel.onmessage = message => this.receiveEdit(message)
+      try {
+      const offer = await connection.createOffer();
+      await connection.setLocalDescription(offer);
+      this.dataChannels[data.senderId] = dataChannel;
+      this.docSubscription.send({ 
+        offer: offer,
+        senderId: this.props.user.id,
+        recipientId: data.senderId
+      })
+    } catch(error) {
+        console.log(error);
+      }
+    }
+
+    if (data.offer) {
+      try {
+      await connection.setRemoteDescription(data.offer);
+      const answer = await connection.createAnswer();
+      await connection.setLocalDescription(answer);
+      this.docSubscription.send({
+        answer: answer,
+        senderId: this.props.user.id,
+        recipientId: data.senderId
+      })
+        } catch(error) {
+        console.log(error)
+      }
+    }
+
+    if (data.answer) {
+      try {
+        await connection.setRemoteDescription(data.answer);
+      } catch(error) {
+        console.log(error);
+      }
+    }
+
+    if (data.iceCandidate) {
+      connection.addIceCandidate(data.iceCandidate)
+      .catch(error => {
+        console.log(error);
+      })
+    }
+  }
+
+  dataChannelsConnected() {
+    const channels = Object.values(this.dataChannels);
+    const allPresent = channels.length === this.state.editorList.length - 1;
+    const allOpen = channels.every(channel => channel.readyState === "open")
+    return allPresent && allOpen;
   }
 
   syncState(data) {

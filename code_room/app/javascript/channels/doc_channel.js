@@ -1,6 +1,6 @@
 import consumer from "./consumer"
 
-   const connectToDoc = (docId, editing, callbacks) => {
+   const connectToDoc = (docId, editing, callbacks, userId) => {
     return consumer.subscriptions.create({
       channel: "DocChannel", 
       document_id: docId,
@@ -17,6 +17,12 @@ import consumer from "./consumer"
       },
 
       received(data) {
+        if (data.join || data.offer || data.iceCandidate || data.answer) {
+          if (data.senderId === userId || !editing) return;
+          callbacks.initConnection(data)
+          return
+        }
+        
         if (data.saved_state) {
           callbacks.save(data)
           return;
@@ -42,7 +48,7 @@ import consumer from "./consumer"
           return;
         }
         
-        data.changeData ? callbacks.edit(data) : callbacks.cursor(data)
+        data.backup ? callbacks.edit(data) : callbacks.cursor(data)
       },
 
       resubscribe() {

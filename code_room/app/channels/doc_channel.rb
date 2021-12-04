@@ -10,6 +10,7 @@ class DocChannel < ApplicationCable::Channel
       DocumentConnection.where(doc_connection_params).destroy_all
       @doc_connection = DocumentConnection.create(doc_connection_params)
       send_initial_state
+      send_join_request
     end
 
     broadcast_active_editors
@@ -31,8 +32,16 @@ class DocChannel < ApplicationCable::Channel
       DocumentConnection.where(doc_connection_params).destroy_all
     end
     
-    
-    broadcast_active_editors if params[:editing]
+    if params[:editing]
+      broadcast_active_editors
+    end
+  end
+
+  private
+
+  def send_join_request
+    signal = { join: true, senderId: connection.current_user.id }
+    ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", signal)
   end
 
   def broadcast_active_editors
@@ -45,8 +54,6 @@ class DocChannel < ApplicationCable::Channel
 
     ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", {editors: editors})
   end
-
-  private
 
   def send_initial_state
     if DocumentConnection.where(document_id: params[:document_id]).length == 1

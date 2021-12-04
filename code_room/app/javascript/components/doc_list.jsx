@@ -39,7 +39,6 @@ const DocList = props => {
   const [ resubscribe, setResubscribe] = useState(false);
 
   useEffect(() => setResubscribe(true))
-
   const docs = props.documents;
   const editables = props.editables;
 

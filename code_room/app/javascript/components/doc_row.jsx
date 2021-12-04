@@ -18,7 +18,6 @@ class DocRow extends React.Component {
   static contextType = GravatarUrl;
 
   editorListUpdate(data) {
-    console.log("editorListUpdate called")
     this.setState({ editorList: data.editors })
   }
 
