@@ -137,6 +137,7 @@ class Room extends React.Component {
 
   ensureCorrectRow(data) {
     this.pending.push(data);
+    this.pending.sort((a,b) => a.time - b.time)
     while (this.pending.length) {
       const editorDoc = this.editorRef.current.editor.session.doc;
       const data = this.pending.shift();
@@ -151,9 +152,10 @@ class Room extends React.Component {
       const lastDelta = this.deltaHistory.slice(-1)[0];
       // corrective conditions
       const diffOrigin = lastDelta.senderId !== data.senderId;
-      const mistimed = lastDelta.time > data.time
+      const simultaneous =  data.time - lastDelta.time < 200;
+      const mismatch = data.currentLine !== editorDoc.$lines[data.changeData.start.row]
       const higherIdx = data.changeData.start.row > lastDelta.changeData.start.row;
-      if (diffOrigin && mistimed && higherIdx) {
+      if (diffOrigin && simultaneous && higherIdx && mismatch) {
         const lastDelta = this.deltaHistory.slice(-1)[0];
         const diff = lastDelta.changeData.lines.length - 1;
         switch(lastDelta.changeData.action) {
@@ -171,6 +173,9 @@ class Room extends React.Component {
       }
       editorDoc.applyDelta(data.changeData);
       this.deltaHistory.push(data)
+      if (this.deltaHistory.length > 10) {
+        this.deltaHistory = this.deltaHistory.slice(-10)
+      }
     }
     
     this.broadcastChange = true;
