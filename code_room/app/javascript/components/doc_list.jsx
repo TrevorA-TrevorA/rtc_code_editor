@@ -65,7 +65,7 @@ const DocList = props => {
         doc={file}
         name={file.file_name}
         size={file.size}
-        accessStatus={ arr === docs ? "Admin" : "Co-Editor" }
+        accessStatus={ arr === docs ? "Admin" : "Editor" }
         resubscribe={resubscribe}
         updated={date}
         />

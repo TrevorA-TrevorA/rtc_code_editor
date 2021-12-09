@@ -16,21 +16,26 @@ class Room extends React.Component {
   constructor(props) {
     super(props);
     this.getEditorMode = this.getEditorMode.bind(this);
-    this.state = { 
-      editorText: "",
-      editorMode: "javascript",
-      initialState: true,
-      docTitle: '',
-      editorList: [],
-      savedState: ''
-    }
-
-    
 
     this.docId = this.props.match.params.docId;
+    const { documents, editables } = this.props;
+    this.doc = documents.concat(editables)
+    .find(doc => doc.id === this.docId)
+    const defaultState = this.doc.content
+    const fileName = this.doc.file_name;
+    const mode = this.getEditorMode(fileName);
+
+    this.state = { 
+      editorText: defaultState,
+      editorMode: mode,
+      initialState: true,
+      docTitle: fileName,
+      editorList: [],
+      savedState: defaultState
+    }
+
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
-    this.ensureDeltaOrder = this.ensureDeltaOrder.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
     this.deltaHistory = [];
@@ -41,6 +46,7 @@ class Room extends React.Component {
     this.dataChannels = {};
     this.backupConnection = true
     this.deltaMap = {}
+    this.processingDeltas = false;
     window.room = this;
   }
 
@@ -116,9 +122,7 @@ class Room extends React.Component {
     this.mapRecentDeltas(data);
     const editorDoc = this.editorRef.current.editor.session.doc;
     this.ensureCorrectRow(data)
-    //this.ensureDeltaOrder(data);
     const newContent = editorDoc.getValue();
-
     this.setState({
       editorText: newContent,
       initialState: false
@@ -138,21 +142,23 @@ class Room extends React.Component {
   ensureCorrectRow(data) {
     this.pending.push(data);
     this.pending.sort((a,b) => a.time - b.time)
+    if (this.processingDeltas) return;
     while (this.pending.length) {
+      this.processingDeltas = true;
       const editorDoc = this.editorRef.current.editor.session.doc;
       const data = this.pending.shift();
       this.broadcastChange = false;
       if (!this.deltaHistory.length) {
         editorDoc.applyDelta(data.changeData);
         this.deltaHistory.push(data)
+        this.processingDeltas = false;
         this.broadcastChange = true;
         return;
       }
 
       const lastDelta = this.deltaHistory.slice(-1)[0];
-      // corrective conditions
       const diffOrigin = lastDelta.senderId !== data.senderId;
-      const simultaneous =  data.time - lastDelta.time < 200;
+      const simultaneous =  data.time - lastDelta.time < 750;
       const mismatch = data.currentLine !== editorDoc.$lines[data.changeData.start.row]
       const higherIdx = data.changeData.start.row > lastDelta.changeData.start.row;
       if (diffOrigin && simultaneous && higherIdx && mismatch) {
@@ -178,33 +184,12 @@ class Room extends React.Component {
       }
     }
     
+    this.processingDeltas = false;
     this.broadcastChange = true;
   }
 
   editorListUpdate(data) {
     this.setState({editorList: data.editors })
-  }
-
-  ensureDeltaOrder(data) {
-    this.broadcastChange = false;
-    const editorDoc = this.editorRef.current.editor.session.doc;
-    const popped = [];
-    while (this.deltaHistory.length && this.deltaHistory.slice(-1)[0].time > data.time) {
-      const prev = this.deltaHistory.pop();
-      editorDoc.revertDelta(prev.changeData);
-      popped.push(prev);
-    }
-
-    editorDoc.applyDelta(data.changeData);
-    this.deltaHistory.push(data)
-
-    while (popped.length) {
-      const next = popped.pop();
-      editorDoc.applyDelta(next.changeData);
-      this.deltaHistory.push(next);
-    }
-
-    this.broadcastChange = true;
   }
 
   getCurrentRow(data) {

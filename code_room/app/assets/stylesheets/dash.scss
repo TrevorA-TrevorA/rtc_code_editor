@@ -1,5 +1,8 @@
 .dash {
   font-family: Montserrat, Arial, Helvetica, sans-serif;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(235,235,235);
 }
 
 .nav-menu {
@@ -10,7 +13,7 @@
   font-size: 16.6px;
   padding: 1vw 5.229166666666667vw;
   align-items: center;
-  background-color: rgba(255,255,255,0.9)
+  background-color: rgb(235,235,235)
 }
 
 a {
@@ -137,7 +140,7 @@ a {
   position: absolute;
   padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
   margin: 10vh 3.229166666666667vw 5vh;
-  background-color: #F3F6F9;
+  background-color: rgb(60,64,70);
   overflow: auto;
 }
 
@@ -156,7 +159,8 @@ a {
 .dash-button {
   height: 5.9375vw;
   flex-grow: 1;
-  border: 1px solid black;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
   background-color: transparent;
   cursor: pointer;
 }
@@ -193,7 +197,7 @@ a {
   align-items: center;
   min-height: 4.6vw;
   font-size: 15px;
-  border-bottom: 0.5208333333333333vw solid #F3F6F9;
+  border-bottom: 0.5208333333333333vw solid rgb(60,64,70);;
   background-color: #FFFFFF;
   input[type="checkbox"] {
     position: absolute;
