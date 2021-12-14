@@ -11,6 +11,8 @@ import { Redirect } from 'react-router';
 import { UPDATE } from '../reducers/doc_reducer'
 import { UPDATE_EDITABLE } from '../reducers/collab_reducer'
 import { v4 as uuid } from 'uuid';
+import { sha1 } from 'object-hash';
+window.sha1 = sha1;
 
 class Room extends React.Component {
   constructor(props) {
@@ -38,15 +40,20 @@ class Room extends React.Component {
     this.broadcastEdit = this.broadcastEdit.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
-    this.deltaHistory = [];
-    this.localDeltaHistory = [];
     this.pending = [];
     this.docSubscription;
     this.localPeers = {};
     this.dataChannels = {};
     this.backupConnection = true
     this.deltaMap = {}
+    this.docMap = {}
+    this.mapRows = this.mapRows.bind(this);
     this.processingDeltas = false;
+    this.lines = []
+    this.senderIdQueue = [];
+    this.lastDeltaByUser = {};
+    this.lastLineCountChange = {}
+    this.userActivity = []
     window.room = this;
   }
 
@@ -54,15 +61,29 @@ class Room extends React.Component {
     const time = Date.now();
     if (!this.broadcastChange) return;
 
-    const editor = this.editorRef.current.editor;
-    let currentLine;
-    if (event.lines.length === 1) {
-      currentLine = editor.session.doc.$lines[event.start.row].slice(0,-1);
+    // const editor = this.editorRef.current.editor;
+    let currentLine = this.lines[event.start.row]
+    // currentLine = event.action === "insert" ? 
+    // editor.session.doc.$lines[event.start.row].slice(0,event.start.column) :
+    // editor.session.doc.$lines[event.start.row].slice(0,event.start.column) + event.lines[0] + editor.session.doc.$lines[event.start.row].slice(event.start.column)
+    const key = sha1(currentLine);
+    let subkey;
+    let dupIndex;
+    let dupCount;
+    let activityIndices = this.docMap[key][this.props.user.id];
+    if (activityIndices && activityIndices.includes(event.start.row)) {
+      dupIndex = this.docMap[key][this.props.user.id].indexOf(event.start.row);
+      dupCount = this.docMap[key][this.props.user.id].length;
+      subkey = this.props.user.id;
     } else {
-      currentLine = editor.session.doc.$lines[event.start.row];
+      dupIndex = this.docMap[key].all.indexOf(event.start.row);
+      dupCount = this.docMap[key].all.length;
+      subkey = "all";
     }
-
     const delta = {
+      subkey,
+      dupCount,
+      dupIndex,
       time,
       deltaId: uuid(),
       senderId: this.props.user.id,
@@ -77,9 +98,26 @@ class Room extends React.Component {
       if (channel.readyState === "open") channel.send(JSON.stringify(delta));
     });
 
-    this.localDeltaHistory.push(delta);
-    this.deltaHistory.push(delta);
+    this.lastDeltaByUser[this.props.user.id] = delta;
+    if (this.senderIdQueue.slice(-1)[0] !== this.props.user.id) {
+      this.senderIdQueue.push(this.props.user.id)
+    }
+
+    if (this.senderIdQueue.length > 3) {
+      this.senderIdQueue = this.senderIdQueue.slice(-3)
+    }
+
+    this.updateUserActivity(delta)
+    if (event.lines.length > 1) {
+      this.lastLineCountChange[this.props.user.id] = { time: delta.time, index: event.start.row }
+    }
     this.setState({editorText: content});
+  }
+
+  componentDidUpdate() {
+    this.mapRows();
+    const lines = this.editorRef.current.editor.session.doc.$lines;
+    this.lines = JSON.parse(JSON.stringify(lines));
   }
 
   componentWillUnmount() {
@@ -114,14 +152,16 @@ class Room extends React.Component {
   }
 
   receiveEdit(editData) {
-    window.latestChange = editData;
+    if (!window.latestChange) window.latestChange = [];
+    window.latestChange.push(editData)
+    if (window.latestChange.length > 2) window.latestChange = window.latestChange.slice(-2)
     if (!editData.backup && this.backupConnection) return;
     let data = editData.backup ? editData.backup : JSON.parse(editData.data);
     if (this.deltaMap[data.deltaId]) return;
     if (data.senderId === this.props.user.id) return;
     this.mapRecentDeltas(data);
     const editorDoc = this.editorRef.current.editor.session.doc;
-    this.ensureCorrectRow(data)
+    this.ensureCorrectRow(data);
     const newContent = editorDoc.getValue();
     this.setState({
       editorText: newContent,
@@ -139,8 +179,40 @@ class Room extends React.Component {
     this.setState({ savedState: data.saved_state.content })
   }
 
-  ensureCorrectRow(data) {
-    this.pending.push(data);
+  locateLine(delta) {
+    console.log("locateLine", delta.senderId)
+    const key = sha1(delta.currentLine);
+    try {
+      let subkey = delta.subkey;
+      const localCount = this.docMap[key][subkey].length;
+      console.log("subkey:", subkey)
+      console.log("currentIndex:", delta.changeData.start.row)
+      console.log("selectedIndex:", this.docMap[key][subkey][delta.dupIndex])
+      console.log("Indices for this line:", this.docMap[key][subkey])
+      console.log("localCount:", localCount)
+      console.log("delta.dupCount:", delta.dupCount)
+      if (localCount === delta.dupCount) {
+        return this.docMap[key][subkey][delta.dupIndex];
+      }
+
+      if (delta.dupIndex >= localCount) {
+        return delta.changeData.start.row
+      }
+
+      if (delta.dupCount > localCount) {
+        return this.docMap[key][subkey][delta.dupIndex];
+      }
+
+      const diff = localCount - delta.dupCount;
+      return this.docMap[key][subkey][delta.dupIndex + diff];
+    } catch(err) {
+      console.log("currentLine:", delta.currentLine)
+      return delta.changeData.start.row;
+    }
+  }
+
+  ensureCorrectRow(newData) {
+    this.pending.push(newData);
     this.pending.sort((a,b) => a.time - b.time)
     if (this.processingDeltas) return;
     while (this.pending.length) {
@@ -148,41 +220,63 @@ class Room extends React.Component {
       const editorDoc = this.editorRef.current.editor.session.doc;
       const data = this.pending.shift();
       this.broadcastChange = false;
-      if (!this.deltaHistory.length) {
+
+      const noDeltas = !this.senderIdQueue.length;
+      const onlyCurrentSender = this.senderIdQueue.length === 1 && 
+      this.senderIdQueue[0] === data.senderId;
+
+      if (noDeltas || onlyCurrentSender) {
+        console.log("not adjusted", JSON.parse(JSON.stringify(data)))
         editorDoc.applyDelta(data.changeData);
-        this.deltaHistory.push(data)
+        if (data.changeData.lines.length > 1) {
+          this.lastLineCountChange[data.senderId] = { time: data.time, index: data.changeData.start.row }
+        }
+        this.updateUserActivity(data)
+        this.lastDeltaByUser[data.senderId] = data;
+        if (this.senderIdQueue.slice(-1)[0] !== data.senderId) {
+          this.senderIdQueue.push(data.senderId)
+        }
+
+        if (this.senderIdQueue.length > 3) {
+          this.senderIdQueue = this.senderIdQueue.slice(-3)
+        }
+
         this.processingDeltas = false;
         this.broadcastChange = true;
         return;
       }
-
-      const lastDelta = this.deltaHistory.slice(-1)[0];
-      const diffOrigin = lastDelta.senderId !== data.senderId;
-      const simultaneous =  data.time - lastDelta.time < 750;
-      const mismatch = data.currentLine !== editorDoc.$lines[data.changeData.start.row]
-      const higherIdx = data.changeData.start.row > lastDelta.changeData.start.row;
-      if (diffOrigin && simultaneous && higherIdx && mismatch) {
-        const lastDelta = this.deltaHistory.slice(-1)[0];
-        const diff = lastDelta.changeData.lines.length - 1;
-        switch(lastDelta.changeData.action) {
-          case "insert":
-            data.changeData.start.row += diff;
-            data.changeData.end.row += diff;
-            break;
-          case "remove":
-            data.changeData.start.row -= diff;
-            data.changeData.end.row -= diff;
-            break;
-          default:
-            break;
-        }
+      const lastDiffSenderId = this.senderIdQueue.slice(-1)[0] === data.senderId ?
+      this.senderIdQueue.slice(-2)[0] :
+      this.senderIdQueue.slice(-1)[0]; 
+      const lastDiffSenderDelta = this.lastDeltaByUser[lastDiffSenderId]
+     
+      // const simultaneous =  data.time - lastDiffSenderDelta.time < 1000;
+      // const higherIdx = data.changeData.start.row > lastDiffSenderDelta.changeData.start.row;
+      if (this.adjustmentNeeded(data)) {
+        console.log("adjusted:", JSON.parse(JSON.stringify(data)))
+        const newRow = this.locateLine(data)
+        console.log("newRow:", newRow);
+        data.changeData.start.row = newRow;
+        data.changeData.end.row = newRow + (data.changeData.lines.length - 1)
       }
+      console.log("AboutToApplyDelta:", data)
       editorDoc.applyDelta(data.changeData);
-      this.deltaHistory.push(data)
-      if (this.deltaHistory.length > 10) {
-        this.deltaHistory = this.deltaHistory.slice(-10)
+
+      if (data.changeData.lines.length > 1) {
+        this.lastLineCountChange[data.senderId] = { time: data.time, index: data.changeData.start.row }
       }
-    }
+
+      this.updateUserActivity(data)
+      this.lastDeltaByUser[data.senderId] = data;
+
+      if (this.senderIdQueue.slice(-1)[0] !== data.senderId) {
+        this.senderIdQueue.push(data.senderId)
+      }
+
+      if (this.senderIdQueue.length > 3) {
+        this.senderIdQueue = this.senderIdQueue.slice(-3)
+      }
+   }
     
     this.processingDeltas = false;
     this.broadcastChange = true;
@@ -200,9 +294,53 @@ class Room extends React.Component {
     // if (rowElement) rowElement.style.backgroundColor = "rgba(255, 0, 0, 0.3)"
   }
 
+  updateUserActivity(data) {
+    const docLines = this.editorRef.current.editor.session.doc.$lines
+    
+    const { senderId, changeData } = data;
+    if (changeData.lines.length === 1) {
+      const hash = sha1(docLines[changeData.start.row])
+      this.userActivity[changeData.start.row] = { [hash]: senderId};
+      return;
+    }
+
+    const startIdx = changeData.start.row;
+    const startEntry = { [sha1(docLines[startIdx])]: senderId }
+    this.userActivity[startIdx] = startEntry;
+
+    switch(changeData.action) {
+      case "insert":
+        //const newLines = changeData.lines.slice(1);
+        const newLineCount = changeData.lines.length - 1;
+        const newLines = []
+        for (let i = 1; i <= newLineCount; i++) {
+          newLines.push(docLines[startIdx + i])
+        }
+        
+        const newEntries = newLines.map(line => ({ [sha1(line)]: senderId }))
+        this.userActivity.splice(startIdx + 1, 0, ...newEntries)
+        return;
+      case "remove":
+        const diff = changeData.lines.length - 1;
+        this.userActivity.splice(startIdx + 1, diff);
+        return;
+    }
+  }
+
   sendInitialPosition() {
     const row = this.editorRef.current.editor.getCursorPosition().row
     this.docSubscription.send({ senderId: this.props.user.id, row });
+  }
+
+  adjustmentNeeded(delta) {
+    for ( let [user, data]  of Object.entries(this.lastLineCountChange)) {
+      if (user === delta.senderId) continue;
+      let { time, index } = data;
+      if (delta.time - time < 1000 && index < delta.changeData.start.row) {
+        return true;
+      }
+    }
+    return false;
   }
 
   getEditorMode(fileName) {
@@ -250,7 +388,9 @@ class Room extends React.Component {
       save: this.updateSavedState.bind(this),
       initConnection: this.connectDataChannel.bind(this),
     }
-
+    this.userActivity = this.editorRef.current.editor.session.doc.$lines.map(line => {
+      return { [sha1(line)]: null }
+    })
     this.docSubscription = connectToDoc(this.docId, true, callbacks, this.props.user.id);
   }
 
@@ -262,7 +402,33 @@ class Room extends React.Component {
         editorMode: mode,
         docTitle: file_name,
         savedState: content
-      })
+      }, this.mapRows)
+  }
+
+  mapRows = () => {
+    this.docMap = {}
+    //const lines = this.editorRef.current.editor.session.doc.$lines;
+
+    // for (let i = 0; i < lines.length; i++) {
+    //   const hash = sha1(lines[i]);
+    //   if (!this.docMap[hash]) this.docMap[hash] = [];
+    //   this.docMap[hash].push(i);
+    // }
+
+    for (let i = 0; i < this.userActivity.length; i++) {
+      const entry = this.userActivity[i]
+      const key = Object.keys(entry)[0];
+      const userId = entry[key];
+      if (!this.docMap[key]) this.docMap[key] = {};
+      if (!this.docMap[key]["all"]) this.docMap[key]["all"] = [];
+      if (!this.docMap[key][userId] && userId) this.docMap[key][userId] = [];
+      if (!userId) {
+        if (!this.docMap[key].default) this.docMap[key].default = [];
+        this.docMap[key].default.push(i)
+      }
+      if (this.docMap[key][userId]) this.docMap[key][userId].push(i);
+      this.docMap[key]["all"].push(i);
+    }
   }
 
   sendState(data) {
