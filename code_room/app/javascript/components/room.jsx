@@ -12,6 +12,8 @@ import { UPDATE } from '../reducers/doc_reducer'
 import { UPDATE_EDITABLE } from '../reducers/collab_reducer'
 import { v4 as uuid } from 'uuid';
 import { sha1 } from 'object-hash';
+import { compoundExtensions, modeMap } from "../language_modes";
+window.modeMap = modeMap;
 window.sha1 = sha1;
 
 class Room extends React.Component {
@@ -61,11 +63,7 @@ class Room extends React.Component {
     const time = Date.now();
     if (!this.broadcastChange) return;
 
-    // const editor = this.editorRef.current.editor;
     let currentLine = this.lines[event.start.row]
-    // currentLine = event.action === "insert" ? 
-    // editor.session.doc.$lines[event.start.row].slice(0,event.start.column) :
-    // editor.session.doc.$lines[event.start.row].slice(0,event.start.column) + event.lines[0] + editor.session.doc.$lines[event.start.row].slice(event.start.column)
     const key = sha1(currentLine);
     let subkey;
     let dupIndex;
@@ -245,13 +243,7 @@ class Room extends React.Component {
         this.broadcastChange = true;
         return;
       }
-      const lastDiffSenderId = this.senderIdQueue.slice(-1)[0] === data.senderId ?
-      this.senderIdQueue.slice(-2)[0] :
-      this.senderIdQueue.slice(-1)[0]; 
-      const lastDiffSenderDelta = this.lastDeltaByUser[lastDiffSenderId]
-     
-      // const simultaneous =  data.time - lastDiffSenderDelta.time < 1000;
-      // const higherIdx = data.changeData.start.row > lastDiffSenderDelta.changeData.start.row;
+
       if (this.adjustmentNeeded(data)) {
         console.log("adjusted:", JSON.parse(JSON.stringify(data)))
         const newRow = this.locateLine(data)
@@ -310,7 +302,6 @@ class Room extends React.Component {
 
     switch(changeData.action) {
       case "insert":
-        //const newLines = changeData.lines.slice(1);
         const newLineCount = changeData.lines.length - 1;
         const newLines = []
         for (let i = 1; i <= newLineCount; i++) {
@@ -344,35 +335,16 @@ class Room extends React.Component {
   }
 
   getEditorMode(fileName) {
-    const fileExt = fileName.split(".").pop();
-    switch(fileExt) {
-      case "js":
-        return "javascript"
-      case "jsx":
-        return "jsx"
-      case "rb":
-        return "ruby"
-      case "java":
-        return "java"
-      case "py":
-        return "python"
-      case "php":
-        return "php"
-      case "cs":
-        return "csharp"
-      case "css":
-        return "css"
-      case "scss":
-        return "sass"
-      case "xml":
-        return "xml"
-      case "coffee":
-        return "coffee"
-      case "dart":
-        return "dart"
-      default:
-        return "text"
+    let fileExt;
+    const fileSegments = fileName.split(".");
+    if (compoundExtensions.some(ext => ext.test(fileName))) {
+      fileExt = fileSegments.slice(-2).join(".")
+    } else {
+      fileExt = fileSegments.pop();
     }
+    
+    const mode = modeMap.get(fileExt) || "text";
+    return mode
   }
 
   componentDidMount() {
@@ -407,14 +379,6 @@ class Room extends React.Component {
 
   mapRows = () => {
     this.docMap = {}
-    //const lines = this.editorRef.current.editor.session.doc.$lines;
-
-    // for (let i = 0; i < lines.length; i++) {
-    //   const hash = sha1(lines[i]);
-    //   if (!this.docMap[hash]) this.docMap[hash] = [];
-    //   this.docMap[hash].push(i);
-    // }
-
     for (let i = 0; i < this.userActivity.length; i++) {
       const entry = this.userActivity[i]
       const key = Object.keys(entry)[0];

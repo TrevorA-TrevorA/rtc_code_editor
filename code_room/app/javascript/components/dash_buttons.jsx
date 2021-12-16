@@ -1,4 +1,6 @@
 import React from 'react';
+import { acceptString } from "../language_modes";
+window.acceptString = acceptString;
 
  export const UploadButton = props => {
     return (
@@ -9,7 +11,7 @@ import React from 'react';
         onChange={() => props.uploadDocuments(fileUpload.files)}
         className="dash-button"
         multiple={true}
-        accept=".js, .jsx, .ts, .rb, .py, .dart" 
+        accept={acceptString}
         type="file" 
         title=""/>
         <button style={{width: "100%"}} onClick={() => fileUpload.click()} className="dash-button">UPLOAD</button>
