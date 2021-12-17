@@ -5,25 +5,29 @@ import { NotificationUtilities } from '../context/notification_utilities';
 class CollabRequest extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { answered: false }
+    this.state = { answer: "pending" }
     this.ref = React.createRef();
     this.acceptEditAccess = this.acceptEditAccess.bind(this);
+    this.declineEditAccess = this.declineEditAccess.bind(this);
   }
 
   static contextType = NotificationUtilities;
 
   componentDidUpdate() {
-    const shouldClose = $(".notification").length === 1;
-    if (this.state.answered) {
-      const notif = this.ref.current;
-      $(notif).find("*").css({ opacity: 0 });
-      $(notif).animate({height: 0, padding: "0px 15px"}, 300);
-      setTimeout(() => {
-        $(notif).css({display: "none"})
-        this.context.removeNotification(this.props.notification)
-        if (shouldClose) this.context.closeListIfEmpty();
-      }, 300)
+    const { answer } = this.state;
+    if (answer === "pending") return;
 
+    const shouldClose = $(".notification").length === 1;
+    const notif = this.ref.current;
+    $(notif).find("*").css({ opacity: 0 });
+    $(notif).animate({height: 0, padding: "0px 15px"}, 300);
+    setTimeout(() => {
+      $(notif).css({display: "none"})
+      this.context.removeNotification(this.props.notification)
+      if (shouldClose) this.context.closeListIfEmpty();
+    }, 300)
+
+    if (answer === "accept") {
       const acceptance = {
         recipient_id: null,
         notification_type: "collaboration_acceptance",
@@ -36,6 +40,26 @@ class CollabRequest extends React.Component {
 
       this.context.sendNotification(acceptance);
     }
+  }
+
+  declineEditAccess() {
+    const collab_id = this.props.notification.details.collaboration_id;
+    const url = `/api/collaborations/${collab_id}`;
+    const options = {
+      method: 'DELETE',
+    }
+    fetch(url, options)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      } else {
+        return res.json();
+      }
+    }).then(json => {
+      console.log(json)
+      this.setState({ answer: "decline" });
+    })
+    .catch(error => console.log(error))
   }
 
 
@@ -63,7 +87,7 @@ class CollabRequest extends React.Component {
         collaboration: json.collaboration
       })
 
-      this.setState({ answered: true });
+      this.setState({ answer: "accept" });
     }).catch(error => console.log(error));
   }
 
@@ -84,7 +108,7 @@ class CollabRequest extends React.Component {
         </div>
         <div className="response-button-row">
           <button onClick={this.acceptEditAccess}>Accept</button>
-          <button>Decline</button>
+          <button onClick={this.declineEditAccess}>Decline</button>
         </div>
       </div>
     )
