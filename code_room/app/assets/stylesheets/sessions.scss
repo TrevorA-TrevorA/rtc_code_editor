@@ -48,7 +48,23 @@ input[type="text"], input[type="password"], input[type="email"] {
   color: white;
   width: 30vw;
   height: 2vw;
+  padding-left: 1%;
   background-color: rgba($color: #ffffff, $alpha: 0.3);
+}
+
+.auth-error-text {
+  padding-top: 2vw;
+  color: #FF0000;
+}
+
+.submit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  p { 
+    margin: 0;
+    font-size: 14px;
+   }
 }
 
 input[type="submit"] {

@@ -29,12 +29,16 @@ class UsersController < ApplicationController
   end
 
   def create
+    if User.find_by(email: user_params[:email])
+      render status: 400, json: { error: "User with this email already exists" }
+      return
+    end
+    
     @user = User.new(user_params)
     if @user.save
       log_in(@user)
       render "api/users/show"
     else
-      flash.now[:errors] = @user.errors.full_messages
       render status: 400
       return
     end

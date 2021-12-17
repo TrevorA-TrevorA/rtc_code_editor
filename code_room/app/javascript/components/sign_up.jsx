@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { LOGIN } from '../reducers/auth_reducer';
 
 class SignUp extends React.Component {
@@ -9,7 +9,8 @@ class SignUp extends React.Component {
       username: "",
       email: "",
       password: "",
-      passwordConfirmation: ""
+      passwordConfirmation: "",
+      errorMessage: ""
      }
 
      this.update = this.update.bind(this);
@@ -19,12 +20,12 @@ class SignUp extends React.Component {
 
   validatePassword() {
     if (this.state.password.length < 8) {
-      console.log("password must be at least 8 characters");
+      this.setState({errorMessage: "password must be at least 8 characters"});
       return false;
     }
 
     if (this.state.passwordConfirmation !== this.state.password) {
-      console.log("passwords do not match");
+      this.setState({errorMessage: "passwords do not match"});
       return false;
     }
     return true;
@@ -51,12 +52,13 @@ class SignUp extends React.Component {
 
     try {
       const response = await fetch("api/users", options)
-      if (!response.ok) throw new Error("log in failed")
       const user = await response.json();
+      if (!response.ok) throw new Error(user.error)
       this.props.dispatch({ type: LOGIN, user: user})
       
     } catch(error) {
       console.log(error);
+      this.setState({ errorMessage: error.message })
     }
   }
 
@@ -64,6 +66,10 @@ class SignUp extends React.Component {
     if (this.props.user) {
       return <Redirect to="/dash"/>
     }
+
+    const errorText = this.state.errorMessage ? 
+    <p className='auth-error-text'>{ this.state.errorMessage }</p> :
+    null
 
     return (
       <div className="sign-up">
@@ -76,8 +82,12 @@ class SignUp extends React.Component {
             <input id="password" onChange={this.update} type="password" onChange={this.update} value={this.state.password}/>
             <label>confirm password</label>
             <input id="passwordConfirmation" onChange={this.update} type="password" onChange={this.update} value={this.state.passwordConfirmation}/>
-            <input type="submit" value="create account"/>
+            <div className='submit-row'>
+              <input type="submit" value="create account"/>
+              { errorText }
+            </div>
           </form>
+          <Link to="/log-in">sign in</Link>
         </div>
     )
   }

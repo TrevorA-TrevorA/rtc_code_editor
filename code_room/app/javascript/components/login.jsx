@@ -5,7 +5,7 @@ import { Redirect, Link } from 'react-router-dom';
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { email: "", password: "" }
+    this.state = { email: "", password: "", errorMessage: "" }
     this.update = this.update.bind(this);
     this.authenticateUser = this.authenticateUser.bind(this);
   }
@@ -16,7 +16,8 @@ class Login extends React.Component {
 
   async authenticateUser(e) {
     e.preventDefault();
-    const params = { user: this.state };
+    const { email, password } = this.state;
+    const params = { user: { email, password } };
     const options = {
       body: JSON.stringify(params),
       method: "POST",
@@ -33,6 +34,7 @@ class Login extends React.Component {
       
     } catch(error) {
       console.log(error);
+      this.setState({errorMessage: "Your username or password is invalid."})
     }
   }
   
@@ -41,6 +43,10 @@ class Login extends React.Component {
       return <Redirect to="/dash"/>
     }
 
+    const errorText = this.state.errorMessage ? 
+    <p className='auth-error-text'>{this.state.errorMessage}</p> :
+    null;
+
     return (
       <div className="login">
         <form onSubmit={this.authenticateUser}>
@@ -48,7 +54,10 @@ class Login extends React.Component {
           <input type="email" autoFocus onChange={this.update} value={this.state.email}/>
           <label>password</label>
           <input type="password" onChange={this.update} value={this.state.password}/>
-          <input type="submit" value="sign in"/>
+          <div className="submit-row">
+            <input type="submit" value="sign in"/>
+            { errorText }
+          </div>
         </form>
         <Link to="/sign-up">create account</Link>
       </div>

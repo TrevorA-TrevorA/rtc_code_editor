@@ -6,6 +6,7 @@ import DashContainer from '../containers/dash_container';
 import RoomContainer from '../containers/room_container';
 import SignUpContainer from '../containers/sign_up_container';
 import HomeContainer from '../containers/home_container';
+import LoginContainer from '../containers/login_container';
 
 const App = () => (
   <Provider store={store}>
@@ -13,6 +14,7 @@ const App = () => (
       <Switch>
         <Route exact path="/" render={() => <HomeContainer/>}/>
         <Route exact path="/sign-up" render={() => <SignUpContainer/>}/>
+        <Route exact path="/log-in" render={() => <LoginContainer/>}/>
         <Route exact path="/dash" render={() => <DashContainer/>}/>
         <Route exact path="/doc/:docId/room" render={() => <RoomContainer/>}/>
       </Switch>
