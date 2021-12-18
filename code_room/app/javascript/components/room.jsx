@@ -26,6 +26,11 @@ class Room extends React.Component {
     this.doc = documents.concat(editables)
     .find(doc => doc.id === this.docId)
 
+    if (!this.doc) {
+      this.state = { authorized: false }
+      return;
+    }
+
     const defaultState = this.doc.content
     const fileName = this.doc.file_name;
     const mode = this.getEditorMode(fileName);
@@ -122,9 +127,11 @@ class Room extends React.Component {
   }
 
   componentWillUnmount() {
-    this.docSubscription.unsubscribe();
-    Object.values(this.dataChannels).forEach(channel => channel.close())
-    Object.values(this.localPeers).forEach(peer => peer.close())
+    if (this.docSubscription) {
+      this.docSubscription.unsubscribe();
+      Object.values(this.dataChannels).forEach(channel => channel.close())
+      Object.values(this.localPeers).forEach(peer => peer.close())
+    }
   }
 
   saveText() {
@@ -352,6 +359,7 @@ class Room extends React.Component {
 
   componentDidMount() {
     if (!this.state.initialState) return;
+    if (!this.state.authorized) return;
     const callbacks = {
       edit: this.receiveEdit.bind(this), 
       cursor: this.getCurrentRow.bind(this), 
