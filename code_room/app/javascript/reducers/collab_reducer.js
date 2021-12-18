@@ -14,8 +14,8 @@ export const collabReducer = (state, action) => {
       newState.editables = [action.doc, ...editables]
       return newState;
     case REMOVE_COLLABORATION:
-      const newEditablesList = editables.filter(doc => doc.id !== action.doc.id);
-      const newCollabsList = collaborations.filter(col => col.id !== action.collaboration.id);
+      const newEditablesList = editables.filter(doc => doc.id !== action.docId);
+      const newCollabsList = collaborations.filter(col => col.id !== action.collaborationId);
       newState.editables = newEditablesList;
       newState.collaborations = newCollabsList;
       return newState;

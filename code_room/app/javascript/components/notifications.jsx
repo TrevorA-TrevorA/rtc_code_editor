@@ -4,6 +4,7 @@ import connectToNotifications from '../channels/notifications_channel';
 import NotificationsList from './notifications_list';
 import NotificationsModal from './notifications_modal';
 import { NotificationUtilities } from '../context/notification_utilities';
+import { REMOVE_COLLABORATION  } from '../reducers/collab_reducer';
 
 class Notifications extends React.Component {
   constructor(props) {
@@ -91,8 +92,16 @@ class Notifications extends React.Component {
   }
 
   receiveNotifications(data) {
+    
     if (data.rescind) {
       this.delist(data);
+      return;
+    }
+
+    if (data.revocation) {
+      const docId  = data.revocation.details.document_id
+      const collaborationId = data.revocation.details.collab_id
+      this.props.dispatch({ type: REMOVE_COLLABORATION, docId, collaborationId })
       return;
     }
 

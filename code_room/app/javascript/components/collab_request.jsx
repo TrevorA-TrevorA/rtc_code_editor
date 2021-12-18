@@ -9,6 +9,7 @@ class CollabRequest extends React.Component {
     this.ref = React.createRef();
     this.acceptEditAccess = this.acceptEditAccess.bind(this);
     this.declineEditAccess = this.declineEditAccess.bind(this);
+    this.collabId;
   }
 
   static contextType = NotificationUtilities;
@@ -34,7 +35,8 @@ class CollabRequest extends React.Component {
         details: {
           document_id: this.props.notification.details.document_id,
           file_name: this.props.notification.details.file_name,
-          editor_id: this.props.notification.recipient_id
+          editor_id: this.props.notification.recipient_id,
+          collab_id: this.collabId
         }
       }
 
@@ -64,8 +66,8 @@ class CollabRequest extends React.Component {
 
 
   acceptEditAccess() {
-    const collab_id = this.props.notification.details.collaboration_id;
-    const url = `/api/collaborations/${collab_id}`;
+    this.collabId = this.props.notification.details.collaboration_id;
+    const url = `/api/collaborations/${this.collabId}`;
     const options = {
       method: 'PATCH',
       headers: {

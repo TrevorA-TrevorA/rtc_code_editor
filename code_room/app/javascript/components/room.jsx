@@ -25,6 +25,7 @@ class Room extends React.Component {
     const { documents, editables } = this.props;
     this.doc = documents.concat(editables)
     .find(doc => doc.id === this.docId)
+
     const defaultState = this.doc.content
     const fileName = this.doc.file_name;
     const mode = this.getEditorMode(fileName);
@@ -35,7 +36,8 @@ class Room extends React.Component {
       initialState: true,
       docTitle: fileName,
       editorList: [],
-      savedState: defaultState
+      savedState: defaultState,
+      authorized: true
     }
 
     this.receiveEdit = this.receiveEdit.bind(this);
@@ -113,6 +115,7 @@ class Room extends React.Component {
   }
 
   componentDidUpdate() {
+    if (!this.state.authorized) return;
     this.mapRows();
     const lines = this.editorRef.current.editor.session.doc.$lines;
     this.lines = JSON.parse(JSON.stringify(lines));
@@ -358,12 +361,17 @@ class Room extends React.Component {
       sendState: this.sendState.bind(this),
       syncState: this.syncState.bind(this),
       save: this.updateSavedState.bind(this),
+      ejectUser: this.ejectUser.bind(this),
       initConnection: this.connectDataChannel.bind(this),
     }
     this.userActivity = this.editorRef.current.editor.session.doc.$lines.map(line => {
       return { [sha1(line)]: null }
     })
     this.docSubscription = connectToDoc(this.docId, true, callbacks, this.props.user.id);
+  }
+
+  ejectUser() {
+    this.setState({authorized: false})
   }
 
   initializeDocument(data) {
@@ -536,6 +544,12 @@ class Room extends React.Component {
       return <Redirect to="/"/>
     }
 
+    if (!this.state.authorized) {
+      return <Redirect to="/dash"/>
+    }
+
+    const { user } = this.props;
+
     const pendingChanges = this.state.editorText !== this.state.savedState;
 
     return (
@@ -562,7 +576,7 @@ class Room extends React.Component {
         value={this.state.editorText}
         />
       </div>
-      <ChatBox docId={this.docId} user={this.props.user}/>
+      <ChatBox docId={this.docId} user={user}/>
       </div>
     </div>
     )

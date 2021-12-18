@@ -7,9 +7,13 @@ class CollabManager extends React.Component {
   constructor(props) {
     super(props)
     this.searchUsers = this.searchUsers.bind(this)
+    this.removeEditor = this.removeEditor.bind(this)
+    this.receiveEditors = this.receiveEditors.bind(this)
     this.state = { 
       selectedDoc: this.props.selected[0],
-      userSearchResults: []
+      userSearchResults: [],
+      editors: [],
+      docAdmin: null
     };
     window.CollabManager = this;
     this.isAdmin = false;
@@ -28,6 +32,43 @@ class CollabManager extends React.Component {
     } catch(err) {
       console.log(err);
     }
+  }
+
+  removeEditor(subscription) {
+    return (editor) => {
+      const { editors } = this.state;
+      const url = `api/collaborations/${editor.collab_id}`
+      fetch(url, { method: 'DELETE' })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        } else {
+          let idx = editors.indexOf(editor);
+          editors.splice(idx, 1);
+          subscription.send({ revoked_user_id: editor.id, collab_id: editor.collab_id })
+          this.setState({editors: [...editors]});
+        }
+      }).catch(error => console.log(error))
+    }
+  }
+
+  receiveEditors(data) {
+    const { userSearchResults, editors } = this.state;
+    if (data.new_editor) {
+      const revised = userSearchResults.filter(user => user.id !== data.new_editor.id)
+
+      this.setState({
+        editors: [...editors, data.new_editor],
+        userSearchResults: revised
+      });
+      return;
+    }
+
+    if (data.admin) {
+      this.setState({docAdmin: data.admin})
+     }
+
+    this.setState({editors: data.editors});
   }
 
   render() {
@@ -78,7 +119,15 @@ class CollabManager extends React.Component {
               )
             })}
           </select>
-          <EditorList isAdmin={this.isAdmin} document_id={this.state.selectedDoc.id}/>
+            <EditorList 
+            isAdmin={this.isAdmin}
+            docAdmin={this.state.docAdmin}
+            user={this.props.user}
+            removeEditor={this.removeEditor}
+            receiveEditors={this.receiveEditors}
+            editors={this.state.editors}
+            document_id={this.state.selectedDoc.id}
+          />
         </div>
       </div>
     )

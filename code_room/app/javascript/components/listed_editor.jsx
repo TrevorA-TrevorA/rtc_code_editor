@@ -17,7 +17,9 @@ const ListedEditor = props => {
     <div className="listed-editor">
       { 
       props.selfIsAdmin ?
-        <button onClick={() => props.removeEditor(props.editor)} 
+        <button onClick={() => {
+          props.removeEditor(props.editor)
+        } }
       className="remove-editor-button">
         Remove
       </button> :

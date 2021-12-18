@@ -11,8 +11,12 @@ class NotificationsChannel < ApplicationCable::Channel
       document_id = data["details"]["document_id"]
       recipient_id = Document.find(document_id).admin_id
       data["recipient_id"] = recipient_id
+      collab_id = data["details"]["collab_id"]
       editor = User.find(data["details"]["editor_id"])
-      editor_name = editor.username
+        .attributes
+        .slice('id', 'username', 'avatar_url', 'email')
+        .merge('collab_id' => collab_id)
+      editor_name = editor['username']
       file_name = data["details"]["file_name"]
       message = "#{editor_name}\n has accepted your invitation to edit\n #{file_name}"
       data["details"]["message"] = message

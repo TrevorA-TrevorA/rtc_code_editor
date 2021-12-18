@@ -34,6 +34,7 @@ class DocRow extends React.Component {
       initialize: () => {},
       sendState: () => {},
       syncState: () => {},
+      ejectUser: () => {},
       save: this.updateSavedState.bind(this)
     }
 

@@ -17,10 +17,15 @@ import consumer from "./consumer"
       },
 
       received(data) {
+        
         if (data.join || data.offer || data.iceCandidate || data.answer) {
           if (data.senderId === userId || !editing) return;
           callbacks.initConnection(data)
           return
+        }
+
+        if (editing && data.revocation && data.revocation.recipient_id === userId) {
+          callbacks.ejectUser();
         }
         
         if (data.saved_state) {
