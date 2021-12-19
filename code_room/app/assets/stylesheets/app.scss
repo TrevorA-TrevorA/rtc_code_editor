@@ -1,0 +1,229 @@
+.nav-menu {
+  font-family: Montserrat, Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: space-between;
+  * { display: inline-block; margin: 0; }
+  font-size: 16.6px;
+  padding: 1vw 5.229166666666667vw;
+  align-items: center;
+  background-color: rgb(235,235,235)
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.right-nav {
+  display: flex;
+  column-gap: 2vw;
+}
+
+#notifications {
+  height: 2vw;
+  cursor: pointer;
+  position: relative;
+}
+
+.notifications-icon-container {
+  height: 100%;
+}
+
+.notifications-icon {
+  height: 100%;
+}
+
+.response-button-row {
+  display: flex;
+  justify-content: space-around;
+  width: 150px;
+  button {
+    max-width: 40%;
+    font-size: 12px;
+  }
+}
+
+.notification {
+  position: relative;
+  font-size: 14px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid black;
+}
+
+.notification-buttons-container {
+  display: flex;
+  padding: 5px;
+  justify-content: space-between;
+  column-gap: 20px;
+}
+
+.collab-request {
+  row-gap: 10px;
+}
+
+.notification-close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  height: 10px;
+  width: 10px;
+  opacity: 0;
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+  }
+}
+
+.notification.unread {
+  background-color: rgba(57,77,109, 0.3);
+  animation: read_notification 1s 1s forwards;
+  -webkit-animation: read_notification 1s 1s forwards;
+}
+
+@keyframes read_notification {
+  from { background-color: rgba(57,77,109, 0.3); };
+  to { background-color: #FFFFFF; }
+}
+
+@-webkit-keyframes read_notification {
+  from { background-color: rgba(57,77,109, 0.3); };
+  to { background-color: #FFFFFF; }
+}
+
+.notification-message {
+  text-align: center;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.notification-message-file-name {
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+.notification-message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.notification-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.avatar-change-buttons {
+  display: flex;
+  column-gap: 1vw;
+}
+
+.avatar-change {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  align-items: center;
+  padding: 5%;
+  row-gap: 15px;
+  top: 20%;
+  left: 30%;
+  right: 30%;
+  z-index: 1;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+  h4 {
+    font-weight: 400;
+  }
+}
+
+#avatarUrlForm, #avatarUrlForm:focus {
+  color: #000000;
+  border: none;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+}
+
+.notifications-modal {
+  background-color: #F3F6F9;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  position: fixed;
+  top: 20%;
+  left: 30%;
+  right: 30%;
+  z-index: 1;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+  max-height: 60%;
+}
+
+.notifications-modal-list {
+  display: flex;
+  background-color: #FFFFFF;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: auto;
+  max-height: 90%;
+}
+
+.modal {
+  align-items: start;
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  position: absolute;
+  top: 2vw;
+  right: 0;
+  z-index: 1;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+}
+
+.notification:first-child {
+  border-radius: 10px 10px 0 0;
+}
+
+.notification:last-child {
+  border-bottom: none;
+  border-radius: 0 0 10px 10px;
+}
+
+.notification-badge {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.25vw;
+  width: 1.25vw;
+  font-size: 50%;
+  top:0;
+  right: -0.5vw;
+  background-color: #FF0000;
+  color: #FFFFFF;
+  border-radius: 50%;
+}
+
+.avatar-and-name {
+  display: flex;
+  column-gap: 1vw;
+  align-items: center;
+}
+
+.avatar {
+  height: 6.5vh;
+  width: 6.5vh;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profiler-results {
+  display: none;
+}
