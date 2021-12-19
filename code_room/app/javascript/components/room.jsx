@@ -50,6 +50,7 @@ class Room extends React.Component {
 
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
+    this.saveOnCtrlS = this.saveOnCtrlS.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
     this.pending = [];
@@ -120,6 +121,28 @@ class Room extends React.Component {
       this.lastLineCountChange[this.props.user.id] = { time: delta.time, index: event.start.row }
     }
     this.setState({editorText: content});
+  }
+
+  saveOnCtrlS() {
+    const editor = document.getElementById("ace-editor")
+    const readS = e => {
+      if (e.code !== "KeyS") return;
+      e.preventDefault();
+      this.saveText();
+    }
+
+    editor.addEventListener("keydown", (e) => {
+      if (["Meta", "Control"].includes(e.key)) {
+        editor.addEventListener("keydown", readS)
+      }
+    })
+
+    editor.addEventListener("keyup", (e) => {
+      e.preventDefault();
+      if (["Meta", "Control"].includes(e.key)) {
+        editor.removeEventListener("keydown", readS)
+      }
+    })
   }
 
   componentDidUpdate() {
@@ -363,6 +386,7 @@ class Room extends React.Component {
   componentDidMount() {
     if (!this.state.initialState) return;
     if (!this.state.authorized) return;
+    this.saveOnCtrlS()
     const callbacks = {
       edit: this.receiveEdit.bind(this), 
       cursor: this.getCurrentRow.bind(this), 
