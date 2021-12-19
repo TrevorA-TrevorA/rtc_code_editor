@@ -4,8 +4,7 @@
   justify-content: space-between;
   height: 70vh;
   width: 25%;
-  background-color: rgb(60,64,70);
-  //filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+  background-color: #36393f;
   box-shadow: 0 0 2px #FFF;
 }
 
@@ -21,7 +20,7 @@
   resize: none;
   border: none;
   color: rgba(255,255,255,0.9);
-  background-color: rgb(60,64,70);
+  background-color: #36393f;
   padding: 1em;
   font-size: 14px;
   height: 6vh;
@@ -92,9 +91,8 @@
 }
 
 .chat-header-text, .doc-header-text {
-  font-size: 20px;
-  color: #FFFFFF;
-  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  color: #DEDEDE;
   font-weight: 500;
   padding: 0;
   text-align: center;
@@ -113,7 +111,7 @@
 .room {
   height: 100%;
   width: 100%;
-  background-color: rgb(46,49,54);
+  background-color: rgb(60,64,70);
 }
 
 .editor-avatars {
@@ -224,9 +222,8 @@
 }
 
 .avatar.present {
-  box-shadow: 0 0 5px #FFF;
-  height: 6vh;
-  width: 6vh;
+  height: 5.5vh;
+  width: 5.5vh;
 }
 
 .doc-header {
@@ -236,6 +233,7 @@
   max-height: 10%;
   padding: 0 20px;
   background-color: #000000;
+  font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace;
   justify-content: space-between;
 }
 
