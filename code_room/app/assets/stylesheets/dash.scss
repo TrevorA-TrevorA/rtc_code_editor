@@ -127,6 +127,22 @@ a {
   outline: none;
 }
 
+.revocation-notice {
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 400;
+  color: #FFFFFF;
+  padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
+  margin: 10vh 3.229166666666667vw 5vh;
+}
+
 .gray-area {
   top: 0;
   right: 0;

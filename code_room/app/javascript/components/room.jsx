@@ -4,6 +4,7 @@ import NavContainer from '../containers/nav_container'
 import AceEditor from 'react-ace';
 import ChatBox from './chat_box';
 import DocHeader from './doc_header'
+import RevocationNotice from './revocation_notice';
 import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
@@ -19,6 +20,7 @@ window.sha1 = sha1;
 class Room extends React.Component {
   constructor(props) {
     super(props);
+    if (this.revokeAccess) return;
     this.getEditorMode = this.getEditorMode.bind(this);
 
     this.docId = this.props.match.params.docId;
@@ -42,7 +44,8 @@ class Room extends React.Component {
       docTitle: fileName,
       editorList: [],
       savedState: defaultState,
-      authorized: true
+      authorized: true,
+      revokeAccess: false
     }
 
     this.receiveEdit = this.receiveEdit.bind(this);
@@ -120,7 +123,7 @@ class Room extends React.Component {
   }
 
   componentDidUpdate() {
-    if (!this.state.authorized) return;
+    if (!this.state.authorized || this.state.revokeAccess) return;
     this.mapRows();
     const lines = this.editorRef.current.editor.session.doc.$lines;
     this.lines = JSON.parse(JSON.stringify(lines));
@@ -379,7 +382,7 @@ class Room extends React.Component {
   }
 
   ejectUser() {
-    this.setState({authorized: false})
+    this.setState({revokeAccess: true})
   }
 
   initializeDocument(data) {
@@ -567,8 +570,11 @@ class Room extends React.Component {
       inRoom={true}
       pendingChanges={pendingChanges}
       />
-      <div className="gray-area doc-room">
-      <div className="doc-editor">
+      {
+        this.state.revokeAccess ?
+        <RevocationNotice fileName={this.state.docTitle}/> :
+        <div className="gray-area doc-room">
+        <div className="doc-editor">
         <DocHeader 
           editors={this.state.editorList} 
           docTitle={this.state.docTitle}
@@ -586,6 +592,7 @@ class Room extends React.Component {
       </div>
       <ChatBox docId={this.docId} user={user}/>
       </div>
+      }
     </div>
     )
   }
