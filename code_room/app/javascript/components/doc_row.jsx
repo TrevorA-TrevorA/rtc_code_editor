@@ -76,7 +76,18 @@ class DocRow extends React.Component {
               src={editor.avatar_url || this.context(editor.email)}
               title={editor.username}
               />
-            })
+            }).slice(0,3)
+          }
+          { 
+            this.state.editorList.length > 3 ? 
+            <span
+            title={
+              this.state.editorList.map(editor => editor.username)
+              .join("\n")
+            }
+            >+
+            </span> : 
+            null 
           }
         </div>
         <Link 

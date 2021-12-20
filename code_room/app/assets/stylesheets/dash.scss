@@ -109,7 +109,12 @@
 
 .active-editors {
   display: flex;
+  align-items: center;
   column-gap: .5vw;
+  span { 
+    cursor: default; 
+    font-size: 15px; 
+  }
 }
 
 .access-status {
