@@ -72,10 +72,16 @@
   display: flex;
   position: relative;
   align-items: center;
-  min-height: 4.6vw;
-  font-size: 15px;
+  min-height: 5vh;
+  color: #FFFFFF;
+  font-size: 13px;
   border-bottom: 0.5208333333333333vw solid rgb(60,64,70);;
-  background-color: #FFFFFF;
+  background-color: rgb(32,32,32);
+  button { 
+    background-color: rgb(60,64,70);
+    color: #FFFFFF;
+    font-size: 13px;
+  }
   input[type="checkbox"] {
     position: absolute;
     left: 1.5625vw;
