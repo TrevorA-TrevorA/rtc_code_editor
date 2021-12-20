@@ -95,7 +95,16 @@
   color: #DEDEDE;
   font-weight: 500;
   padding: 0;
+}
+
+.chat-header-text {
   text-align: center;
+}
+
+.doc-header-text {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #chatInput:focus {
@@ -120,6 +129,11 @@
   column-gap: 1vw;
   height: 100%;
   align-items: center;
+  color: #DEDEDE;
+  span { 
+    cursor: default; 
+    font-size: 18px; 
+  }
 }
 
 .chat-bubble {
@@ -230,6 +244,7 @@
   display: flex;
   align-items: center;
   flex-grow: 1;
+  column-gap: 2vw;
   max-height: 10%;
   padding: 0 20px;
   background-color: rgb(32,32,32);

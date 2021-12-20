@@ -7,7 +7,11 @@ const DocHeader = props => {
   
   return (
     <div className="doc-header">
-      <p className="doc-header-text">{props.docTitle}</p>
+      <p 
+        className="doc-header-text"
+        title={props.docTitle}
+        >{props.docTitle}
+      </p>
       <div className="editor-avatars">
         { 
         props.editors.map(editor => {
@@ -16,7 +20,15 @@ const DocHeader = props => {
             src={editor.avatar_url || gravatar(editor.email)}
             />
             )
-        }) 
+        }).slice(0,5) 
+        }
+          { props.editors.length > 5 ? 
+          <span title={
+            props.editors.map(editor => editor.username).join("\n")
+            }>
+            +
+          </span> : 
+          null 
         }
       </div>
     </div>
