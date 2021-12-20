@@ -30,7 +30,7 @@
 
 #chatInput::placeholder {
   color: rgba(255,255,255,0.7);
-  font-size: 16px;
+  font-size: 14px;
   font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace;
 }
 
@@ -95,16 +95,8 @@
   color: #DEDEDE;
   font-weight: 500;
   padding: 0;
-}
-
-.chat-header-text {
   text-align: center;
-}
-
-.doc-header-text {
-  flex-grow: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace;
 }
 
 #chatInput:focus {
@@ -129,11 +121,6 @@
   column-gap: 1vw;
   height: 100%;
   align-items: center;
-  color: #DEDEDE;
-  span { 
-    cursor: default; 
-    font-size: 18px; 
-  }
 }
 
 .chat-bubble {
@@ -244,11 +231,9 @@
   display: flex;
   align-items: center;
   flex-grow: 1;
-  column-gap: 2vw;
   max-height: 10%;
   padding: 0 20px;
   background-color: rgb(32,32,32);
-  font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace;
   justify-content: space-between;
 }
 
