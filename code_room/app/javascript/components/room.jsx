@@ -146,7 +146,7 @@ class Room extends React.Component {
   }
 
   componentDidUpdate() {
-    if (!this.state.authorized || this.state.revokeAccess) return;
+    if (!this.state.authorized || this.state.revokeAccess || !this.props.user) return;
     this.mapRows();
     const lines = this.editorRef.current.editor.session.doc.$lines;
     this.lines = JSON.parse(JSON.stringify(lines));

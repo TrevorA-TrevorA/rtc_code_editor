@@ -4,15 +4,15 @@
   justify-content: space-between;
   height: 70vh;
   width: 25%;
-  background-color: rgb(60,64,70);
-  box-shadow: 0 0 2px #FFF;
+  background-color: rgb(32,32,32);
+  //box-shadow: 0 0 2px #FFF;
 }
 
 #chatBoxHeader {
   display: flex;
   justify-content: center;
   height: 6vh;
-  background-color: #000000;
+  background-color: rgb(32,32,32);
   padding: .5vw;
 }
 
@@ -20,7 +20,7 @@
   resize: none;
   border: none;
   color: rgba(255,255,255,0.9);
-  background-color: rgb(60,64,70);
+  background-color: rgb(32,32,32);
   padding: 1em;
   font-size: 14px;
   height: 6vh;
@@ -31,7 +31,7 @@
 #chatInput::placeholder {
   color: rgba(255,255,255,0.7);
   font-size: 16px;
-  font-family:'Courier New', Courier, monospace;
+  font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace;
 }
 
 #chatBody {
@@ -232,9 +232,13 @@
   flex-grow: 1;
   max-height: 10%;
   padding: 0 20px;
-  background-color: #000000;
+  background-color: rgb(32,32,32);
   font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace;
   justify-content: space-between;
+}
+
+.ace_dark, .ace_gutter-layer {
+  background-color: rgb(32,32,32);
 }
 
 .doc-editor {
@@ -243,7 +247,7 @@
   height: 70vh;
   width: 70%;
   min-width: 500px;
-  box-shadow: 0 0 2px #FFF;
+  //box-shadow: 0 0 2px #FFF;
 }
 
 @media only screen and (max-width: 1000px) {
