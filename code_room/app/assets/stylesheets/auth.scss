@@ -28,6 +28,15 @@
     right: 2vw;
     font-size: 1.5vw;
   }
+
+  input[type="text"], input[type="password"], input[type="email"] {
+    border-radius: .5vw;
+    color: white;
+    width: 30vw;
+    height: 2vw;
+    padding-left: 1%;
+    background-color: rgba($color: #ffffff, $alpha: 0.3);
+  }
 }
 
 form {
@@ -41,15 +50,6 @@ label {
   display: inline-block;
   margin-top: 1.5vw;
   margin-bottom: .5vw;
-}
-
-input[type="text"], input[type="password"], input[type="email"] {
-  border-radius: .5vw;
-  color: white;
-  width: 30vw;
-  height: 2vw;
-  padding-left: 1%;
-  background-color: rgba($color: #ffffff, $alpha: 0.3);
 }
 
 .auth-error-text {

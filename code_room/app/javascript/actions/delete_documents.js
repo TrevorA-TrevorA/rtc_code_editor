@@ -3,25 +3,27 @@ import { DELETE } from '../reducers/doc_reducer'
 import { DESELECT } from '../reducers/selection_reducer';
 
 const removeDocuments = () => (dispatch, getState) => {
-  const docs = getState().selected;
+  const selectedDocs = getState().selected;
+  const currentUserDocs = getState().documents;
   const user = getState().user;
 
-  docs.forEach(doc => {
+  selectedDocs.forEach(doc => {
     let url;
     let isAdmin;
 
-    if (user.documents.some(userDoc => userDoc.id === doc.id)) {
+    if (currentUserDocs.some(userDoc => userDoc.id === doc.id)) {
       url = `api/documents/${doc.id}`;
       isAdmin = true
     } else {
       url = `api/users/${user.id}/collaborations/${doc.id}`;
       isAdmin = false;
     }
-
+    console.log(isAdmin);
     fetch(url, { method: 'DELETE' })
     .then(res => {
       if (res.ok && isAdmin) {
         dispatch({ type: DELETE, doc })
+        dispatch({ type: DESELECT, doc })
       } else if (res.ok && !isAdmin) {
         return res.json();
       } else {

@@ -16,6 +16,7 @@ class DocumentsController < ApplicationController
 
     if @document
       @document.destroy
+      render status: 200, json: { document_id: @document.id }
     else
       render status: 404
     end

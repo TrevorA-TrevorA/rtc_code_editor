@@ -34,6 +34,7 @@ const NewDocRow = props => {
   useEffect(() => {
     $(fileName).on('keydown', (e) => {
       if (e.code !== 'Enter') return;
+      e.preventDefault();
       createNewDoc();
     })
   })

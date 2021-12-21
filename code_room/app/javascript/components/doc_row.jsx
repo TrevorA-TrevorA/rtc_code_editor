@@ -11,8 +11,14 @@ class DocRow extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { editorList: [], docState: "" }
+    this.state = { 
+      editorList: [], 
+      docState: "", 
+      editing: false,
+    }
+
     this.subscription;
+    this.ref = React.createRef();
   }
 
   static contextType = GravatarUrl;
@@ -21,8 +27,49 @@ class DocRow extends React.Component {
     this.setState({ editorList: data.editors })
   }
 
+  updateDocTitle() {
+    const title = $(this.ref.current).find('input.editing-title')[0].value
+    const url = `api/documents/${this.props.doc.id}`
+    const options = {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ file_name: title })
+    }
+
+    fetch(url, options)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(res.statusText)
+      } else {
+        return res.json();
+      }
+    }).then(json => {
+      this.props.dispatch({ type: UPDATE, doc: json })
+    })
+  }
+
   componentWillUnmount() {
     this.subscription.unsubscribe();
+  }
+
+  getTextWidth(text, font) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+  
+    context.font = font || getComputedStyle(document.body).font;
+  
+    return context.measureText(text).width;
+  }
+
+  componentDidUpdate() {
+    if (this.state.editing) {
+      const $titleEditField = $(this.ref.current).find('input.editing-title');
+      $titleEditField.on("keydown", (e) => {
+        if (e.code !== "Enter") return;
+        e.preventDefault()
+        this.updateDocTitle()
+      })
+    }
   }
 
   componentDidMount() {
@@ -36,6 +83,15 @@ class DocRow extends React.Component {
       syncState: () => {},
       ejectUser: () => {},
       save: this.updateSavedState.bind(this)
+    }
+
+    const $title = $(this.ref.current).find('div.file-name')
+    this.titleLength = $title.width();
+    
+    if (this.props.accessStatus === "Admin") {
+      $title.on("dblclick", () => {
+        this.setState({editing: true});
+      })
     }
 
     this.subscription = connectToDoc(this.props.doc.id, false, callbacks);
@@ -53,7 +109,7 @@ class DocRow extends React.Component {
 
   render() {
     return(
-      <div className="doc-row">
+      <div className="doc-row" ref={this.ref}>
         <input onChange={(e) => {
           const action = { doc: this.props.doc };
           action.type = e.target.checked ? SELECT : DESELECT;
@@ -62,7 +118,21 @@ class DocRow extends React.Component {
         type="checkbox"
         autoComplete="off"
         />
-        <div className="file-name" title={this.props.name}>{this.props.name}</div>
+        {
+          this.state.editing ?
+          <div className='file-name'>
+            <input 
+              className='editing-title' 
+              type='text' 
+              defaultValue={this.props.name}
+            />
+          </div> :
+          <div 
+          className="file-name" 
+          title={this.props.name}>
+            {this.props.name}
+        </div>
+        }
         <div className="file-size">{this.props.size}</div>
         <div className="file-date">{this.props.updated}</div>
         <div className="access-status">{this.props.accessStatus}</div>
@@ -85,7 +155,8 @@ class DocRow extends React.Component {
               this.state.editorList.map(editor => editor.username)
               .join("\n")
             }
-            >+
+            >
+              +
             </span> : 
             null 
           }
