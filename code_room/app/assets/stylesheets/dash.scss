@@ -42,6 +42,10 @@
   cursor: pointer;
 }
 
+.dash-button.new-doc {
+  font-size: 25px;
+}
+
 
 #docList {
   display: flex;
@@ -61,6 +65,19 @@
   justify-content: space-between;
   margin-bottom: 4vw;
   column-gap: 1.0416666666666665vw;
+}
+
+#fileName {
+  height: 85%;
+  border-radius: 0;
+  color: #000000;
+  background-color: #FFFFFF;
+}
+
+#fileName::placeholder {
+  color: rgba(0,0,0,0.7);
+  font-size: 13px;
+  padding-left: 2%;
 }
 
 #fileUpload {
@@ -86,6 +103,7 @@
     position: absolute;
     left: 1.5625vw;
   }
+
   p {
     margin-top: 0;
     margin-bottom: 0;
@@ -94,6 +112,8 @@
 
 .file-name {
   position: absolute;
+  display: flex;
+  column-gap: 1vw;
   left: 5.729166666666666vw;
   text-overflow: ellipsis;
   overflow: hidden;

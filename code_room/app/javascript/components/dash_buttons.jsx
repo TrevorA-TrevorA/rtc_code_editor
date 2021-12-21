@@ -1,7 +1,19 @@
 import React from 'react';
 import { acceptString } from "../language_modes";
+import { openNewDocForm } from './dash';
 
- export const UploadButton = props => {
+export const AddNewDoc = () => {
+  return (
+    <button
+      className='dash-button new-doc'
+      onClick={openNewDocForm}
+    >
+      +
+    </button>
+  )
+}
+
+export const UploadButton = props => {
     return (
       <div style={{position: "relative", flexGrow: 1}}>
         <input

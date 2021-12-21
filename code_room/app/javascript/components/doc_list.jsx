@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DocRowContainer from '../containers/doc_row_container';
 import { v4 as uuid } from 'uuid';
+import NewDocRow from './new_doc_row';
 
 const DocListHeader = props => {
   return (
@@ -25,7 +26,6 @@ const DocListHeader = props => {
 }
 
 const DocList = props => {
-  window.docListProps = props;
   const options = {
     month: "2-digit",
     day: "2-digit",
@@ -51,9 +51,11 @@ const DocList = props => {
   }
 
   const dateFormat = new Intl.DateTimeFormat("en-US", options)
+  const { user, dispatch } = props;
   return (
     <div id="docList">
       <DocListHeader docCount={docs.concat(editables).length}/>
+      { props.newDoc ? <NewDocRow { ...{ user, dispatch } } /> : null }
       <div id="docListBody">
       {[docs, editables].map(list => {
         return list.map((file, _, arr) => {
