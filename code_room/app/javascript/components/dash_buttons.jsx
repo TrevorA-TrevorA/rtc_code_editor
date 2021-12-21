@@ -1,6 +1,5 @@
 import React from 'react';
 import { acceptString } from "../language_modes";
-window.acceptString = acceptString;
 
  export const UploadButton = props => {
     return (
@@ -53,11 +52,12 @@ export class DownloadButton extends React.Component {
 }
 
 export const DeleteButton = props => {
+  
   return (
     <button 
-    onClick={props.deleteDocuments} 
+    onClick={props.removeDocuments} 
     className="dash-button">
-      DELETE
+      REMOVE
     </button>
   )
 }

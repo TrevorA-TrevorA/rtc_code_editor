@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   patch "api/users/:user_id/notifications" => "notifications#update_all"
   delete "api/users/:user_id/notifications" => "notifications#destroy_all"
+  delete "api/users/:user_id/collaborations/:document_id" => "collaborations#destroy_by_document"
 
   root "static#index"
   get "*path" => "static#index"

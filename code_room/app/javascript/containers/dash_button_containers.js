@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import uploadDocuments from '../actions/upload_documents';
-import deleteDocuments from '../actions/delete_documents';
+import removeDocuments from '../actions/delete_documents';
 
 import {
   UploadButton,
@@ -15,8 +15,8 @@ const mapStateToProps = (state) => ({
 });
 
 const matchUpload = dispatch => ({ uploadDocuments: (docs) => dispatch(uploadDocuments(docs)) })
-const matchDelete = dispatch => ({ deleteDocuments: () => dispatch(deleteDocuments()) })
+const matchRemove = dispatch => ({ removeDocuments: () => dispatch(removeDocuments())})
 
 export const UploadButtonContainer = connect(mapStateToProps, matchUpload)(UploadButton);
-export const DeleteButtonContainer = connect(mapStateToProps, matchDelete)(DeleteButton);
+export const DeleteButtonContainer = connect(mapStateToProps, matchRemove)(DeleteButton);
 export const DownloadButtonContainer = connect(mapStateToProps)(DownloadButton);

@@ -22,6 +22,20 @@ class CollaborationsController < ApplicationController
       render status: 400
     end
   end
+
+  def destroy_by_document
+    user_id = request.path_parameters[:user_id]
+    doc_id = request.path_parameters[:document_id]
+    @collaboration = Collaboration.find_by(editor_id: user_id, document_id: doc_id)
+    collab_id = @collaboration.id
+    
+    if @collaboration
+      @collaboration.destroy
+      render status: 200, json: { status: 200, collaboration_id: collab_id }
+    else
+      render status: 404, json: { status: 404 }
+    end
+  end
   
   
   def destroy

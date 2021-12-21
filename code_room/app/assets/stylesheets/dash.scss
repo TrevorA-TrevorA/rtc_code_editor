@@ -34,7 +34,7 @@
 }
 
 .dash-button {
-  height: 5.9375vw;
+  height: 8vh;
   flex-grow: 1;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;
@@ -78,9 +78,9 @@
   border-bottom: 0.5208333333333333vw solid rgb(60,64,70);;
   background-color: rgb(32,32,32);
   button { 
-    background-color: rgb(60,64,70);
+    background-color: transparent;
+    background-color: rgb(56,56,56);
     color: #FFFFFF;
-    font-size: 13px;
   }
   input[type="checkbox"] {
     position: absolute;
@@ -216,11 +216,11 @@
 .doc-row-rightmost {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: stretch;
   column-gap: .5vw;
   max-width: 13vw;
   position: absolute;
-  right: 2.3958333333333335vw;
+  right: 2vw;
 }
 
 .listed-editor {
