@@ -21,7 +21,7 @@ class ChatBox extends React.Component {
 
   receiveChat(chats) {
     this.setState({
-      chatLog: chats,
+      chatLog: chats
     })
   }
 

@@ -14,6 +14,7 @@ import { UPDATE_EDITABLE } from '../reducers/collab_reducer'
 import { v4 as uuid } from 'uuid';
 import { sha1 } from 'object-hash';
 import { compoundExtensions, modeMap } from "../language_modes";
+import { edit } from 'ace-builds';
 window.modeMap = modeMap;
 window.sha1 = sha1;
 
