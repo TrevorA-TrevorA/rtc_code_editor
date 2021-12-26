@@ -4,6 +4,11 @@ import { closeNewDocForm } from './dash';
 
 const NewDocRow = props => {
   const createNewDoc = () => {
+    if (!fileName.value) {
+      closeNewDocForm();
+      return;
+    }
+
     const url = `api/users/${props.user.id}/documents`
     const options = {
       method: 'POST',
@@ -33,6 +38,11 @@ const NewDocRow = props => {
 
   useEffect(() => {
     $(fileName).on('keydown', (e) => {
+      if (e.code === 'Escape') {
+        e.preventDefault();
+        closeNewDocForm();
+      }
+
       if (e.code !== 'Enter') return;
       e.preventDefault();
       createNewDoc();
