@@ -190,7 +190,7 @@
 .editor-list {
   display: flex;
   flex-direction: column;
-  row-gap: 1vw;
+  row-gap: 2vh;
   max-height: 80%;
   overflow: auto;
 }
@@ -199,6 +199,7 @@
   border: none;
   color: #000000;
   min-width: 80%;
+  padding: 5px 2px;
   box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
 }
 
@@ -229,8 +230,9 @@
 }
 
 .user-search-results {
-  padding-top: 1vw;
+  padding-top: 2vh;
   display: flex;
+  row-gap: 2vh;
   flex-direction: column;
   width: 80%;
 }

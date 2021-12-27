@@ -1,9 +1,9 @@
 import React from 'react';
 import { GravatarUrl } from '../context/gravatar_url';
 import connectToNotifications from '../channels/notifications_channel';
+import { v4 as uuid } from 'uuid';
 
  window.UserSearchResults = [];
-
 class UserSearchResult extends React.Component {
   static contextType = GravatarUrl;
   
@@ -120,12 +120,21 @@ class UserSearchResult extends React.Component {
     const imURL = this.props.user.avatar_url || this.context(this.props.user.email);
     const buttonText = this.state.invited ? "Rescind" : "Invite";
     const callback = this.state.invited ? this.rescindInvitation : this.inviteUser;
+    const searchPattern = new RegExp(`(${this.props.searchBarValue})`, 'i');
 
     return (
       <div className="user-search-result">
         <button onClick={callback}>{buttonText}</button>
         <img className="avatar" src={imURL}/>
-        <p>{this.props.user.username}</p>
+        <p>
+         {
+          this.props.user.username
+          .split(searchPattern)
+          .map((s) => {
+            return searchPattern.test(s) ? <b key={uuid()}>{s}</b> : s;
+          })
+         }
+        </p>
       </div>
     )
   }

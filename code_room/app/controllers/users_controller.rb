@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   def index
     pattern = params[:q]
 
-    @users = User.where("username ILIKE ?", "#{pattern}%")
+    @users = User.where("username ILIKE ?", "%#{pattern}%")
     if @users
       render "api/users/index"
     else

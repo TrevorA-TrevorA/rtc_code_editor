@@ -13,7 +13,8 @@ class CollabManager extends React.Component {
       selectedDoc: this.props.selected[0],
       userSearchResults: [],
       editors: [],
-      docAdmin: null
+      docAdmin: null,
+      searchBarValue: ''
     };
     window.CollabManager = this;
     this.isAdmin = false;
@@ -21,14 +22,14 @@ class CollabManager extends React.Component {
 
   async searchUsers(e) {
     if (!e.target.value) {
-      this.setState({userSearchResults: []})
+      this.setState({userSearchResults: [], searchBarValue: ''})
       return;
     }
     try {
       let search = await fetch(`/api/users?q=${e.target.value}`)
       let results = await search.json();
       if (!search.ok) throw new Error(search.statusText);
-      this.setState({ userSearchResults: results });
+      this.setState({ userSearchResults: results, searchBarValue: e.target.value });
     } catch(err) {
       console.log(err);
     }
@@ -94,7 +95,8 @@ class CollabManager extends React.Component {
             })) return;
             return <UserSearchResult 
             key={uuid()} 
-            self={this.props.user} 
+            self={this.props.user}
+            searchBarValue={this.state.searchBarValue}
             user={user} 
             doc={this.state.selectedDoc}/>
           })}
