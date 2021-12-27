@@ -23,7 +23,6 @@ class Room extends React.Component {
     super(props);
     if (this.revokeAccess) return;
     this.getEditorMode = this.getEditorMode.bind(this);
-
     this.docId = this.props.match.params.docId;
     const { documents, editables } = this.props;
     this.doc = documents.concat(editables)
@@ -126,22 +125,10 @@ class Room extends React.Component {
 
   saveOnCtrlS() {
     const editor = document.getElementById("ace-editor")
-    const readS = e => {
-      if (e.code !== "KeyS") return;
-      e.preventDefault();
-      this.saveText();
-    }
-
     editor.addEventListener("keydown", (e) => {
-      if (["Meta", "Control"].includes(e.key)) {
-        editor.addEventListener("keydown", readS)
-      }
-    })
-
-    editor.addEventListener("keyup", (e) => {
-      e.preventDefault();
-      if (["Meta", "Control"].includes(e.key)) {
-        editor.removeEventListener("keydown", readS)
+      if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
+        e.preventDefault();
+        this.saveText();
       }
     })
   }
