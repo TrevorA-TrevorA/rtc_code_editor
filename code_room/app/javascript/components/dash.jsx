@@ -29,6 +29,14 @@ class Dash extends React.Component {
     this.setState({ newDoc: true })
   }
 
+  captureCtrlO(e) {
+    console.log("captureCtrlO called")
+    if ((e.ctrlKey || e.metaKey) && e.code === "KeyO") {
+      e.preventDefault();
+      fileUpload.click();
+    }
+  }
+
   closeDocFormRow() {
     this.setState({ newDoc: false })
   }
@@ -39,7 +47,11 @@ class Dash extends React.Component {
     }
 
     return (
-    <div className="dash">
+    <div
+    tabIndex={0}
+    onKeyDown={this.captureCtrlO.bind(this)}
+    className="dash"
+    >
       <NavContainer/>
       <div className="gray-area">
       <DashButtonRow callback={this.toggleManager.bind(this)}/>
