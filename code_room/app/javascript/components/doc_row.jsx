@@ -6,6 +6,7 @@ import { GravatarUrl } from '../context/gravatar_url';
 import { v4 as uuid } from 'uuid';
 import { UPDATE_EDITABLE } from '../reducers/collab_reducer';
 import { UPDATE } from '../reducers/doc_reducer';
+import downArrow from 'images/down_arrow.png';
 
 class DocRow extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ class DocRow extends React.Component {
 
     this.subscription;
     this.ref = React.createRef();
+    this.saveFile = this.saveFile.bind(this);
   }
 
   static contextType = GravatarUrl;
@@ -106,6 +108,15 @@ class DocRow extends React.Component {
     }
   }
 
+  async saveFile () {
+    const { content, file_name } = this.props.doc;
+    const file = new File([content], file_name);
+    const handle = await window.showSaveFilePicker({ suggestedName: file_name });
+    console.log("handle:", handle)
+    const writable = await handle.createWritable();
+    await writable.write(file);
+    await writable.close();
+  }
 
   render() {
     return(
@@ -137,36 +148,39 @@ class DocRow extends React.Component {
         <div className="file-date">{this.props.updated}</div>
         <div className="access-status">{this.props.accessStatus}</div>
         <div className="doc-row-rightmost">
-        <div className="active-editors">
-          {
-            this.state.editorList.map(editor => {
-              return <img
-              key={uuid()}
-              className="avatar doc-status"
-              src={editor.avatar_url || this.context(editor.email)}
-              title={editor.username}
-              />
-            }).slice(0,3)
-          }
-          { 
-            this.state.editorList.length > 3 ? 
-            <span
-            title={
-              this.state.editorList.map(editor => editor.username)
-              .join("\n")
+          <div className="active-editors">
+            {
+              this.state.editorList.map(editor => {
+                return <img
+                key={uuid()}
+                className="avatar doc-status"
+                src={editor.avatar_url || this.context(editor.email)}
+                title={editor.username}
+                />
+              }).slice(0,3)
             }
-            >
-              +
-            </span> : 
-            null 
-          }
-        </div>
-        <Link 
-          to={{
-            pathname: `/doc/${this.props.doc.id}/room`
-            }}>
-            <button>&#9998;</button>
-        </Link>
+            { 
+              this.state.editorList.length > 3 ? 
+              <span
+              title={
+                this.state.editorList.map(editor => editor.username)
+                .join("\n")
+              }
+              >
+                +
+              </span> : 
+              null 
+            }
+          </div>
+          <button onClick={this.saveFile} className='doc-row-button'>
+            <img src={downArrow}/>
+          </button>
+          <Link 
+            to={{
+              pathname: `/doc/${this.props.doc.id}/room`
+              }}>
+              <button className='doc-row-button'>&#9998;</button>
+          </Link>
         </div>
       </div>
     )

@@ -255,6 +255,19 @@
   right: 2vw;
 }
 
+.doc-row-button {
+  height: 3vh;
+  width: 2vw;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    height: 90%;
+    width: 90%;
+  }
+}
+
 .listed-editor {
   display: flex;
   column-gap: 1vw;

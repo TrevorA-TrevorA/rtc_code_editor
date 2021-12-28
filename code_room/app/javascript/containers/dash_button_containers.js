@@ -5,7 +5,6 @@ import removeDocuments from '../actions/delete_documents';
 import {
   UploadButton,
   DeleteButton,
-  DownloadButton
 } from '../components/dash_buttons';
 
 const mapStateToProps = (state) => ({
@@ -19,4 +18,3 @@ const matchRemove = dispatch => ({ removeDocuments: () => dispatch(removeDocumen
 
 export const UploadButtonContainer = connect(mapStateToProps, matchUpload)(UploadButton);
 export const DeleteButtonContainer = connect(mapStateToProps, matchRemove)(DeleteButton);
-export const DownloadButtonContainer = connect(mapStateToProps)(DownloadButton);
