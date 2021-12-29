@@ -17,6 +17,7 @@ class Dash extends React.Component {
     openNewDocForm = this.openDocFormRow.bind(this);
     closeNewDocForm = this.closeDocFormRow.bind(this);
     window.dash = this;
+    this.dashRef = React.createRef();
   }
 
   toggleManager() {
@@ -29,18 +30,27 @@ class Dash extends React.Component {
     this.setState({ newDoc: true })
   }
 
-  captureCtrlO(e) {
-    console.log("captureCtrlO called")
-    if ((e.ctrlKey || e.metaKey) && e.code === "KeyO") {
+  captureKeys(e) {
+    if (e.key === "+" && !this.state.newDoc) {
       e.preventDefault();
-      fileUpload.click();
+      this.openDocFormRow();
     }
   }
 
   closeDocFormRow() {
     this.setState({ newDoc: false })
   }
-  
+
+  componentDidUpdate() {
+    this.state.newDoc ?
+    fileName.focus() :
+    this.dashRef.current.focus()
+  }
+
+  componentDidMount() {
+    this.dashRef.current.focus();
+  }
+
   render() {
     if (!this.props.user) {
       return <Redirect to="/"/>
@@ -49,7 +59,8 @@ class Dash extends React.Component {
     return (
     <div
     tabIndex={0}
-    onKeyDown={this.captureCtrlO.bind(this)}
+    ref={this.dashRef}
+    onKeyDown={this.captureKeys.bind(this)}
     className="dash"
     >
       <NavContainer/>
