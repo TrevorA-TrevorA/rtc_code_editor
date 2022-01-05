@@ -1,6 +1,6 @@
 
 
-# Code Room
+# RTC Code Editor
 
 A real-time collaborative code-editing interface.
 
