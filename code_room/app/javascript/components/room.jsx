@@ -14,7 +14,6 @@ import { UPDATE_EDITABLE } from '../reducers/collab_reducer'
 import { v4 as uuid } from 'uuid';
 import { sha1 } from 'object-hash';
 import { compoundExtensions, modeMap } from "../language_modes";
-import { edit } from 'ace-builds';
 window.modeMap = modeMap;
 window.sha1 = sha1;
 
@@ -62,18 +61,20 @@ class Room extends React.Component {
     this.docMap = {}
     this.mapRows = this.mapRows.bind(this);
     this.processingDeltas = false;
-    this.lines = []
+    this.lines = [];
     this.senderIdQueue = [];
     this.lastDeltaByUser = {};
     this.lastLineCountChange = {}
     this.userActivity = []
+    this.userPositions = {}
+    this.nameTagColors = {};
+    this.nameTagColorList = ['#FF0000', '#0096FF', '#19AD49', '#FF00FF', '#FFA500'];
     window.room = this;
   }
 
   broadcastEdit(content, event) {
     const time = Date.now();
     if (!this.broadcastChange) return;
-
     let currentLine = this.lines[event.start.row]
     const key = sha1(currentLine);
     let subkey;
@@ -95,17 +96,15 @@ class Room extends React.Component {
       dupIndex,
       time,
       deltaId: uuid(),
+      senderName: this.props.user.username,
       senderId: this.props.user.id,
       changeData: event,
       currentLine,
-      currentContent: content
+      currentContent: content,
     }
     
-    this.docSubscription.send({backup: delta})
-
-    Object.values(this.dataChannels).forEach(channel => {
-      if (channel.readyState === "open") channel.send(JSON.stringify(delta));
-    });
+    this.sendUpdate(delta);
+    // this.adjustCursorRows(delta.changeData)
 
     this.lastDeltaByUser[this.props.user.id] = delta;
     if (this.senderIdQueue.slice(-1)[0] !== this.props.user.id) {
@@ -121,6 +120,54 @@ class Room extends React.Component {
       this.lastLineCountChange[this.props.user.id] = { time: delta.time, index: event.start.row }
     }
     this.setState({editorText: content});
+  }
+
+  updateCursorPos(pos) {
+    const { row, column } = pos.cursor;
+    this.userPositions[this.props.user.id] = { row, column };
+
+    this.sendUpdate({
+      position: this.userPositions[this.props.user.id],
+      senderId: this.props.user.id,
+      senderName: this.props.user.username
+    });
+  }
+
+  renderLocation(row, col, username, userId) {
+    const left = col * 7 + 52 + col/5;
+    const top = row * 16;
+    const nameTagColor = this.nameTagColors[userId]
+
+    const userLocationClass = `${username.replaceAll(/ /g, "_")}_location`
+    $(`.${userLocationClass}`).remove();
+    const locationMarker = $('<div></div>');
+    locationMarker.css({
+      position: 'absolute',
+      width: '2px',
+      height: '16px',
+      backgroundColor: nameTagColor,
+      top,
+      left
+    })
+
+    const nameTag = $(`<div>${username}</div>`);
+    nameTag.css({
+      position: 'absolute',
+      [!row ? 'bottom' : 'top']: '-16px',
+      padding: '2px 5px',
+      border: `2px solid ${nameTagColor}`,
+      left: '0',
+      whiteSpace: 'nowrap',
+      boxSizing: 'border-box',
+      backgroundColor: 'rgb(32,32,32)',
+      fontSize: '10px',
+      borderRadius: '3px'
+    })
+
+    locationMarker.append(nameTag);
+
+    locationMarker.addClass(userLocationClass);
+    $('#ace-editor').append(locationMarker[0]);
   }
 
   saveOnCtrlS() {
@@ -146,6 +193,26 @@ class Room extends React.Component {
       Object.values(this.dataChannels).forEach(channel => channel.close())
       Object.values(this.localPeers).forEach(peer => peer.close())
     }
+  }
+
+  // adjustCursorRows(delta) {
+  //   const { action, lines } = delta;
+  //   if (lines.length < 2) return;
+  //   const diff = lines.length - 1;
+  //   const { row } = this.userPositions[this.props.user.id];
+  //   for (let pos of Object.values(this.userPositions)) {
+  //     if (pos.row > row) {
+  //       action === "insert" ? pos.row += diff : pos.row -= diff;
+  //     }
+  //   }
+  // }
+
+  sendUpdate(delta) {
+    this.docSubscription.send({backup: delta})
+
+    Object.values(this.dataChannels).forEach(channel => {
+      if (channel.readyState === "open") channel.send(JSON.stringify(delta));
+    });
   }
 
   saveText() {
@@ -178,7 +245,7 @@ class Room extends React.Component {
     window.latestChange.push(editData)
     if (window.latestChange.length > 2) window.latestChange = window.latestChange.slice(-2)
     if (!editData.backup && this.backupConnection) return;
-    let data = editData.backup ? editData.backup : JSON.parse(editData.data);
+    let data = editData.backup || editData;
     if (this.deltaMap[data.deltaId]) return;
     if (data.senderId === this.props.user.id) return;
     this.mapRecentDeltas(data);
@@ -234,6 +301,7 @@ class Room extends React.Component {
   }
 
   ensureCorrectRow(newData) {
+    console.log("ensureCorrectRow called", Date.now(), newData)
     this.pending.push(newData);
     this.pending.sort((a,b) => a.time - b.time)
     if (this.processingDeltas) return;
@@ -250,6 +318,8 @@ class Room extends React.Component {
       if (noDeltas || onlyCurrentSender) {
         console.log("not adjusted", JSON.parse(JSON.stringify(data)))
         editorDoc.applyDelta(data.changeData);
+        const { row, column } = this.userPositions[data.senderId];
+        this.renderLocation(row, column, data.senderName, data.senderId);
         if (data.changeData.lines.length > 1) {
           this.lastLineCountChange[data.senderId] = { time: data.time, index: data.changeData.start.row }
         }
@@ -268,15 +338,19 @@ class Room extends React.Component {
         return;
       }
 
+      let diff = 0;
       if (this.adjustmentNeeded(data)) {
         console.log("adjusted:", JSON.parse(JSON.stringify(data)))
         const newRow = this.locateLine(data)
         console.log("newRow:", newRow);
+        diff = newRow - data.changeData.start.row;
         data.changeData.start.row = newRow;
         data.changeData.end.row = newRow + (data.changeData.lines.length - 1)
       }
       console.log("AboutToApplyDelta:", data)
       editorDoc.applyDelta(data.changeData);
+      const { row, column } = this.userPositions[data.senderId];
+      this.renderLocation(row + diff, column, data.senderName, data.senderId);
 
       if (data.changeData.lines.length > 1) {
         this.lastLineCountChange[data.senderId] = { time: data.time, index: data.changeData.start.row }
@@ -298,16 +372,12 @@ class Room extends React.Component {
     this.broadcastChange = true;
   }
 
-  editorListUpdate(data) {
-    this.setState({editorList: data.editors })
+  getCursorPosition() {
+    return this.editorRef.current.editor.getCursorPosition()
   }
 
-  getCurrentRow(data) {
-    if (data.senderId === this.props.user.id) return;
-
-    // $(".ace_text-layer").find('div').css({backgroundColor: ""})
-    // const rowElement = $(".ace_text-layer").find('div')[data.row]
-    // if (rowElement) rowElement.style.backgroundColor = "rgba(255, 0, 0, 0.3)"
+  editorListUpdate(data) {
+    this.setState({editorList: data.editors })
   }
 
   updateUserActivity(data) {
@@ -343,8 +413,8 @@ class Room extends React.Component {
   }
 
   sendInitialPosition() {
-    const row = this.editorRef.current.editor.getCursorPosition().row
-    this.docSubscription.send({ senderId: this.props.user.id, row });
+    const pos = this.editorRef.current.editor.getCursorPosition()
+    this.updateCursorPos({cursor: pos});
   }
 
   adjustmentNeeded(delta) {
@@ -372,12 +442,14 @@ class Room extends React.Component {
   }
 
   componentDidMount() {
+    const editor = this.editorRef.current.editor;
     if (!this.state.initialState) return;
     if (!this.state.authorized) return;
+    this.lines = JSON.parse(JSON.stringify(editor.session.doc.$lines))
     this.saveOnCtrlS()
     const callbacks = {
       edit: this.receiveEdit.bind(this), 
-      cursor: this.getCurrentRow.bind(this), 
+      cursor: this.setUserPosition.bind(this), 
       connect: this.sendInitialPosition.bind(this),
       editorList: this.editorListUpdate.bind(this),
       initialize: this.initializeDocument.bind(this),
@@ -385,6 +457,7 @@ class Room extends React.Component {
       syncState: this.syncState.bind(this),
       save: this.updateSavedState.bind(this),
       ejectUser: this.ejectUser.bind(this),
+      assignColor: this.assignColor.bind(this),
       initConnection: this.connectDataChannel.bind(this),
     }
     this.userActivity = this.editorRef.current.editor.session.doc.$lines.map(line => {
@@ -429,9 +502,25 @@ class Room extends React.Component {
   sendState(data) {
     if (data.sender_id === this.props.user.id) return;
     this.docSubscription.send({
-      senderId: this.props.user.id, 
-      currentState: this.state
+      senderId: this.props.user.id,
+      currentState: this.state,
+      userActivity: this.userActivity,
+      senderPosition: this.userPositions[this.props.user.id],
+      senderName: this.props.user.username,
     })
+  }
+
+  assignColor(data) {
+    if (data.exit) {
+      $(`.${data.senderName.replaceAll(/ /g, "_")}_location`).remove();
+      delete this.nameTagColors[data.senderId];
+      return;
+    }
+
+    if (this.nameTagColors[data.senderId]) return;
+    const colorIndex = Object.keys(this.nameTagColors).length % 5;
+    console.log(this.nameTagColorList[colorIndex]);
+    this.nameTagColors[data.senderId] = this.nameTagColorList[colorIndex];
   }
 
   async connectDataChannel(data) {  
@@ -447,7 +536,12 @@ class Room extends React.Component {
     connection.ondatachannel = e => {
       console.log("ondatachannel event triggered")
       const dataChannel = e.channel;
-      dataChannel.onmessage = message => this.receiveEdit(message)
+      dataChannel.onmessage = message => {
+        let data = JSON.parse(message.data);
+        data.position ?
+        this.setUserPosition(data) :
+        this.receiveEdit(data);
+      }
       dataChannel.onopen = () => {
         console.log("open");
         this.backupConnection = !this.dataChannelsConnected()
@@ -502,7 +596,12 @@ class Room extends React.Component {
         delete this.localPeers[data.senderId]
         delete this.dataChannels[data.senderId]
       }
-      dataChannel.onmessage = message => this.receiveEdit(message)
+      dataChannel.onmessage = message => {
+        let data = JSON.parse(message.data);
+        data.position ?
+        this.setUserPosition(data) :
+        this.receiveEdit(data);
+      }
       try {
       const offer = await connection.createOffer();
       await connection.setLocalDescription(offer);
@@ -555,10 +654,30 @@ class Room extends React.Component {
     return allPresent && allOpen;
   }
 
+
+  setUserPosition(pos) {
+    const { senderId, position, senderName } = pos.backup || pos;
+    if (senderId === this.props.user.id) return;
+    this.userPositions[senderId] = position;
+    const { row, column } = position;
+    this.renderLocation(row, column, senderName, senderId);
+  }
+
   syncState(data) {
     if (data.senderId === this.props.user.id) return;
-    const { editorMode, editorText, docTitle, savedState } = data.currentState;
-    this.setState({ editorMode, editorText, docTitle, savedState })
+    this.assignColor(data);
+    const { senderName, senderPosition, senderId } = data;
+    const { row, column } = senderPosition;
+    this.userPositions[senderId] = senderPosition;
+    const { editorMode,
+        editorText, 
+        docTitle, 
+        savedState } = data.currentState;
+
+    this.userActivity = data.userActivity;
+    this.setState({ editorMode, editorText, docTitle, savedState }, () => {
+      this.renderLocation(row, column, senderName, senderId);
+    })
   }
   
   render() {
@@ -593,6 +712,7 @@ class Room extends React.Component {
         />
         <AceEditor
         onChange={this.broadcastEdit}
+        onCursorChange={this.updateCursorPos.bind(this)}
         height="90%"
         width="100%"
         mode={this.state.editorMode}
