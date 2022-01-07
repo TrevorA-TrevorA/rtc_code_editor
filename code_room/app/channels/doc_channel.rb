@@ -33,11 +33,21 @@ class DocChannel < ApplicationCable::Channel
     end
     
     if params[:editing]
+      remove_location
       broadcast_active_editors
     end
   end
 
   private
+
+  def remove_location
+    signal = { 
+      exit: true, 
+      senderId: connection.current_user.id, 
+      senderName: connection.current_user.username 
+    }
+    ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", signal)
+  end
 
   def send_join_request
     signal = { join: true, senderId: connection.current_user.id }

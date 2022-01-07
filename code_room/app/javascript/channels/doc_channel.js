@@ -17,11 +17,15 @@ import consumer from "./consumer"
       },
 
       received(data) {
-        
         if (data.join || data.offer || data.iceCandidate || data.answer) {
           if (data.senderId === userId || !editing) return;
-          callbacks.initConnection(data)
+          callbacks.initConnection(data);
+          callbacks.assignColor(data);
           return
+        }
+
+        if (data.exit) {
+          callbacks.assignColor(data);
         }
 
         if (editing && data.revocation && data.revocation.recipient_id === userId) {
@@ -52,8 +56,17 @@ import consumer from "./consumer"
           callbacks.editorList(data);
           return;
         }
+
+        const update = data.backup;
+        if (!update) return;
         
-        data.backup ? callbacks.edit(data) : callbacks.cursor(data)
+        if (update.changeData) { 
+          callbacks.edit(data);
+        } 
+
+        if (update.position) {
+          callbacks.cursor(data);
+        }
       },
 
       resubscribe() {
