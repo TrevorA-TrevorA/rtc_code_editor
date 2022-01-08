@@ -42,6 +42,7 @@ class Dash extends React.Component {
   }
 
   componentDidUpdate() {
+    if (!this.props.user) return;
     this.state.newDoc ?
     fileName.focus() :
     this.dashRef.current.focus()
