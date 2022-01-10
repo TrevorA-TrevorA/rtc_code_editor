@@ -87,7 +87,7 @@ class SignUp extends React.Component {
               { errorText }
             </div>
           </form>
-          <Link to="/log-in">sign in</Link>
+          <Link className='nav-link' to="/log-in">sign in</Link>
         </div>
     )
   }

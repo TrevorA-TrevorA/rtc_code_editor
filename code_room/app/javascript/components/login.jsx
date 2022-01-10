@@ -58,8 +58,9 @@ class Login extends React.Component {
             <input type="submit" value="sign in"/>
             { errorText }
           </div>
+          <Link className='pw-reset-link' to="/password-reset">forgot password?</Link>
         </form>
-        <Link to="/sign-up">create account</Link>
+        <Link className='nav-link' to="/sign-up">create account</Link>
       </div>
     )
   }
