@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resource :session, only: [:create, :destroy]
   end
 
+  get "users/reset-password/:encoded_email" => "users#request_password_reset"
   patch "api/users/:user_id/notifications" => "notifications#update_all"
   delete "api/users/:user_id/notifications" => "notifications#destroy_all"
   delete "api/users/:user_id/collaborations/:document_id" => "collaborations#destroy_by_document"

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  before_action :confirm_logged_in, except: [:new, :create]
+  before_action :confirm_logged_in, except: [:new, :create, :request_password_reset]
 
   def index
     pattern = params[:q]
@@ -53,6 +53,18 @@ class UsersController < ApplicationController
     else
       render json: { status: 400 }, status: 400
     end
+  end
+
+  def request_password_reset
+    email = Base64.urlsafe_decode64(params[:encoded_email])
+    @user = User.find_by(email: email)
+    if !@user
+      render json: { status: 400 }
+      return
+    end
+    
+    UserMailer.password_reset(@user).deliver_now
+    render json: { status: 200 }
   end
 
   def destroy

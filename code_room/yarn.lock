@@ -6872,6 +6872,11 @@ url-regex@^5.0.0:
     ip-regex "^4.1.0"
     tlds "^1.203.0"
 
+url-safe-base64@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/url-safe-base64/-/url-safe-base64-1.1.1.tgz#1711596fbe18dcb4c95103234bf58df2ef225187"
+  integrity sha512-7FAWxRcSliMIuLqDR7a6CHgH6Crkgl8lwLtuum4FmzlNLjWu3KVtcKN0C7VHpJOTgHZlqF6dH4gQpM+xwff7uw==
+
 url@^0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/url/-/url-0.11.0.tgz#3838e97cfc60521eb73c525a8e55bfdd9e2e28f1"
