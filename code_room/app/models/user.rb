@@ -55,7 +55,19 @@ class User < ApplicationRecord
 
   def reset_session_token
     self.session_token = self.class.generate_unique_secure_token
-  end  
+  end
+
+  def set_password_reset_token
+    self.update(password_reset_token: self.class.generate_unique_secure_token)
+  end
+
+  def set_password_reset_time
+    self.update(password_reset_time: DateTime.now)
+  end
+
+  def validate_password_reset_time
+    return DateTime.now - self.password_reset_time.to_datetime <= 1/24.0
+  end
          
   private
 

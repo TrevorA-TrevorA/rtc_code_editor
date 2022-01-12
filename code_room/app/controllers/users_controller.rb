@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  before_action :confirm_logged_in, except: [:new, :create, :request_password_reset]
+  before_action :confirm_logged_in, except: [
+    :new, 
+    :create, 
+    :request_password_reset, 
+    :update_password_form,
+    :update_password
+  ]
 
   def index
     pattern = params[:q]
@@ -59,12 +65,44 @@ class UsersController < ApplicationController
     email = Base64.urlsafe_decode64(params[:encoded_email])
     @user = User.find_by(email: email)
     if !@user
-      render json: { status: 400 }
+      render json: { status:400, message: 'Email not associated with an account' }
       return
     end
-    
+
+    @user.set_password_reset_token
+    @user.set_password_reset_time
     UserMailer.password_reset(@user).deliver_now
     render json: { status: 200 }
+  end
+
+  def update_password
+    puts user_params
+    password = user_params[:password]
+    confirmation = user_params[:password_confirmation]
+    @token = user_params[:password_reset_token]
+    
+    if !@token
+      render status: 401
+    elsif password != confirmation
+      render status: 400, json: { error: 'password and confirmation do not match' }
+    elsif password.length < 8
+      render status: 400, json: { error: 'password must be at least eight characters' }
+    else
+      @user = User.find_by(password_reset_token: @token)
+      new_digest = BCrypt::Password.create(password)
+      @user.update(password_digest: new_digest, password_reset_token: nil, password_reset_time: nil)
+      UserMailer.confirm_password_change(@user).deliver_now
+      render status: 200, json: { message: 'update successful' }
+    end
+  end
+
+  def update_password_form
+    user = User.find(params[:id])
+    if !user.password_reset_token || !user.validate_password_reset_time
+      render 'user_mailer/expired_link_error'
+    else
+      @password_reset_token = user.password_reset_token
+    end
   end
 
   def destroy
@@ -76,6 +114,11 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:username, :email, :password, :password_confirmation)
+    params.require(:user)
+    .permit(:username, 
+    :email, 
+    :password, 
+    :password_confirmation, 
+    :password_reset_token)
   end
 end

@@ -4,7 +4,7 @@
 
 
 
-[data-react-class="app"] {
+[data-react-class="app"], [data-react-class="new_password"] {
   position: absolute;
   left: 0;
   top: 0;
@@ -12,7 +12,7 @@
   width: 100%;
 }
 
-.login, .sign-up, .password-reset {
+.login, .sign-up, .password-reset, .new-password {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,6 +31,27 @@
     padding-left: 1%;
     background-color: rgba($color: #ffffff, $alpha: 0.3);
   }
+}
+
+.expired-link {
+  display: flex;
+  height: 100vh;
+  background-color: #000000;
+  color: #FFFFFF;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  width: 30vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#new-password-form {
+  width: 30vw;
 }
 
 .pw-reset-link {
@@ -64,6 +85,13 @@ label {
   color: #FF0000;
 }
 
+.unregistered-email-error {
+  color: #FF0000;
+  position: absolute;
+  display: inline-block;
+  top: -50%;
+}
+
 .submit-row {
   display: flex;
   justify-content: space-between;
@@ -74,7 +102,7 @@ label {
    }
 }
 
-input[type="submit"] {
+input[type="submit"], .sign-in-button {
   margin-top: 2vw;
   height: 2vw;
   min-width: 7vw;
