@@ -716,7 +716,7 @@ class Room extends React.Component {
         height="90%"
         width="100%"
         mode={this.state.editorMode}
-        theme="terminal"
+        theme="tomorrow_night_blue"
         ref={this.editorRef}
         keyboardHandler="vscode"
         value={this.state.editorText}

@@ -101,7 +101,7 @@ class ChatBox extends React.Component {
         headerMessageTime={this.state.headerMessageTime}
         />
         <ChatBody uid={this.props.user.id} chatLog={this.state.chatLog}/>
-        <textarea id="chatInput" placeholder="     Say something."></textarea>
+        <textarea id="chatInput" placeholder="Say something."></textarea>
       </div>
     )
   }
