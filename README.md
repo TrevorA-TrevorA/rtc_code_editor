@@ -12,5 +12,8 @@ A real-time collaborative code-editing interface.
 
 **Status**: Currently in development.
 
-https://user-images.githubusercontent.com/53229267/148244461-336c218c-4a8c-4ea3-a942-2f54626fe0fb.mov
+
+
+https://user-images.githubusercontent.com/53229267/150449117-87494483-67ff-4b03-8e79-3ed3100f147f.mov
+
 
