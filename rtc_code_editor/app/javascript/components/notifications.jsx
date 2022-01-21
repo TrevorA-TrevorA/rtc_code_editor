@@ -1,5 +1,5 @@
 import React from 'react';
-import notificationsIcon from 'images/notifications-icon.png';
+import notificationsIcon from 'images/notifications-icon-white.png';
 import connectToNotifications from '../channels/notifications_channel';
 import NotificationsList from './notifications_list';
 import NotificationsModal from './notifications_modal';

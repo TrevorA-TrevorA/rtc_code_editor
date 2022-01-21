@@ -43,7 +43,7 @@ class Nav extends React.Component {
 
     const imURL = this.props.avatarUrl || this.context(this.props.user.email);
     return(
-    <div className="nav-menu">
+    <div className={this.props.inRoom ? 'nav-menu room-nav' : 'nav-menu'}>
       <div className="avatar-and-name">
         <img onClick={this.openAvatarForm.bind(this)} 
         className="avatar" alt="user avatar" src={imURL}/>
@@ -53,6 +53,7 @@ class Nav extends React.Component {
         { 
         this.props.inRoom ?
         <button 
+        className='save-button'
         onClick={this.props.saveText}
         disabled={!this.props.pendingChanges}
         className="save-button">
