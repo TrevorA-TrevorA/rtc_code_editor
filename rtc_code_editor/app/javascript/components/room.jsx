@@ -50,6 +50,7 @@ class Room extends React.Component {
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
     this.saveOnCtrlS = this.saveOnCtrlS.bind(this);
+    this.renderLocation = this.renderLocation.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
     this.pending = [];
@@ -124,7 +125,7 @@ class Room extends React.Component {
 
   updateCursorPos(pos) {
     const { row, column } = pos.cursor;
-    this.userPositions[this.props.user.id] = { row, column };
+    this.userPositions[this.props.user.id] = { row, column, name: this.props.user.username };
 
     this.sendUpdate({
       position: this.userPositions[this.props.user.id],
@@ -134,8 +135,9 @@ class Room extends React.Component {
   }
 
   renderLocation(row, col, username, userId) {
+    if (userId === this.props.user.id) return;
     const left = col * 7 + 52 + col/5;
-    const top = row * 16;
+    const top = row * 16 - this.editorRef.current.editor.session.$scrollTop;
     const nameTagColor = this.nameTagColors[userId]
 
     const userLocationClass = `${username.replaceAll(/ /g, "_")}_location`
@@ -445,8 +447,8 @@ class Room extends React.Component {
     const editor = this.editorRef.current.editor;
     if (!this.state.initialState) return;
     if (!this.state.authorized) return;
-    this.lines = JSON.parse(JSON.stringify(editor.session.doc.$lines))
-    this.saveOnCtrlS()
+    this.lines = JSON.parse(JSON.stringify(editor.session.doc.$lines));
+    this.saveOnCtrlS();
     const callbacks = {
       edit: this.receiveEdit.bind(this), 
       cursor: this.setUserPosition.bind(this), 
@@ -658,7 +660,7 @@ class Room extends React.Component {
   setUserPosition(pos) {
     const { senderId, position, senderName } = pos.backup || pos;
     if (senderId === this.props.user.id) return;
-    this.userPositions[senderId] = position;
+    this.userPositions[senderId] = { ...position, name: senderName };
     const { row, column } = position;
     this.renderLocation(row, column, senderName, senderId);
   }
@@ -668,7 +670,7 @@ class Room extends React.Component {
     this.assignColor(data);
     const { senderName, senderPosition, senderId } = data;
     const { row, column } = senderPosition;
-    this.userPositions[senderId] = senderPosition;
+    this.userPositions[senderId] = { ...senderPosition, name: senderName };
     const { editorMode,
         editorText, 
         docTitle, 
@@ -713,6 +715,12 @@ class Room extends React.Component {
         <AceEditor
         onChange={this.broadcastEdit}
         onCursorChange={this.updateCursorPos.bind(this)}
+        onScroll={() => {
+          for (let [id, pos] of Object.entries(this.userPositions)) {
+            const { row, column, name } = pos;
+            this.renderLocation(row, column, name, id);
+          }
+        }}
         height="90%"
         width="100%"
         mode={this.state.editorMode}
