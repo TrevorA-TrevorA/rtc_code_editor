@@ -163,7 +163,8 @@ class Room extends React.Component {
       boxSizing: 'border-box',
       backgroundColor: 'rgb(32,32,32)',
       fontSize: '10px',
-      borderRadius: '3px'
+      borderRadius: '3px',
+      pointerEvents: 'none'
     })
 
     locationMarker.append(nameTag);
