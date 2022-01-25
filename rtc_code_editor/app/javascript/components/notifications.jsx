@@ -106,6 +106,16 @@ class Notifications extends React.Component {
     }
 
     if (data.new_notification) {
+      const type = data.new_notification.notification_type;
+      if (type === "deletion_notice") {
+        const { document_id, collaboration_id } = data.new_notification.details;
+
+        this.props.dispatch({ 
+          type: REMOVE_COLLABORATION, 
+          docId: document_id, 
+          collaborationId: collaboration_id 
+        })
+      }
       const { notifications } = this.state;
       notifications.unshift(data.new_notification)
       this.setState({ notifications: notifications })
