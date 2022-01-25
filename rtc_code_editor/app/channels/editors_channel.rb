@@ -13,6 +13,9 @@ class EditorsChannel < ApplicationCable::Channel
     if !params[:admin]
       document = Document.find(params[:document_id])
       editor_info[:admin] = User.find(document.admin_id)
+      .attributes
+      .slice('id', 'username', 'avatar_url', 'email')
+      .merge('collab_id' => collab.id)
     end
 
     ActionCable.server.broadcast("editors_channel_#{params[:document_id]}", editor_info)

@@ -21,7 +21,7 @@ class Dash extends React.Component {
   }
 
   toggleManager() {
-    if (!this.props.selected.length) return;
+    // if (!this.props.selected.length) return;
     const current = this.state.managerOpen;
     this.setState({ managerOpen: !current })
   }

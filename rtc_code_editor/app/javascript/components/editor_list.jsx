@@ -5,7 +5,6 @@ import { v4 as uuid } from 'uuid';
 
 const EditorList = props => {
   const subscription = connectToEditors(props.document_id, props.receiveEditors, props.isAdmin)
-
   useEffect(() => {
     return () => {
       subscription.unsubscribe()

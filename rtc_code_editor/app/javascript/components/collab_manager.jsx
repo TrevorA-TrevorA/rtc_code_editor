@@ -6,11 +6,16 @@ import EditorList from './editor_list';
 class CollabManager extends React.Component {
   constructor(props) {
     super(props)
+
+    this.documents = this.props.selected.length ? 
+    this.props.selected :
+    this.props.documents.concat(this.props.editables);
+    console.log(this.documents);
     this.searchUsers = this.searchUsers.bind(this)
     this.removeEditor = this.removeEditor.bind(this)
     this.receiveEditors = this.receiveEditors.bind(this)
     this.state = { 
-      selectedDoc: this.props.selected[0],
+      selectedDoc: this.documents[0],
       userSearchResults: [],
       editors: [],
       docAdmin: null,
@@ -73,7 +78,7 @@ class CollabManager extends React.Component {
   }
 
   render() {
-    if (this.props.user.documents.some(doc => {
+    if (this.props.documents.some(doc => {
       return doc.id === this.state.selectedDoc.id;
     })) {
       this.isAdmin = true;
@@ -107,11 +112,11 @@ class CollabManager extends React.Component {
           value={this.state.selectedDoc.id}
           className="doc-selector"
           onChange={(e) => {
-           const newSelected = this.props.selected.find(doc => doc.id === e.target.value);
+           const newSelected = this.documents.find(doc => doc.id === e.target.value);
            this.setState({ selectedDoc: newSelected })
             }
           }>
-            {this.props.selected.map((doc) => {
+            {this.documents.map((doc) => {
               return (
                 <option
                 key={uuid()}
