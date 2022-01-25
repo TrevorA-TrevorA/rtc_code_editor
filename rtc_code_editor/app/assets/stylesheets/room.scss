@@ -52,7 +52,6 @@
   font-weight: 500;
   padding: 0;
   text-align: center;
-  // font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace;
 }
 
 #chatInput:focus {
@@ -62,21 +61,13 @@
 .doc-room { 
   display: flex;
   column-gap: .5vw;
-  // margin: 15vh 2vw 3vh;
-  // padding: 0;
   background-color: transparent;
 }
-
-// .room-nav {
-//   justify-content: flex-end;
-//   // padding: 2vw;
-// }
 
 .room {
   height: 100%;
   width: 100%;
   background-color: rgb(60,64,70);
-  // background-color: rgb(51,51,51);
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
   Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }

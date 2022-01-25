@@ -105,7 +105,6 @@ class Room extends React.Component {
     }
     
     this.sendUpdate(delta);
-    // this.adjustCursorRows(delta.changeData)
 
     this.lastDeltaByUser[this.props.user.id] = delta;
     if (this.senderIdQueue.slice(-1)[0] !== this.props.user.id) {
@@ -197,18 +196,6 @@ class Room extends React.Component {
       Object.values(this.localPeers).forEach(peer => peer.close())
     }
   }
-
-  // adjustCursorRows(delta) {
-  //   const { action, lines } = delta;
-  //   if (lines.length < 2) return;
-  //   const diff = lines.length - 1;
-  //   const { row } = this.userPositions[this.props.user.id];
-  //   for (let pos of Object.values(this.userPositions)) {
-  //     if (pos.row > row) {
-  //       action === "insert" ? pos.row += diff : pos.row -= diff;
-  //     }
-  //   }
-  // }
 
   sendUpdate(delta) {
     this.docSubscription.send({backup: delta})
