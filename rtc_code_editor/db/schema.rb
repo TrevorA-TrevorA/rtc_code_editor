@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_11_011818) do
+ActiveRecord::Schema.define(version: 2022_01_28_025426) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -25,15 +25,6 @@ ActiveRecord::Schema.define(version: 2022_01_11_011818) do
     t.boolean "accepted", default: false, null: false
     t.index ["document_id"], name: "index_collaborations_on_document_id"
     t.index ["editor_id"], name: "index_collaborations_on_editor_id"
-  end
-
-  create_table "document_connections", force: :cascade do |t|
-    t.uuid "editor_id", null: false
-    t.uuid "document_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["document_id"], name: "index_document_connections_on_document_id"
-    t.index ["editor_id"], name: "index_document_connections_on_editor_id"
   end
 
   create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -73,7 +64,6 @@ ActiveRecord::Schema.define(version: 2022_01_11_011818) do
 
   add_foreign_key "collaborations", "documents"
   add_foreign_key "collaborations", "users", column: "editor_id"
-  add_foreign_key "document_connections", "users", column: "editor_id"
   add_foreign_key "documents", "users", column: "admin_id"
   add_foreign_key "notifications", "users", column: "recipient_id"
 end

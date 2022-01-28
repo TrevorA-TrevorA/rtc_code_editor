@@ -9,13 +9,11 @@ import "ace-builds";
 import "ace-builds/webpack-resolver";
 import { withRouter } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import { UPDATE } from '../reducers/doc_reducer'
-import { UPDATE_EDITABLE } from '../reducers/collab_reducer'
+import { UPDATE } from '../reducers/doc_reducer';
+import { UPDATE_EDITABLE } from '../reducers/collab_reducer';
 import { v4 as uuid } from 'uuid';
 import { sha1 } from 'object-hash';
 import { compoundExtensions, modeMap } from "../language_modes";
-window.modeMap = modeMap;
-window.sha1 = sha1;
 
 class Room extends React.Component {
   constructor(props) {
@@ -35,13 +33,14 @@ class Room extends React.Component {
     const defaultState = this.doc.content
     const fileName = this.doc.file_name;
     const mode = this.getEditorMode(fileName);
+    const { avatar_url, username, email, id } = this.props.user;
 
     this.state = { 
       editorText: defaultState,
       editorMode: mode,
       initialState: true,
       docTitle: fileName,
-      editorList: [],
+      editorList: [{ avatar_url, username, email, id }],
       savedState: defaultState,
       authorized: true,
       revokeAccess: false
@@ -183,6 +182,7 @@ class Room extends React.Component {
   }
 
   componentDidUpdate() {
+    console.log("componentDidUpdate")
     if (!this.state.authorized || this.state.revokeAccess || !this.props.user) return;
     this.mapRows();
     const lines = this.editorRef.current.editor.session.doc.$lines;
@@ -367,7 +367,16 @@ class Room extends React.Component {
   }
 
   editorListUpdate(data) {
-    this.setState({editorList: data.editors })
+    console.log("data.arrival:", data.arrival)
+    // this.setState({editorList: data.editors })
+    if (data.arrival && data.arrival.id !== this.props.user.id) {
+      this.setState({editorList: [...this.state.editorList, data.arrival]})
+    }
+
+    if (data.departure) {
+      const editors = this.state.editorList.filter(editor => editor.id !== data.departure)
+      this.setState({editorList: editors});
+    }
   }
 
   updateUserActivity(data) {
@@ -432,6 +441,7 @@ class Room extends React.Component {
   }
 
   componentDidMount() {
+    console.log('componentDidMount');
     const editor = this.editorRef.current.editor;
     if (!this.state.initialState) return;
     if (!this.state.authorized) return;
@@ -453,6 +463,7 @@ class Room extends React.Component {
     this.userActivity = this.editorRef.current.editor.session.doc.$lines.map(line => {
       return { [sha1(line)]: null }
     })
+    this.mapRows();
     this.docSubscription = connectToDoc(this.docId, true, callbacks, this.props.user.id);
   }
 
@@ -472,6 +483,7 @@ class Room extends React.Component {
   }
 
   mapRows = () => {
+    console.log(this.userActivity)
     this.docMap = {}
     for (let i = 0; i < this.userActivity.length; i++) {
       const entry = this.userActivity[i]
@@ -491,12 +503,15 @@ class Room extends React.Component {
 
   sendState(data) {
     if (data.sender_id === this.props.user.id) return;
+    const { username, email, id, avatar_url } = this.props.user;
     this.docSubscription.send({
-      senderId: this.props.user.id,
+      senderId: id,
       currentState: this.state,
       userActivity: this.userActivity,
       senderPosition: this.userPositions[this.props.user.id],
-      senderName: this.props.user.username,
+      senderName: username,
+      avatarUrl: avatar_url,
+      email
     })
   }
 
@@ -654,9 +669,10 @@ class Room extends React.Component {
   }
 
   syncState(data) {
+    console.log(data);
     if (data.senderId === this.props.user.id) return;
     this.assignColor(data);
-    const { senderName, senderPosition, senderId } = data;
+    const { senderName, senderPosition, senderId, email, avatarUrl } = data;
     const { row, column } = senderPosition;
     this.userPositions[senderId] = { ...senderPosition, name: senderName };
     const { editorMode,
@@ -665,7 +681,13 @@ class Room extends React.Component {
         savedState } = data.currentState;
 
     this.userActivity = data.userActivity;
-    this.setState({ editorMode, editorText, docTitle, savedState }, () => {
+    this.setState({ 
+      editorMode, 
+      editorText, 
+      docTitle, 
+      savedState,
+      editorList: [...this.state.editorList, { username: senderName, avatar_url: avatarUrl, email, id: senderId }]
+    }, () => {
       this.renderLocation(row, column, senderName, senderId);
     })
   }
@@ -683,7 +705,7 @@ class Room extends React.Component {
     const { user } = this.props;
 
     const pendingChanges = this.state.editorText !== this.state.savedState;
-
+    console.log(this.state.editorList);
     return (
     <div className="room">
       <NavContainer 

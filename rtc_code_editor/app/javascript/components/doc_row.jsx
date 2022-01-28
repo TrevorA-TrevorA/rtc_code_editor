@@ -26,7 +26,22 @@ class DocRow extends React.Component {
   static contextType = GravatarUrl;
 
   editorListUpdate(data) {
-    this.setState({ editorList: data.editors })
+    if (data.arrival) {
+      if (this.state.editorList.some(editor => editor.id === data.arrival.id)) return;
+      this.setState({ editorList: [...this.state.editorList, data.arrival] })
+    }
+
+    if (data.departure) {
+      const editors = this.state.editorList.filter(editor => editor.id !== data.departure)
+      this.setState({editorList: editors});
+    }
+
+    if (data.currentState) {
+      if (this.state.editorList.some(editor => editor.id === data.senderId)) return;
+      const { email, senderId, senderName, avatarUrl } = data;
+      const editor = { email, id: senderId, username: senderName, avatar_url: avatarUrl };
+      this.setState({ editorList: [...this.state.editorList, editor] })
+    }
   }
 
   updateDocTitle() {
@@ -82,7 +97,7 @@ class DocRow extends React.Component {
       editorList: this.editorListUpdate.bind(this),
       initialize: () => {},
       sendState: () => {},
-      syncState: () => {},
+      syncState: this.editorListUpdate.bind(this),
       ejectUser: () => {},
       assignColor: () => {},
       save: this.updateSavedState.bind(this)
