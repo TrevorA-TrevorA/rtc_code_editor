@@ -213,6 +213,13 @@
   color: #FFF;
   box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
   min-width: 50%;
+  option {
+    color: #000;
+  }
+
+  option:focus {
+    color: #FFF;
+  }
 }
 
 .avatar.doc-status {

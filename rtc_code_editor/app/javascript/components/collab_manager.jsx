@@ -59,6 +59,7 @@ class CollabManager extends React.Component {
   }
 
   receiveEditors(data) {
+    console.log(data);
     const { userSearchResults, editors } = this.state;
     if (data.new_editor) {
       const revised = userSearchResults.filter(user => user.id !== data.new_editor.id)
@@ -74,6 +75,10 @@ class CollabManager extends React.Component {
       this.setState({docAdmin: data.admin})
      }
 
+    if (!data.admin && this.state.docAdmin) {
+      this.setState({docAdmin: null});
+    }
+
     this.setState({editors: data.editors});
   }
 
@@ -82,7 +87,10 @@ class CollabManager extends React.Component {
       return doc.id === this.state.selectedDoc.id;
     })) {
       this.isAdmin = true;
+    } else {
+      this.isAdmin = false;
     }
+
 
     return (
       <div id="collab">

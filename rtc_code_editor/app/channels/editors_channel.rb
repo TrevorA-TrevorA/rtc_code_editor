@@ -1,5 +1,7 @@
 class EditorsChannel < ApplicationCable::Channel
   def subscribed
+    puts "subscribed called"
+    puts params
     stream_from "editors_channel_#{params[:document_id]}"
     @editors = Collaboration.where(document_id: params[:document_id], accepted: true)
     .map do |collab|
@@ -15,7 +17,6 @@ class EditorsChannel < ApplicationCable::Channel
       editor_info[:admin] = User.find(document.admin_id)
       .attributes
       .slice('id', 'username', 'avatar_url', 'email')
-      .merge('collab_id' => collab.id)
     end
 
     ActionCable.server.broadcast("editors_channel_#{params[:document_id]}", editor_info)
