@@ -11,6 +11,9 @@ yarn-debug.log*
 .byebug_history
 .vscode/
 log/
+Capfile
+config/deploy.rb
+config/deploy/
 
 # Ignore application configuration
 /config/application.yml
