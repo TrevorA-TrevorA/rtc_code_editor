@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'base64'
 
 class UsersController < ApplicationController
   before_action :confirm_logged_in, except: [

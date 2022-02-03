@@ -19,10 +19,7 @@ const uploadDocuments = docs => (dispatch, getState) => {
           const res = await fetch(url, options)
           const json = await res.json()
           if (!res.ok) throw new Error(res.statusText);
-          let { name, size } = doc;
-          let docRecord = { file_name: name, size, id: json.id }
-          docRecord.updated_at = json.updated_at;
-          dispatch({ type: UPLOAD, doc: docRecord });
+          dispatch({ type: UPLOAD, doc: json });
         } catch(err) {
           console.log(err);
         }
