@@ -367,9 +367,8 @@ class Room extends React.Component {
   }
 
   editorListUpdate(data) {
-    console.log("data.arrival:", data.arrival)
-    // this.setState({editorList: data.editors })
     if (data.arrival && data.arrival.id !== this.props.user.id) {
+      if (this.state.editorList.some(ed => ed.id === data.arrival.id)) return;
       this.setState({editorList: [...this.state.editorList, data.arrival]})
     }
 
@@ -679,6 +678,12 @@ class Room extends React.Component {
         editorText, 
         docTitle, 
         savedState } = data.currentState;
+    
+    const editor = { username: senderName, avatar_url: avatarUrl, email, id: senderId }
+    const alreadyPresent = this.state.editorList.some(ed => ed.id === senderId);
+    const editorList = alreadyPresent ? 
+    this.state.editorList : 
+    [...this.state.editorList, editor]
 
     this.userActivity = data.userActivity;
     this.setState({ 
@@ -686,7 +691,7 @@ class Room extends React.Component {
       editorText, 
       docTitle, 
       savedState,
-      editorList: [...this.state.editorList, { username: senderName, avatar_url: avatarUrl, email, id: senderId }]
+      editorList
     }, () => {
       this.renderLocation(row, column, senderName, senderId);
     })
