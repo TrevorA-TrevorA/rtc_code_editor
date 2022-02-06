@@ -108,8 +108,12 @@ class UsersController < ApplicationController
 
   def destroy
     @user = User.find_by(id: params[:id])
-    @user.destroy
-    render status: 200
+    if @user
+      @user.destroy
+      render status: 200, json: {status: 200}
+    else
+      render status: 400, json: {status: 400}
+    end
   end
 
   private

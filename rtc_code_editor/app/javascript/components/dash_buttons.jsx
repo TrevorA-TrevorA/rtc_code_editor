@@ -42,7 +42,16 @@ export const DeleteButton = props => {
 }
 
 export const ManageEditorsButton = props => {
+  const disabled = !props.documents.concat(props.editables).length;
+  const hoverText = disabled ? "you must have at least one document to invite editors" : "";
+  
   return (
-    <button onClick={props.callback} className="dash-button">EDITORS</button>
+    <button 
+      disabled={disabled} 
+      onClick={props.callback} 
+      className="dash-button"
+      title={hoverText}>
+        EDITORS
+    </button>
   )
 }

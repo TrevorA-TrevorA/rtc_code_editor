@@ -42,6 +42,10 @@
   cursor: pointer;
 }
 
+.dash-button:disabled {
+  cursor: not-allowed;
+}
+
 .dash-button.new-doc {
   font-size: 25px;
 }
