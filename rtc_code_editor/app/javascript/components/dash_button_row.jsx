@@ -1,6 +1,6 @@
 import React from 'react';
 import { UploadButtonContainer, DeleteButtonContainer } from '../containers/dash_button_containers';
-import { ManageEditorsButton } from './dash_buttons';
+import { ManageEditorsButtonContainer } from '../containers/dash_button_containers';
 import { AddNewDoc } from './dash_buttons';
 
 export const DashButtonRow = props => {
@@ -9,7 +9,7 @@ export const DashButtonRow = props => {
       <AddNewDoc/>
       <UploadButtonContainer/>
       <DeleteButtonContainer/>
-      <ManageEditorsButton callback={props.callback}/>
+      <ManageEditorsButtonContainer callback={props.callback}/>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'base64'
 
 class UsersController < ApplicationController
   before_action :confirm_logged_in, except: [
@@ -107,8 +108,14 @@ class UsersController < ApplicationController
 
   def destroy
     @user = User.find_by(id: params[:id])
-    @user.destroy
-    render status: 200
+    if @user
+      @collaborations = Collaboration.where(document_id: @user.documents.pluck(:id))
+      destroy_collaborations(@collaborations)
+      @user.destroy
+      render status: 200, json: {status: 200}
+    else
+      render status: 400, json: {status: 400}
+    end
   end
 
   private

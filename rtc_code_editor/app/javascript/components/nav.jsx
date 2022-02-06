@@ -4,6 +4,7 @@ import { LOGOUT } from '../reducers/auth_reducer'
 import { GravatarUrl } from '../context/gravatar_url';
 import NotificationsContainer from '../containers/notifications_container';
 import AvatarChangeContainer from '../containers/avatar_change_container';
+import Settings from './settings';
 
 class Nav extends React.Component {
   static contextType = GravatarUrl;
@@ -64,6 +65,7 @@ class Nav extends React.Component {
         <NotificationsContainer/>
         <Link to="/dash">Home</Link>
         <Link to="/" onClick={this.logout}>Logout</Link>
+        <Settings/>
       </div>
         {
           this.state.changeAvatar ?

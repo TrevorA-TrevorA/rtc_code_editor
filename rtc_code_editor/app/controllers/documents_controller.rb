@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'base64'
 
 class DocumentsController < ApplicationController
   def create
@@ -16,21 +17,7 @@ class DocumentsController < ApplicationController
 
     if @document
       @collaborations = Collaboration.where(document_id: params[:id])
-
-      @collaborations.each do |col|
-        notification_data = {
-          recipient_id: col.editor_id,
-          notification_type: "deletion_notice",
-          details: { 
-            document_id: col.document_id, 
-            collaboration_id: col.id,
-            message: "#{@document.file_name} has been deleted."
-          }
-        }
-        @notification = Notification.create(notification_data);
-        ActionCable.server.broadcast("notifications_channel_#{col.editor_id}", { new_notification: @notification })
-      end
-
+      destroy_collaborations(@collaborations)
       @document.destroy
       render status: 200, json: { document_id: @document.id }
     else
