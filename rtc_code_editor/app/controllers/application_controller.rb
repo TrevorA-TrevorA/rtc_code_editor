@@ -18,6 +18,22 @@ class ApplicationController < ActionController::Base
     User.find_by(session_token: session[:session_token])
   end
 
+  def destroy_collaborations(collaborations)
+    collaborations.each do |col|
+      notification_data = {
+        recipient_id: col.editor_id,
+        notification_type: "deletion_notice",
+        details: { 
+          document_id: col.document_id, 
+          collaboration_id: col.id,
+          message: "#{Document.find(col.document_id).file_name} has been deleted."
+        }
+      }
+      notification = Notification.create(notification_data);
+      ActionCable.server.broadcast("notifications_channel_#{col.editor_id}", { new_notification: notification })
+    end
+  end
+
   private
 
   def confirm_logged_in

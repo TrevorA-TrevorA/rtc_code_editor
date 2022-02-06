@@ -109,6 +109,8 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find_by(id: params[:id])
     if @user
+      @collaborations = Collaboration.where(document_id: @user.documents.pluck(:id))
+      destroy_collaborations(@collaborations)
       @user.destroy
       render status: 200, json: {status: 200}
     else
