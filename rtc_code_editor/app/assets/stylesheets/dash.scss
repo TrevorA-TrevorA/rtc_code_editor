@@ -82,12 +82,12 @@
 #fileName {
   height: 85%;
   border-radius: 0;
-  color: #000000;
-  background-color: #FFFFFF;
+  color: #FFF;
+  background-color: rgb(32,32,32);
 }
 
 #fileName::placeholder {
-  color: rgba(0,0,0,0.7);
+  color: rgba(255,255,255,0.7);
   font-size: 13px;
   padding-left: 2%;
 }
