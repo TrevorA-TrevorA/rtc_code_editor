@@ -4,16 +4,6 @@
 
 
 
-[data-react-class="app"], [data-react-class="new_password"] {
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-}
-
 .login, .sign-up, .password-reset, .new-password {
   display: flex;
   justify-content: center;

@@ -5,6 +5,14 @@
   background-color: rgb(60,64,70);
 }
 
+.doc-row.editor {
+  background-color: rgba(255,255,255,0.5);
+  color:#000;
+  input[type="checkbox"] {
+    outline: 1px solid #000;
+  }
+}
+
 .revocation-notice {
   top: 0;
   right: 0;
@@ -94,7 +102,7 @@
   position: relative;
   align-items: center;
   min-height: 5vh;
-  color: #FFFFFF;
+  color: #FFF;
   font-size: 13px;
   border-bottom: 0.5208333333333333vw solid rgb(60,64,70);;
   background-color: rgb(32,32,32);

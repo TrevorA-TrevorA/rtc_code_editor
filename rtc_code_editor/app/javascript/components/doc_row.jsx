@@ -135,8 +135,13 @@ class DocRow extends React.Component {
   }
 
   render() {
+
+    const klass = this.props.accessStatus === "Editor" ?
+    "doc-row editor" :
+    "doc-row";
+    
     return(
-      <div className="doc-row" ref={this.ref}>
+      <div className={klass} ref={this.ref}>
         <input onChange={(e) => {
           const action = { doc: this.props.doc };
           action.type = e.target.checked ? SELECT : DESELECT;

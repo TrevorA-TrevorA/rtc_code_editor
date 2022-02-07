@@ -42,36 +42,31 @@ const DocList = props => {
   const docs = props.documents;
   const editables = props.editables;
 
-  if (docs.length > 1) {
-    docs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-  }
-
-  if (editables.length > 1) {
-    editables.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-  }
-
   const dateFormat = new Intl.DateTimeFormat("en-US", options)
+  const combinedDocs = docs.concat(editables);
+  combinedDocs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+  const combinedDocRows = combinedDocs.map((file) => {
+    const date = dateFormat
+    .format(new Date(file.updated_at))
+    .replaceAll(/\//g, "-")
+    return <DocRowContainer
+    key={uuid()}
+    doc={file}
+    name={file.file_name}
+    size={file.size}
+    accessStatus={ file.admin_id === props.user.id ? "Admin" : "Editor" }
+    resubscribe={resubscribe}
+    updated={date}
+    />
+  })
+
   const { user, dispatch } = props;
   return (
     <div id="docList">
       <DocListHeader docCount={docs.concat(editables).length}/>
       { props.newDoc ? <NewDocRow { ...{ user, dispatch } } /> : null }
       <div id="docListBody">
-      {[docs, editables].map(list => {
-        return list.map((file, _, arr) => {
-        const date = dateFormat
-        .format(new Date(file.updated_at))
-        .replaceAll(/\//g, "-")
-        return <DocRowContainer
-        key={uuid()}
-        doc={file}
-        name={file.file_name}
-        size={file.size}
-        accessStatus={ arr === docs ? "Admin" : "Editor" }
-        resubscribe={resubscribe}
-        updated={date}
-        />
-      })})}
+      {combinedDocRows}
       </div>
     </div>
   )
