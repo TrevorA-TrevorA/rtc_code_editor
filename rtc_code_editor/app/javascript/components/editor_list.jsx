@@ -4,7 +4,6 @@ import ListedEditor from './listed_editor';
 import { v4 as uuid } from 'uuid';
 
 const EditorList = props => {
-  console.log(props.isAdmin);
   const subscription = connectToEditors(props.document_id, props.receiveEditors, props.isAdmin)
   useEffect(() => {
     return () => {

@@ -128,7 +128,6 @@ class DocRow extends React.Component {
     const { content, file_name } = this.props.doc;
     const file = new File([content], file_name);
     const handle = await window.showSaveFilePicker({ suggestedName: file_name });
-    console.log("handle:", handle)
     const writable = await handle.createWritable();
     await writable.write(file);
     await writable.close();

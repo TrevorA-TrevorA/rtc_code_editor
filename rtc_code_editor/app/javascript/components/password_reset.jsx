@@ -15,7 +15,6 @@ const PasswordReset = () => {
     const email = state.email;
     const encoded = encode(window.btoa(email))
     const url = `/users/reset-password/${encoded}`
-    console.log(url);
     fetch(url).then(res => res.json())
     .then(json => {
       switch(json.status) {

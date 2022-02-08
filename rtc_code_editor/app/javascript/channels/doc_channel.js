@@ -13,7 +13,6 @@ import consumer from "./consumer"
 
       disconnected() {
         console.log("doc channel disconnected")
-        // Called when the subscription has been terminated by the server
       },
 
       received(data) {

@@ -32,7 +32,6 @@ const AvatarChange = props => {
         return res.json();
       }
     }).then(json => {
-      console.log(json);
       if (!json["avatar_url"]) {
         props.dispatch({ type: DELETE_AVATAR_URL })
       } else {

@@ -28,7 +28,6 @@ const newPasswordForm = props => {
       if (!res.ok) {
         throw new Error(res.statusText);
       } else {
-        console.log(res.status);
         setState({...state, processing: false, updateSuccessful: true })
       }
     }).catch(error => setState({...state, processing: false, errorText: error.message}))

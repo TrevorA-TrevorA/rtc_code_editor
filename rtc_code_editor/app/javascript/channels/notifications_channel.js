@@ -6,14 +6,9 @@ const connectToNotifications = (user, receiveNotifications) => {
       console.log("notifications channel connected")
     },
 
-    disconnected() {
-      // Called when the subscription has been terminated by the server
-    },
-
     received(data) {
       if (!receiveNotifications) return;
       receiveNotifications(data);
-      // Called when there's incoming data on the websocket for this channel
     }
   });
 }

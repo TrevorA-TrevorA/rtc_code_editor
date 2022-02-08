@@ -182,7 +182,6 @@ class Room extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log("componentDidUpdate")
     if (!this.state.authorized || this.state.revokeAccess || !this.props.user) return;
     this.mapRows();
     const lines = this.editorRef.current.editor.session.doc.$lines;
@@ -259,17 +258,10 @@ class Room extends React.Component {
   }
 
   locateLine(delta) {
-    console.log("locateLine", delta.senderId)
     const key = sha1(delta.currentLine);
     try {
       let subkey = delta.subkey;
       const localCount = this.docMap[key][subkey].length;
-      console.log("subkey:", subkey)
-      console.log("currentIndex:", delta.changeData.start.row)
-      console.log("selectedIndex:", this.docMap[key][subkey][delta.dupIndex])
-      console.log("Indices for this line:", this.docMap[key][subkey])
-      console.log("localCount:", localCount)
-      console.log("delta.dupCount:", delta.dupCount)
       if (localCount === delta.dupCount) {
         return this.docMap[key][subkey][delta.dupIndex];
       }
@@ -285,13 +277,11 @@ class Room extends React.Component {
       const diff = localCount - delta.dupCount;
       return this.docMap[key][subkey][delta.dupIndex + diff];
     } catch(err) {
-      console.log("currentLine:", delta.currentLine)
       return delta.changeData.start.row;
     }
   }
 
   ensureCorrectRow(newData) {
-    console.log("ensureCorrectRow called", Date.now(), newData)
     this.pending.push(newData);
     this.pending.sort((a,b) => a.time - b.time)
     if (this.processingDeltas) return;
@@ -306,7 +296,6 @@ class Room extends React.Component {
       this.senderIdQueue[0] === data.senderId;
 
       if (noDeltas || onlyCurrentSender) {
-        console.log("not adjusted", JSON.parse(JSON.stringify(data)))
         editorDoc.applyDelta(data.changeData);
         const { row, column } = this.userPositions[data.senderId];
         this.renderLocation(row, column, data.senderName, data.senderId);
@@ -330,14 +319,11 @@ class Room extends React.Component {
 
       let diff = 0;
       if (this.adjustmentNeeded(data)) {
-        console.log("adjusted:", JSON.parse(JSON.stringify(data)))
         const newRow = this.locateLine(data)
-        console.log("newRow:", newRow);
         diff = newRow - data.changeData.start.row;
         data.changeData.start.row = newRow;
         data.changeData.end.row = newRow + (data.changeData.lines.length - 1)
       }
-      console.log("AboutToApplyDelta:", data)
       editorDoc.applyDelta(data.changeData);
       const { row, column } = this.userPositions[data.senderId];
       this.renderLocation(row + diff, column, data.senderName, data.senderId);
@@ -440,7 +426,6 @@ class Room extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     const editor = this.editorRef.current.editor;
     if (!this.state.initialState) return;
     if (!this.state.authorized) return;
@@ -482,7 +467,6 @@ class Room extends React.Component {
   }
 
   mapRows = () => {
-    console.log(this.userActivity)
     this.docMap = {}
     for (let i = 0; i < this.userActivity.length; i++) {
       const entry = this.userActivity[i]
@@ -523,22 +507,18 @@ class Room extends React.Component {
 
     if (this.nameTagColors[data.senderId]) return;
     const colorIndex = Object.keys(this.nameTagColors).length % 5;
-    console.log(this.nameTagColorList[colorIndex]);
     this.nameTagColors[data.senderId] = this.nameTagColorList[colorIndex];
   }
 
   async connectDataChannel(data) {  
     if (!data.join && data.recipientId !== this.props.user.id) return;
-    console.log(data)
 
     const config = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
     if (!this.localPeers[data.senderId]) {
-      console.log("creating new peer")
       this.localPeers[data.senderId] = new RTCPeerConnection(config);
     }
     const connection = this.localPeers[data.senderId];
     connection.ondatachannel = e => {
-      console.log("ondatachannel event triggered")
       const dataChannel = e.channel;
       dataChannel.onmessage = message => {
         let data = JSON.parse(message.data);
@@ -547,12 +527,10 @@ class Room extends React.Component {
         this.receiveEdit(data);
       }
       dataChannel.onopen = () => {
-        console.log("open");
         this.backupConnection = !this.dataChannelsConnected()
       }
       dataChannel.onclose = () => {
         this.backupConnection = !this.dataChannelsConnected();
-        console.log("closing datachannel")
         delete this.localPeers[data.senderId]
         delete this.dataChannels[data.senderId]
       }
@@ -571,7 +549,6 @@ class Room extends React.Component {
     connection.onconnectionstatechange = () => {
       if (Object.values(this.localPeers).every(conn => conn.connectionState === 'connected')) {
         this.backupConnection = false;
-        console.log("peers connected")
       }  else  {
         this.backupConnection = true;
       }
@@ -591,12 +568,10 @@ class Room extends React.Component {
     if (data.join) {
       const dataChannel = connection.createDataChannel(this.docId);
       dataChannel.onopen = () => {
-        console.log("open");
        this.backupConnection = !this.dataChannelsConnected();
       }
       dataChannel.onclose = () => {
         this.backupConnection = !this.dataChannelsConnected();
-        console.log("closing data channel")
         delete this.localPeers[data.senderId]
         delete this.dataChannels[data.senderId]
       }
@@ -668,7 +643,6 @@ class Room extends React.Component {
   }
 
   syncState(data) {
-    console.log(data);
     if (data.senderId === this.props.user.id) return;
     this.assignColor(data);
     const { senderName, senderPosition, senderId, email, avatarUrl } = data;
@@ -710,7 +684,6 @@ class Room extends React.Component {
     const { user } = this.props;
 
     const pendingChanges = this.state.editorText !== this.state.savedState;
-    console.log(this.state.editorList);
     return (
     <div className="room">
       <NavContainer 

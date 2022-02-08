@@ -10,7 +10,6 @@ class CollabManager extends React.Component {
     this.documents = this.props.selected.length ? 
     this.props.selected :
     this.props.documents.concat(this.props.editables);
-    console.log(this.documents);
     this.searchUsers = this.searchUsers.bind(this)
     this.removeEditor = this.removeEditor.bind(this)
     this.receiveEditors = this.receiveEditors.bind(this)
@@ -59,7 +58,6 @@ class CollabManager extends React.Component {
   }
 
   receiveEditors(data) {
-    console.log(data);
     const { userSearchResults, editors } = this.state;
     if (data.new_editor) {
       const revised = userSearchResults.filter(user => user.id !== data.new_editor.id)

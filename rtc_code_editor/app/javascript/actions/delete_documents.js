@@ -18,7 +18,7 @@ const removeDocuments = () => (dispatch, getState) => {
       url = `api/users/${user.id}/collaborations/${doc.id}`;
       isAdmin = false;
     }
-    console.log(isAdmin);
+    
     fetch(url, { method: 'DELETE' })
     .then(res => {
       if (res.ok && isAdmin) {
