@@ -4,6 +4,7 @@ import worfDemo from 'videos/worf_view.mp4';
 import dataDemo from 'videos/data_view.mp4';
 
 const IntroDisplay = () => {
+
   return (<div className='intro-view'>
     <div className='video-block'>
       <video className="demo-vid" src={worfDemo} autoPlay loop muted/>

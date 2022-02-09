@@ -259,8 +259,10 @@ a {
   display: flex;
   justify-content: center;
   background: url("rtc_bg.png");
+  background-size: cover;
+  background-color: #000;
+  column-gap: 1vw;
   align-items: center;
-  column-gap: 2vw;
   top: 0;
   bottom: 0;
   right: 0;
@@ -319,6 +321,7 @@ a {
 .demo-vid {
   object-fit: cover;
   width: 100%;
+  opacity: 0.6;
 }
 
 .confirmation-box {
