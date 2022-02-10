@@ -170,7 +170,7 @@ const supportedModes = {
 };
 
 const modeData = []
-let acceptString;
+let acceptString = "";
 for (let [k, v] of Object.entries(supportedModes)) {
   for (let i = 0; i < v.length;i++) {
     const exts = v[i].split("|")
@@ -188,8 +188,14 @@ for (let [k, v] of Object.entries(supportedModes)) {
   }
 }
 
-const compoundExtensions = [/asl\.json$/, /blade\.php$/, /html\.eex$/, /html\.erb$/]
-
+const compoundExtensions = [/asl\.json$/, /blade\.php$/, /html\.eex$/, /html\.erb$/,]
 acceptString = acceptString.slice(0, -2)
+
+export const permitted = (fileName) => {
+  if (compoundExtensions.some(ext => ext.test(fileName))) return true;
+  if (acceptString.includes(fileName.split(".").pop())) return true;
+  return false;
+}
+
 export { acceptString, compoundExtensions }
 export const modeMap = new Map(modeData)

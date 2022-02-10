@@ -4,6 +4,8 @@ import DocListContainer from '../containers/doc_list_container'
 import NavContainer from '../containers/nav_container';
 import { Redirect } from 'react-router-dom';
 import CollabManagerContainer from '../containers/collab_manager_container';
+import { permitted } from '../language_modes';
+
 let openNewDocForm;
 let closeNewDocForm;
 
@@ -21,7 +23,6 @@ class Dash extends React.Component {
   }
 
   toggleManager() {
-    // if (!this.props.selected.length) return;
     const current = this.state.managerOpen;
     this.setState({ managerOpen: !current })
   }
@@ -65,7 +66,21 @@ class Dash extends React.Component {
     className="dash"
     >
       <NavContainer/>
-      <div className="gray-area">
+      <div 
+        onDragOver={e => e.preventDefault()} 
+        onDrop={e => {
+          e.preventDefault();
+          const permittedFiles = [];
+          for (let i = 0; i < e.dataTransfer.files.length; i++) {
+            const file = e.dataTransfer.files.item(i)
+            if (permitted(file.name)) {
+              permittedFiles.push(file)
+            }
+          }
+          this.props.uploadDocuments(permittedFiles);
+        }} 
+        className="gray-area"
+        >
       <DashButtonRow callback={this.toggleManager.bind(this)}/>
       <DocListContainer newDoc={this.state.newDoc}/>
       { this.state.managerOpen ? <CollabManagerContainer callback={this.toggleManager.bind(this)}/> : null }
