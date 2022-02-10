@@ -10,10 +10,11 @@ class ChatBox extends React.Component {
 
     const callbacks = [
       this.receiveChat.bind(this), 
-      this.getHeaderMessage.bind(this)
+      this.getHeaderMessage.bind(this),
+      this.sendChatLog.bind(this)
     ]
     
-    this.subscription = connectToChat(...callbacks, this.props.docId);
+    this.subscription = connectToChat(...callbacks, this.props.docId, this.props.user.id);
     this.sendChat = this.sendChat.bind(this);
     this.state = { chatLog: [], headerMessage: "", headerMessageTime: null }
     window.subscription = this.subscription
@@ -23,6 +24,13 @@ class ChatBox extends React.Component {
     this.setState({
       chatLog: chats
     })
+  }
+
+  sendChatLog(data, chatLog) {
+    if (data.senderId === this.props.user.id) return;
+    const chat = { recipient: data.senderId, chatLog }
+    console.log(chat);
+    this.subscription.send(chat);
   }
 
   getHeaderMessage(data) {
@@ -57,16 +65,6 @@ class ChatBox extends React.Component {
 
   componentWillUnmount() {
     this.subscription.unsubscribe();
-  }
-
-  sendArrivalNotice() {
-    const arrivalNotice = { 
-      senderId: this.props.user.id,
-      headerMessage: this.props.user.username + " has arrived.",
-      arrival: true
-    }
-
-    this.subscription.send(arrivalNotice);
   }
 
   sendExitNotice() {

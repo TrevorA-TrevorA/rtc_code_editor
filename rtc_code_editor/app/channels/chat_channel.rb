@@ -6,6 +6,7 @@ class ChatChannel < ApplicationCable::Channel
     arrival_message = { senderId: @user.id }
     message = "#{@user.username} has arrived."
     arrival_message[:headerMessage] = message;
+    arrival_message[:arrival] = true;
     ActionCable.server.broadcast("chat_channel_#{params[:document_id]}", arrival_message)
   end
 
