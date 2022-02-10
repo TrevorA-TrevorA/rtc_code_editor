@@ -60,6 +60,7 @@
 
 .doc-room { 
   display: flex;
+  flex-direction: row;
   column-gap: .5vw;
   background-color: transparent;
 }

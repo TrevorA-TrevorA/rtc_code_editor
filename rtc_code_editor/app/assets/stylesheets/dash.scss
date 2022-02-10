@@ -34,8 +34,11 @@
   right: 0;
   left: 0;
   bottom: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10vh;
   position: absolute;
-  padding: 3.854166666666667vw 3.125vw 3.229166666666667vw;
+  padding: 5vh 3.125vw 4vh;
   margin: 10vh 3.229166666666667vw 5vh;
   background-color: transparent;
   overflow: auto;
@@ -58,24 +61,39 @@
   font-size: 25px;
 }
 
+.drop-files-text {
+  position: absolute;
+  align-self: center;
+  text-shadow: 0 0 15px #000;
+  color: rgb(60,64,70);
+  font-size: 8vw;
+  top: 40%;
+  margin: 0;
+}
 
 #docList {
   display: flex;
+  position: relative;
   flex-direction: column;
-  max-height: 25.208333333333332vw;
-  margin-top: 6.354166666666666vw;
+  flex: 1 1 auto;
   overflow: hidden;
 }
 
+#doc-list-header {
+  margin-bottom: 0.75vh;
+}
+
 #docListBody {
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
   overflow: auto;
-  flex-grow: 1
+  row-gap: 0.75vh;
 }
 
 .dash-button-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 4vw;
   column-gap: 1.0416666666666665vw;
 }
 
@@ -104,7 +122,7 @@
   min-height: 5vh;
   color: #FFF;
   font-size: 13px;
-  border-bottom: 0.5208333333333333vw solid rgb(60,64,70);;
+  opacity: 0.8;
   background-color: rgb(32,32,32);
   button { 
     background-color: transparent;
@@ -216,6 +234,12 @@
   padding: 5px 2px;
   background-color: rgba(255,255,255,0.2);
   box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+}
+
+.drop-space {
+  flex: 1 1 auto;
+  box-shadow: 0 0 10px 5px rgba(0,0,0,.3) inset;
+  overflow: hidden;
 }
 
 .doc-selector {

@@ -5,7 +5,7 @@ import NewDocRow from './new_doc_row';
 
 const DocListHeader = props => {
   return (
-    <div className="doc-row">
+    <div id="doc-list-header" className="doc-row">
       <input onClick={
         (e) => {
           $("input[type='checkbox']").each((i, c) => {
@@ -63,10 +63,13 @@ const DocList = props => {
   const { user, dispatch } = props;
   return (
     <div id="docList">
+       <p className='drop-files-text'>DROP FILES HERE</p>
       <DocListHeader docCount={docs.concat(editables).length}/>
       { props.newDoc ? <NewDocRow { ...{ user, dispatch } } /> : null }
       <div id="docListBody">
       {combinedDocRows}
+      </div>
+      <div className='drop-space'>
       </div>
     </div>
   )
