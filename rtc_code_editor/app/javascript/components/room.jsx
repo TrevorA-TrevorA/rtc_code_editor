@@ -98,8 +98,7 @@ class Room extends React.Component {
       senderName: this.props.user.username,
       senderId: this.props.user.id,
       changeData: event,
-      currentLine,
-      currentContent: content,
+      currentLine
     }
     
     this.sendUpdate(delta);
