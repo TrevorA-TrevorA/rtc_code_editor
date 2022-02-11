@@ -51,7 +51,7 @@ const NewDocRow = props => {
   
   
   return (
-    <div className='doc-row'>
+    <div id="new-doc-row" className='doc-row'>
       <div className='file-name'>
         <input id="fileName" type='text' placeholder='enter file name'/>
         <button onClick={createNewDoc}>

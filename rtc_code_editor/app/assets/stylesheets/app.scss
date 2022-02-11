@@ -155,9 +155,9 @@ a {
   position: fixed;
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
+  border-radius: 5px;
   align-items: center;
-  padding: 5%;
+  padding: 1% 0;
   row-gap: 15px;
   top: 20%;
   left: 30%;
@@ -174,6 +174,8 @@ a {
   color: #000000;
   border: none;
   box-shadow: 0 2px 5px 1px rgba(64,60,67,.3);
+  width: 80%;
+  height: 20%;
 }
 
 .notifications-modal {

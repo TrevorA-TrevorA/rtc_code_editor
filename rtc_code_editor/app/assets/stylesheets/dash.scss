@@ -86,9 +86,12 @@
 #docListBody {
   display: flex;
   flex-direction: column;
-  z-index: 2;
   overflow: auto;
   row-gap: 0.75vh;
+}
+
+#new-doc-row {
+  margin-bottom: 0.75vh;
 }
 
 .dash-button-row {
@@ -259,8 +262,8 @@
 }
 
 .avatar.doc-status {
-  height: 2vw;
-  width: 2vw;
+  height: 3.5vh;
+  width: 3.5vh;
 }
 
 .editor-search-bar:focus {
@@ -297,7 +300,7 @@
 .doc-row-rightmost {
   display: flex;
   justify-content: flex-end;
-  align-items: stretch;
+  align-items: center;
   column-gap: .5vw;
   max-width: 13vw;
   position: absolute;

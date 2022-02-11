@@ -33,14 +33,13 @@ class Room extends React.Component {
     const defaultState = this.doc.content
     const fileName = this.doc.file_name;
     const mode = this.getEditorMode(fileName);
-    const { avatar_url, username, email, id } = this.props.user;
 
     this.state = { 
       editorText: defaultState,
       editorMode: mode,
       initialState: true,
       docTitle: fileName,
-      editorList: [{ avatar_url, username, email, id }],
+      editorList: [],
       savedState: defaultState,
       authorized: true,
       revokeAccess: false
@@ -486,14 +485,15 @@ class Room extends React.Component {
 
   sendState(data) {
     if (data.sender_id === this.props.user.id) return;
-    const { username, email, id, avatar_url } = this.props.user;
+    const { username, email, id } = this.props.user;
+    const { avatarUrl } = this.props;
     this.docSubscription.send({
       senderId: id,
       currentState: this.state,
       userActivity: this.userActivity,
       senderPosition: this.userPositions[this.props.user.id],
       senderName: username,
-      avatarUrl: avatar_url,
+      avatarUrl,
       email
     })
   }
@@ -648,10 +648,12 @@ class Room extends React.Component {
     const { senderName, senderPosition, senderId, email, avatarUrl } = data;
     const { row, column } = senderPosition;
     this.userPositions[senderId] = { ...senderPosition, name: senderName };
-    const { editorMode,
+    const { 
+        editorMode,
         editorText, 
         docTitle, 
-        savedState } = data.currentState;
+        savedState 
+      } = data.currentState;
     
     const editor = { username: senderName, avatar_url: avatarUrl, email, id: senderId }
     const alreadyPresent = this.state.editorList.some(ed => ed.id === senderId);
@@ -682,6 +684,10 @@ class Room extends React.Component {
     }
 
     const { user } = this.props;
+    const { username, email, id } = user;
+    const { avatarUrl } = this.props;
+
+    const currentUserData = { avatar_url: avatarUrl, username, email, id }
 
     const pendingChanges = this.state.editorText !== this.state.savedState;
     return (
@@ -697,7 +703,7 @@ class Room extends React.Component {
         <div className="gray-area doc-room">
         <div className="doc-editor">
         <DocHeader 
-          editors={this.state.editorList} 
+          editors={[...this.state.editorList, currentUserData]} 
           docTitle={this.state.docTitle}
         />
         <AceEditor
