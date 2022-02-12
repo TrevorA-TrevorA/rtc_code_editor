@@ -61,7 +61,7 @@
 .doc-room { 
   display: flex;
   flex-direction: row;
-  column-gap: .5vw;
+  column-gap: .1vw;
   background-color: transparent;
 }
 
@@ -176,6 +176,13 @@
 
 .ace_gutter-layer {
   background-color: rgb(30,30,30);
+}
+
+.doc-chat-container {
+  display: flex;
+  column-gap: .1vw;
+  box-shadow: 0 0 20px 5px rgba(0,0,0,0.3);
+  width: 100%
 }
 
 .doc-editor {

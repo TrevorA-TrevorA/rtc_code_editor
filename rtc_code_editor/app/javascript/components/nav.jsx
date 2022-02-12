@@ -63,7 +63,11 @@ class Nav extends React.Component {
         null
          }
         <NotificationsContainer/>
-        <Link to="/dash">Home</Link>
+        {
+          this.props.inRoom ?
+          <Link to="/dash">Home</Link> :
+          null
+          }
         <Link to="/" onClick={this.logout}>Logout</Link>
         <Settings/>
       </div>

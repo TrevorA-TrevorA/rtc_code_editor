@@ -700,6 +700,7 @@ class Room extends React.Component {
         this.state.revokeAccess ?
         <RevocationNotice fileName={this.state.docTitle}/> :
         <div className="gray-area doc-room">
+        <div className='doc-chat-container'>
         <div className="doc-editor">
         <DocHeader 
           editors={[...this.state.editorList, currentUserData]} 
@@ -724,6 +725,7 @@ class Room extends React.Component {
         />
       </div>
       <ChatBox docId={this.docId} user={user}/>
+      </div>
       </div>
       }
     </div>
