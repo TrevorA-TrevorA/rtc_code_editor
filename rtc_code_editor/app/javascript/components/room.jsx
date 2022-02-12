@@ -14,6 +14,7 @@ import { UPDATE_EDITABLE } from '../reducers/collab_reducer';
 import { v4 as uuid } from 'uuid';
 import { sha1 } from 'object-hash';
 import { compoundExtensions, modeMap } from "../language_modes";
+import connectToChat from '../channels/chat_channel';
 
 class Room extends React.Component {
   constructor(props) {
@@ -34,6 +35,12 @@ class Room extends React.Component {
     const fileName = this.doc.file_name;
     const mode = this.getEditorMode(fileName);
 
+    const chatCallbacks = [
+      this.receiveChat.bind(this), 
+      this.getHeaderMessage.bind(this),
+      this.sendChatLog.bind(this)
+    ]
+
     this.state = { 
       editorText: defaultState,
       editorMode: mode,
@@ -42,13 +49,20 @@ class Room extends React.Component {
       editorList: [],
       savedState: defaultState,
       authorized: true,
-      revokeAccess: false
+      revokeAccess: false,
+      chat: true,
+      unreadChats: 0,
+      chatLog: [],
+      headerMessage: "",
+      headerMessageTime: null
     }
 
     this.receiveEdit = this.receiveEdit.bind(this);
     this.broadcastEdit = this.broadcastEdit.bind(this);
     this.saveOnCtrlS = this.saveOnCtrlS.bind(this);
     this.renderLocation = this.renderLocation.bind(this);
+    this.toggleChat = this.toggleChat.bind(this);
+    this.updateChatLog = this.updateChatLog.bind(this);
     this.editorRef = React.createRef();
     this.broadcastChange = true;
     this.pending = [];
@@ -67,8 +81,34 @@ class Room extends React.Component {
     this.userActivity = []
     this.userPositions = {}
     this.nameTagColors = {};
+    this.chatSubscription = connectToChat(...chatCallbacks, this.docId, this.props.user.id)
     this.nameTagColorList = ['#FF0000', '#0096FF', '#19AD49', '#FF00FF', '#FFA500'];
     window.room = this;
+  }
+
+  receiveChat(chats) {
+    if (!this.state.chat) {
+      this.setState({
+        chatLog: chats,
+        unreadChats: this.state.unreadChats + 1
+      })
+    } else {
+      this.setState({
+        chatLog: chats
+      })
+    }
+  }
+
+  sendChatLog(data, chatLog) {
+    if (data.senderId === this.props.user.id) return;
+    const chat = { recipient: data.senderId, chatLog }
+    this.chatSubscription.send(chat);
+  }
+
+  getHeaderMessage(data) {
+    if (data.senderId === this.props.user.id) return;
+
+    this.setState({ headerMessage: data.headerMessage, headerMessageTime: Date.now() });
   }
 
   broadcastEdit(content, event) {
@@ -117,6 +157,10 @@ class Room extends React.Component {
       this.lastLineCountChange[this.props.user.id] = { time: delta.time, index: event.start.row }
     }
     this.setState({editorText: content});
+  }
+
+  updateChatLog(log) {
+    this.setState({chatLog: log})
   }
 
   updateCursorPos(pos) {
@@ -184,11 +228,13 @@ class Room extends React.Component {
     this.mapRows();
     const lines = this.editorRef.current.editor.session.doc.$lines;
     this.lines = JSON.parse(JSON.stringify(lines));
+    this.chatSubscription.boxOpen = this.state.chat;
   }
 
   componentWillUnmount() {
     if (this.docSubscription) {
       this.docSubscription.unsubscribe();
+      this.chatSubscription.unsubscribe();
       Object.values(this.dataChannels).forEach(channel => channel.close())
       Object.values(this.localPeers).forEach(peer => peer.close())
     }
@@ -671,6 +717,11 @@ class Room extends React.Component {
       this.renderLocation(row, column, senderName, senderId);
     })
   }
+
+  toggleChat() {
+    const chatState = this.state.chat;
+    this.setState({ chat: !chatState, unreadChats: 0 });
+  }
   
   render() {
     if (!this.props.user) {
@@ -682,17 +733,30 @@ class Room extends React.Component {
       return <Redirect to="/dash"/>
     }
 
-    const { user } = this.props;
+    const { user, avatarUrl } = this.props;
     const { username, email, id } = user;
-    const { avatarUrl } = this.props;
 
     const currentUserData = { avatar_url: avatarUrl, username, email, id }
+    const { chatLog, headerMessage, headerMessageTime } = this.state;
+    const chatProps =  { 
+      chatLog,
+      headerMessage, 
+      headerMessageTime,
+      user,
+      send: this.chatSubscription.send.bind(this.chatSubscription),
+      toggle: this.toggleChat,
+    };
 
     const pendingChanges = this.state.editorText !== this.state.savedState;
     return (
     <div className="room">
-      <NavContainer 
-      saveText={this.saveText.bind(this)} 
+      <NavContainer
+      updateChatLog={this.updateChatLog}
+      docId={this.docId}
+      chat={this.state.chat}
+      chatToggle={this.toggleChat}
+      saveText={this.saveText.bind(this)}
+      unreadChats={this.state.unreadChats}
       inRoom={true}
       pendingChanges={pendingChanges}
       />
@@ -724,7 +788,11 @@ class Room extends React.Component {
         value={this.state.editorText}
         />
       </div>
-      <ChatBox docId={this.docId} user={user}/>
+      {
+        this.state.chat ?
+        <ChatBox {...chatProps}/> :
+        null
+      }
       </div>
       </div>
       }

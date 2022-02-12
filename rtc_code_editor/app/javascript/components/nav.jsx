@@ -5,6 +5,7 @@ import { GravatarUrl } from '../context/gravatar_url';
 import NotificationsContainer from '../containers/notifications_container';
 import AvatarChangeContainer from '../containers/avatar_change_container';
 import Settings from './settings';
+import ChatToggle from './chat_toggle';
 
 class Nav extends React.Component {
   static contextType = GravatarUrl;
@@ -62,6 +63,16 @@ class Nav extends React.Component {
         </button> :
         null
          }
+        {
+          !this.props.chat && this.props.inRoom ?
+          <ChatToggle 
+            docId={this.props.docId} 
+            toggle={this.props.chatToggle}
+            unreadChats={this.props.unreadChats}
+            updateChatLog={this.props.updateChatLog}
+          /> :
+          null
+        }
         <NotificationsContainer/>
         {
           this.props.inRoom ?

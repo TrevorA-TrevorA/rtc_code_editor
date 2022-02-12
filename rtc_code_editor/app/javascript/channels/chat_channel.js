@@ -10,18 +10,26 @@ import consumer from "./consumer"
        
     return consumer.subscriptions.create({channel: "ChatChannel", document_id: docId}, {
       chatLog: [],
+      boxOpen: true,
 
       connected() {
         console.log("chat channel connected...")
       },
 
       received(data) {
+        if (data.message) {
+          this.chatLog.push(data);
+          getChat(this.chatLog);
+          return;
+        }
+
         if (data.arrival) {
           getHeaderMessage(data);
           sendChatLog(data, this.chatLog);
         }
         
         if (data.headerMessage) {
+          if (!this.boxOpen) return;
           getHeaderMessage(data);
           return;
         }
@@ -34,9 +42,6 @@ import consumer from "./consumer"
           
           return;
         }
-
-        this.chatLog.push(data);
-        getChat(this.chatLog);
       }
     });
   }

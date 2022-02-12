@@ -24,7 +24,7 @@
   height: 2.5vh;
 }
 
-.save-button {
+.save-button, .chat-toggle-button {
   background-color: rgb(37,37,38);
   color: #FFF;
   font-size: 14px;
@@ -356,7 +356,7 @@ a {
   height: 1.25vw;
   width: 1.25vw;
   font-size: 50%;
-  top:0;
+  top: -1.5vh;
   right: -0.5vw;
   background-color: #FF0000;
   color: #FFFFFF;

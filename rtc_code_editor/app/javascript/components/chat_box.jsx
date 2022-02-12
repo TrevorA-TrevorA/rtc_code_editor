@@ -7,36 +7,8 @@ import { Redirect } from 'react-router';
 class ChatBox extends React.Component {
   constructor(props) {
     super(props);
-
-    const callbacks = [
-      this.receiveChat.bind(this), 
-      this.getHeaderMessage.bind(this),
-      this.sendChatLog.bind(this)
-    ]
-    
-    this.subscription = connectToChat(...callbacks, this.props.docId, this.props.user.id);
     this.sendChat = this.sendChat.bind(this);
-    this.state = { chatLog: [], headerMessage: "", headerMessageTime: null }
-    window.subscription = this.subscription
-  }
-
-  receiveChat(chats) {
-    this.setState({
-      chatLog: chats
-    })
-  }
-
-  sendChatLog(data, chatLog) {
-    if (data.senderId === this.props.user.id) return;
-    const chat = { recipient: data.senderId, chatLog }
-    console.log(chat);
-    this.subscription.send(chat);
-  }
-
-  getHeaderMessage(data) {
-    if (data.senderId === this.props.user.id) return;
-
-    this.setState({ headerMessage: data.headerMessage, headerMessageTime: Date.now() });
+    window.ChatBox = this;
   }
 
   componentDidMount() {
@@ -63,27 +35,13 @@ class ChatBox extends React.Component {
     chatInput.addEventListener("keyup", shiftUp);
   }
 
-  componentWillUnmount() {
-    this.subscription.unsubscribe();
-  }
-
-  sendExitNotice() {
-    const exitNotice = { 
-      senderId: this.props.user.id, 
-      headerMessage: this.props.user.username + " has exited.",
-      exit: true
-    }
-
-    this.subscription.send(exitNotice);
-  }
-
   sendChat(e) {
     const message = e.currentTarget.value;
     if (!message) return;
     const options = { month: "numeric", day: "numeric", year: "numeric" }
     const time = new Date().toLocaleTimeString('en-US', options)
 
-    this.subscription.send({ user: this.props.user, message, time })
+    this.props.send({ user: this.props.user, message, time })
     e.currentTarget.value = "";
   }
 
@@ -95,11 +53,12 @@ class ChatBox extends React.Component {
     return (
       <div id="chatBox">
         <ChatBoxHeader 
-        headerMessage={this.state.headerMessage}
-        headerMessageTime={this.state.headerMessageTime}
+        headerMessage={this.props.headerMessage}
+        headerMessageTime={this.props.headerMessageTime}
         />
-        <ChatBody uid={this.props.user.id} chatLog={this.state.chatLog}/>
+        <ChatBody uid={this.props.user.id} chatLog={this.props.chatLog}/>
         <textarea id="chatInput" placeholder="Say something."></textarea>
+        <div onClick={this.props.toggle} className='minimize-chat'>x</div>
       </div>
     )
   }
