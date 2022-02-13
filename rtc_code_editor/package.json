@@ -24,7 +24,7 @@
     "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
     "turbolinks": "^5.2.0",
-    "url-regex": "^5.0.0",
+    "url-regex-safe": "^3.0.0",
     "urlsafe-base64": "^1.0.0",
     "uuid": "^8.3.2",
     "webpack": "^4.46.0",

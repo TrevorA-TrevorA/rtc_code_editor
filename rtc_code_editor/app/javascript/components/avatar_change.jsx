@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UPDATE_AVATAR_URL, DELETE_AVATAR_URL } from '../reducers/root_reducer';
-import * as urlRegex from 'url-regex';
+import * as urlRegex from 'url-regex-safe';
 
 const AvatarChange = props => {
   const [error, setError] = useState("");
