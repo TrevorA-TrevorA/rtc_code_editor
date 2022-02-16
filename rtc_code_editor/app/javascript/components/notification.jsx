@@ -32,8 +32,6 @@ const Notification = props => {
     button.css({ opacity: 0 });
   }
 
-  const modalClass = props.modal ? " modal" : ""
-
   switch(notification_type) {
     case "collaboration_request":
       return <CollabRequestContainer {...props}/>;

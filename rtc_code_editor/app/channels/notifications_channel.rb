@@ -1,9 +1,6 @@
 class NotificationsChannel < ApplicationCable::Channel
   def subscribed
-    @notifications = Notification.where(recipient_id: params[:id])
     stream_from "notifications_channel_#{params[:id]}"
-    puts "Notifications Channel object ID: #{self.object_id}"
-    ActionCable.server.broadcast("notifications_channel_#{params[:id]}", { notifications: @notifications })
   end
 
   def receive(data)

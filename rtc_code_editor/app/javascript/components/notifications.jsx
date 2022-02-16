@@ -5,12 +5,12 @@ import NotificationsList from './notifications_list';
 import NotificationsModal from './notifications_modal';
 import { NotificationUtilities } from '../context/notification_utilities';
 import { REMOVE_COLLABORATION  } from '../reducers/collab_reducer';
+import { CLEAR_NOTIFICATIONS, SET_NOTIFICATIONS  } from '../reducers/notification_reducer';
 
 class Notifications extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      notifications: [],
       viewing: false,
       modalOpen: false
     }
@@ -21,7 +21,6 @@ class Notifications extends React.Component {
     this.closeNotifications = this.closeNotifications.bind(this);
     this.markAllAsRead = this.markAllAsRead.bind(this);
     this.removeNotification = this.removeNotification.bind(this);
-    this.subscription = connectToNotifications(this.props.user, this.receiveNotifications.bind(this));
     this.delist = this.delist.bind(this);
     this.utilities = {
       sendNotification: this.sendNotification.bind(this),
@@ -36,16 +35,26 @@ class Notifications extends React.Component {
     window.notificationsComponent = this;
   }
 
+  componentDidMount() {
+    this.subscription = connectToNotifications(this.props.user, this.receiveNotifications.bind(this));
+  }
+
+  componentDidUpdate() {
+    if (!this.props.notifications.length && this.state.viewing) {
+      this.setState({viewing: false});
+    }
+  }
+
   componentWillUnmount() {
     this.subscription.unsubscribe();
   }
 
   totalNotifications() {
-    return this.state.notifications.length;
+    return this.props.notifications.length;
   }
 
   totalUnread() {
-    return this.state.notifications.filter(notif => !notif.read).length;
+    return this.props.notifications.filter(notif => !notif.read).length;
   }
 
   clearAll() {
@@ -57,10 +66,7 @@ class Notifications extends React.Component {
         return;
       }
       
-      this.setState({
-        notifications: [],
-        viewing: false
-      })
+      this.props.dispatch({type: CLEAR_NOTIFICATIONS})
   }).catch(error => console.log(error))
   }
 
@@ -81,18 +87,18 @@ class Notifications extends React.Component {
 
   delist(data) {
     const notifId = data.rescind ? data.rescind.id : data.id;
-    const notifications = this.state.notifications;
+    const notifications = this.props.notifications;
     let notif = notifications.find(notif => notif.id === notifId);
     if (notif) {
       notifications.splice(notifications.indexOf(notif), 1)
-      this.setState({ notifications: notifications })
+      this.props.dispatch({ type: SET_NOTIFICATIONS, notifications });
     } 
 
     if (!notifications.length) this.closeNotifications();
   }
 
   receiveNotifications(data) {
-    
+    console.log(data);
     if (data.rescind) {
       this.delist(data);
       return;
@@ -116,21 +122,12 @@ class Notifications extends React.Component {
           collaborationId: collaboration_id 
         })
       }
-      const { notifications } = this.state;
+
+      const  notifications  = this.props.notifications
       notifications.unshift(data.new_notification)
-      this.setState({ notifications: notifications })
+      this.props.dispatch({ type: SET_NOTIFICATIONS, notifications: [...notifications] })
       return;
     }
-
-    const { notifications } = data;
-
-    if (!notifications) return;
-
-    notifications.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-
-    this.setState({
-      notifications: notifications
-    })
   }
 
   markAllAsRead() {
@@ -152,7 +149,7 @@ class Notifications extends React.Component {
       }
     }).then(json => {
       json.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-      setTimeout(() => this.setState({ notifications: json }), 1500);
+      setTimeout(() => this.props.dispatch({ type: SET_NOTIFICATIONS, notifications: json }), 1500);
     })
     .catch(error => console.log(error));
   }
@@ -160,13 +157,13 @@ class Notifications extends React.Component {
   viewNotifications() {
     if (!this.totalNotifications()) return;
     this.setState({ viewing: true })
-    if (this.state.notifications.some(notif => !notif.read)) {
+    if (this.props.notifications.some(notif => !notif.read)) {
       this.markAllAsRead();
     }
   }
 
   closeListIfEmpty() {
-    if (!this.state.notifications.length) {
+    if (!this.props.notifications.length) {
       this.closeNotifications();
     }
   }
@@ -191,6 +188,7 @@ class Notifications extends React.Component {
     this.subscription.send(n)
   }
 
+
   render() {
     const unreadCount = this.totalUnread();
     const callback = this.state.viewing ? this.closeNotifications : this.viewNotifications
@@ -207,13 +205,13 @@ class Notifications extends React.Component {
         { 
           this.state.viewing ? 
           <NotificationsList 
-          notifications={this.state.notifications}
+          notifications={this.props.notifications}
           /> :
           null 
         }
         {
-          this.state.modalOpen && this.state.notifications.length ? 
-          <NotificationsModal notifications={this.state.notifications}/> : 
+          this.state.modalOpen && this.props.notifications.length ? 
+          <NotificationsModal notifications={this.props.notifications}/> : 
           null
         }
       </div>

@@ -76,7 +76,10 @@ class Nav extends React.Component {
         <NotificationsContainer/>
         {
           this.props.inRoom ?
-          <Link to="/dash">Home</Link> :
+          <Link to={{
+            pathname: "/dash",
+            state: { resubscribe: true }
+          }}>Home</Link> :
           null
           }
         <Link to="/" onClick={this.logout}>Logout</Link>

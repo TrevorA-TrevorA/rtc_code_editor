@@ -10,13 +10,15 @@ export const authReducer = (_, action) => {
       const collaborations = user.collaborations;
       const selected = [];
       const avatarUrl = action.user.avatar_url;
+      const notifications = user.notifications;
       return { 
         user, 
         documents, 
         editables, 
         collaborations, 
         selected, 
-        avatarUrl 
+        avatarUrl,
+        notifications
       };
     case LOGOUT: 
       return { 
@@ -24,7 +26,8 @@ export const authReducer = (_, action) => {
         documents: [], 
         editables: [], 
         selected: [], 
-        collaborations: [] 
+        collaborations: [],
+        notifications: []
       }
     default:
       return user;

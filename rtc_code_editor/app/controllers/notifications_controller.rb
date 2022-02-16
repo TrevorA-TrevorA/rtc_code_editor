@@ -8,20 +8,31 @@ class NotificationsController < ApplicationController
       render json: { status: 400 }
     end
   end
-  
+
+  def index
+    @notifications = Notification.where(recipient_id: params[:user_id])
+    render json: @notifications
+  end
   
   def destroy
     @notification = Notification.find(params[:id])
 
-    if @notification
-      @notification.destroy
-    else
+    if !@notification
       render json: { status: 404 }
+    else
+      @notification.destroy
     end
   end
 
   def destroy_all
     @notifications = Notification.where(recipient_id: params[:user_id]);
+
+    @notifications
+    .where(notification_type: "collaboration_request")
+    .each do |coll_req|
+      destroy_unreferenced_collab(coll_req)
+    end
+
     @notifications.destroy_all;
   end
   
@@ -39,4 +50,12 @@ class NotificationsController < ApplicationController
       render status: 400, json: { status: 400 }
      end
   end
+end
+
+private
+
+def destroy_unreferenced_collab(notification)
+  return if notification.notification_type != "collaboration_request"
+  collab = Collaboration.find(notification.details["collaboration_id"])
+  collab.destroy unless collab.accepted
 end

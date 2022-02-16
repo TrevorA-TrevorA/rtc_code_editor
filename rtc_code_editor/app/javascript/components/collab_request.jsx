@@ -55,10 +55,8 @@ class CollabRequest extends React.Component {
       if (!res.ok) {
         throw new Error(res.statusText);
       } else {
-        return res.json();
+        this.setState({ answer: "decline" });
       }
-    }).then(json => {
-      this.setState({ answer: "decline" });
     })
     .catch(error => console.log(error))
   }

@@ -31,7 +31,6 @@ class Login extends React.Component {
       if (!response.ok) throw new Error("log in failed")
       const user = await response.json();
       this.props.dispatch({ type: LOGIN, user: user})
-      
     } catch(error) {
       console.log(error);
       this.setState({errorMessage: "Your username or password is invalid."})
