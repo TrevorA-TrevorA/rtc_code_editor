@@ -78,6 +78,10 @@
   text-align: center;
 }
 
+.chat-header-text {
+  opacity: 0;
+}
+
 #chatInput:focus {
   outline: none;
 }
