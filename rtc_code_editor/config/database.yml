@@ -81,6 +81,6 @@ test:
 #
 production:
   <<: *default
-  database: code_room_production
-  username: code_room
-  password: <%= ENV['CODE_ROOM_DATABASE_PASSWORD'] %>
+  database: ENV['DATABASE']
+  username: ENV['DATABASE_USERNAME']
+  password: <%= ENV['DATABASE_PASSWORD'] %>
