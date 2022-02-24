@@ -1,4 +1,5 @@
 import { UPLOAD } from '../reducers/doc_reducer'
+import { SET_ERROR } from '../reducers/root_reducer';
 
 const uploadDocuments = docs => (dispatch, getState) => {
   const url = `api/users/${getState().user.id}/documents`;
@@ -18,10 +19,10 @@ const uploadDocuments = docs => (dispatch, getState) => {
         try {
           const res = await fetch(url, options)
           const json = await res.json()
-          if (!res.ok) throw new Error(res.statusText);
+          if (!res.ok) throw new Error(json.error);
           dispatch({ type: UPLOAD, doc: json });
-        } catch(err) {
-          console.log(err);
+        } catch(error) {
+          dispatch({type:SET_ERROR, error:error.message})
         }
       }
       reader.readAsText(doc)

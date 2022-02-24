@@ -15,6 +15,9 @@ import { v4 as uuid } from 'uuid';
 import { sha1 } from 'object-hash';
 import { compoundExtensions, modeMap } from "../language_modes";
 import connectToChat from '../channels/chat_channel';
+import ErrorMessage from './error_message';
+import { SET_ERROR } from '../reducers/root_reducer';
+import clearErrorMessage from '../actions/clear_error_message';
 
 class Room extends React.Component {
   constructor(props) {
@@ -223,7 +226,12 @@ class Room extends React.Component {
     })
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prev) {
+    if (this.props.errorMessage && !prev.errorMessage) {
+      setTimeout(() => this.props.dispatch(clearErrorMessage()), 1000);
+      return;
+    }
+    
     if (!this.state.authorized || this.state.revokeAccess || !this.props.user) return;
     this.mapRows();
     const lines = this.editorRef.current.editor.session.doc.$lines;
@@ -248,21 +256,23 @@ class Room extends React.Component {
     });
   }
 
-  saveText() {
+  async saveText() {
     const content = this.state.editorText;
     const size = new File([content], "").size;
     const file_name = this.state.docTitle;
     const body = JSON.stringify({ file_name, size, content })
     const url = `/api/documents/${this.docId}`;
     const headers = { 'Content-Type': 'application/json' }
-    fetch(url, { method: 'PATCH', headers, body })
-    .then(res => {
+    
+    try {
+      const res = await fetch(url, { method: 'PATCH', headers, body })
       if (!res.ok) {
-        throw new Error(res.statusText)
+        const json = await res.json();
+        throw new Error(json.error);
       }
-      return res.json();
-    }).then(json => console.log(json))
-    .catch(error => console.log(error))
+    } catch(error) {
+      this.props.dispatch({ type:SET_ERROR, error:error.message });
+    }
   }
 
   mapRecentDeltas(data) {
@@ -471,6 +481,7 @@ class Room extends React.Component {
 
   componentDidMount() {
     const editor = this.editorRef.current.editor;
+    editor.focus();
     if (!this.state.initialState) return;
     if (!this.state.authorized) return;
     this.lines = JSON.parse(JSON.stringify(editor.session.doc.$lines));
@@ -796,6 +807,11 @@ class Room extends React.Component {
       </div>
       </div>
       }
+    { 
+      this.props.errorMessage ? 
+      <ErrorMessage message={this.props.errorMessage}/> :
+      null
+    }
     </div>
     )
   }

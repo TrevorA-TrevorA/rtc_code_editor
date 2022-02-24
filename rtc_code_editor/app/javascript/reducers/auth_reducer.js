@@ -18,7 +18,8 @@ export const authReducer = (_, action) => {
         collaborations, 
         selected, 
         avatarUrl,
-        notifications
+        notifications,
+        errorMessage: ""
       };
     case LOGOUT: 
       return { 
@@ -27,7 +28,8 @@ export const authReducer = (_, action) => {
         editables: [], 
         selected: [], 
         collaborations: [],
-        notifications: []
+        notifications: [],
+        errorMessage: ""
       }
     default:
       return user;

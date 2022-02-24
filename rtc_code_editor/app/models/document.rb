@@ -4,7 +4,7 @@ class Document < ApplicationRecord
   validates_presence_of :file_name, :admin_id
   validates :file_name, uniqueness: { scope: :admin_id, 
   message: "already exists" }
-
+  validate :does_not_exceed_max
   belongs_to :admin,
              class_name: 'User',
              foreign_key: :admin_id,
@@ -23,4 +23,17 @@ class Document < ApplicationRecord
   has_many :editors,
   through: :collaborations,
   source: :user
+
+  private
+
+  def does_not_exceed_max
+    admin = User.find(self.admin_id)
+    docs = self.persisted? ? 
+    admin.documents.reject { |doc| doc.id == self.id } : 
+    admin.documents
+    current_total_bytes = docs.pluck(:size).sum
+    if current_total_bytes + self.size > 5000000
+      errors.add :base, "Total uploaded files cannot exceed 50MB"
+    end
+  end
 end

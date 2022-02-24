@@ -2,6 +2,8 @@ import { authReducer, LOGIN, LOGOUT } from './auth_reducer'
 import { docReducer, UPLOAD, DELETE, UPDATE } from './doc_reducer'
 import { selectionReducer, SELECT, DESELECT } from './selection_reducer';
 import { SET_NOTIFICATIONS, CLEAR_NOTIFICATIONS, notificationReducer } from './notification_reducer';
+export const SET_ERROR = "SET ERROR"
+export const CLEAR_ERROR = "CLEAR ERROR"
 export const UPDATE_AVATAR_URL = "UPDATE AVATAR URL";
 export const DELETE_AVATAR_URL = "DELETE AVATAR URL";
 import { 
@@ -52,6 +54,12 @@ const rootReducer = (state, action) => {
       return newState;
     case CLEAR_NOTIFICATIONS:
       newState.notifications = notificationReducer(null, action)
+      return newState;
+    case SET_ERROR:
+      newState.errorMessage = action.error;
+      return newState;
+    case CLEAR_ERROR:
+      newState.errorMessage = ""
       return newState;
     default:
       return state;

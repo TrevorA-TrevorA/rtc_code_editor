@@ -8,7 +8,7 @@ class DocumentsController < ApplicationController
     if @document.save
       render status: 201, json: @document
     else
-      render status: 400, json: { errors: @document.errors.full_messages }
+      render status: 400, json: { error: @document.errors.full_messages }
     end
   end
 
@@ -54,8 +54,7 @@ class DocumentsController < ApplicationController
       data = { saved_state: @document, admin_id: @document.admin_id }
       ActionCable.server.broadcast("doc_channel_#{params[:id]}", data)
     else
-      render status: 400
-      flash.now[:errors] = @document.errors.full_messages
+      render status: 400, json: { error: @document.errors.full_messages }
     end
   end
 end

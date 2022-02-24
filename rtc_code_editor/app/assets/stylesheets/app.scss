@@ -326,7 +326,7 @@ a {
   opacity: 0.6;
 }
 
-.confirmation-box {
+.confirmation-box, .error-message {
   display: flex;
   flex-direction: column;
   align-items: center;

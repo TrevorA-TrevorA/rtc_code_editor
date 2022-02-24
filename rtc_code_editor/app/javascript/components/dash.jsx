@@ -5,6 +5,7 @@ import NavContainer from '../containers/nav_container';
 import { Redirect } from 'react-router-dom';
 import CollabManagerContainer from '../containers/collab_manager_container';
 import { permitted } from '../language_modes';
+import ErrorMessage from './error_message';
 
 let openNewDocForm;
 let closeNewDocForm;
@@ -42,7 +43,12 @@ class Dash extends React.Component {
     this.setState({ newDoc: false })
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prev) {
+    if (this.props.errorMessage && !prev.errorMessage) {
+      setTimeout(this.props.clearErrorMessage, 1000);
+      return;
+    }
+
     if (!this.props.user) return;
     this.state.newDoc ?
     fileName.focus() :
@@ -85,6 +91,11 @@ class Dash extends React.Component {
       <DocListContainer newDoc={this.state.newDoc}/>
       { this.state.managerOpen ? <CollabManagerContainer callback={this.toggleManager.bind(this)}/> : null }
       </div>
+      { 
+        this.props.errorMessage ? 
+        <ErrorMessage message={this.props.errorMessage}/> :
+        null
+      }
     </div>
     )
   }

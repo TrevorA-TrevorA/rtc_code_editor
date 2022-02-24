@@ -16,7 +16,8 @@ const initialState = {
   editables,
   avatarUrl,
   selected: [],
-  notifications
+  notifications,
+  errorMessage: ""
 }
 
 export const store = createStore(rootReducer, initialState, applyMiddleware(logger,thunk));
