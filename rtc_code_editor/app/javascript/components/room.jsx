@@ -684,7 +684,7 @@ class Room extends React.Component {
 
   dataChannelsConnected() {
     const channels = Object.values(this.dataChannels);
-    const allPresent = channels.length === this.state.editorList.length - 1;
+    const allPresent = channels.length === this.state.editorList.length;
     const allOpen = channels.every(channel => channel.readyState === "open")
     return allPresent && allOpen;
   }

@@ -3,9 +3,9 @@ require 'base64'
 
 class UsersController < ApplicationController
   before_action :confirm_logged_in, except: [
-    :new, 
-    :create, 
-    :request_password_reset, 
+    :new,
+    :create,
+    :request_password_reset,
     :update_password_form,
     :update_password
   ]
