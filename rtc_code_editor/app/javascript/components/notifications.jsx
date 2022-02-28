@@ -32,7 +32,6 @@ class Notifications extends React.Component {
       openModal: this.openModal.bind(this),
       closeModal: this.closeModal.bind(this),
     }
-    window.notificationsComponent = this;
   }
 
   componentDidMount() {
@@ -98,7 +97,6 @@ class Notifications extends React.Component {
   }
 
   receiveNotifications(data) {
-    console.log(data);
     if (data.rescind) {
       this.delist(data);
       return;

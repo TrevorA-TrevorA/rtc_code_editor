@@ -1,15 +1,17 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers/root_reducer';
-const loggedIn = !!window.currentUser;
-const documents = loggedIn ? window.currentUser.documents : [];
-const editables = loggedIn ? window.currentUser.accepted_collab_documents : [];
-const collaborations = loggedIn ? window.currentUser.collaborations : [];
-const avatarUrl = loggedIn ? window.currentUser.avatar_url : null;
-const notifications = loggedIn ? window.currentUser.notifications : [];
+const currentUser = window.currentUser;
+delete window.currentUser;
+const loggedIn = !!currentUser;
+const documents = loggedIn ? currentUser.documents : [];
+const editables = loggedIn ? currentUser.accepted_collab_documents : [];
+const collaborations = loggedIn ? currentUser.collaborations : [];
+const avatarUrl = loggedIn ? currentUser.avatar_url : null;
+const notifications = loggedIn ? currentUser.notifications : [];
 notifications.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 const initialState = { 
-  user: window.currentUser, 
+  user: currentUser, 
   documents, 
   collaborations, 
   editables,

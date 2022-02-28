@@ -12,10 +12,6 @@ import consumer from "./consumer"
       chatLog: [],
       boxOpen: true,
 
-      connected() {
-        console.log("chat channel connected...")
-      },
-
       received(data) {
         if (data.message) {
           this.chatLog.push(data);

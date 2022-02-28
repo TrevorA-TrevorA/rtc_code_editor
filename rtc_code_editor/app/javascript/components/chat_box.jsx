@@ -8,7 +8,6 @@ class ChatBox extends React.Component {
   constructor(props) {
     super(props);
     this.sendChat = this.sendChat.bind(this);
-    window.ChatBox = this;
   }
 
   componentDidMount() {

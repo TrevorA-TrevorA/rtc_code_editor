@@ -20,7 +20,6 @@ class CollabManager extends React.Component {
       docAdmin: null,
       searchBarValue: ''
     };
-    window.CollabManager = this;
     this.isAdmin = false;
   }
 

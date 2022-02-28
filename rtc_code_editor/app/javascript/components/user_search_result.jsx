@@ -3,7 +3,6 @@ import { GravatarUrl } from '../context/gravatar_url';
 import connectToNotifications from '../channels/notifications_channel';
 import { v4 as uuid } from 'uuid';
 
- window.UserSearchResults = [];
 class UserSearchResult extends React.Component {
   static contextType = GravatarUrl;
   
@@ -19,7 +18,6 @@ class UserSearchResult extends React.Component {
     this.collaborations = this.props.user.collaborations
     this.inviteUser = this.inviteUser.bind(this);
     this.rescindInvitation = this.rescindInvitation.bind(this);
-    UserSearchResults.push(this);
   }
 
   componentWillUnmount() {

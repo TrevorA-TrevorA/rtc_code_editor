@@ -19,7 +19,6 @@ class Dash extends React.Component {
     }
     openNewDocForm = this.openDocFormRow.bind(this);
     closeNewDocForm = this.closeDocFormRow.bind(this);
-    window.dash = this;
     this.dashRef = React.createRef();
   }
 

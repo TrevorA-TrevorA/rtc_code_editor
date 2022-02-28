@@ -3,7 +3,6 @@ import { GravatarUrl } from '../context/gravatar_url';
 import { v4 as uuid } from 'uuid';
 
 const DocHeader = props => {
-  window.DocHeaderProps = props;
   const gravatar = useContext(GravatarUrl);
   
   return (

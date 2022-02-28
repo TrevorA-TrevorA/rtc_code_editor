@@ -86,7 +86,6 @@ class Room extends React.Component {
     this.nameTagColors = {};
     this.chatSubscription = connectToChat(...chatCallbacks, this.docId, this.props.user.id)
     this.nameTagColorList = ['#FF0000', '#0096FF', '#19AD49', '#FF00FF', '#FFA500'];
-    window.room = this;
   }
 
   receiveChat(chats) {
@@ -284,9 +283,6 @@ class Room extends React.Component {
   }
 
   receiveEdit(editData) {
-    if (!window.latestChange) window.latestChange = [];
-    window.latestChange.push(editData)
-    if (window.latestChange.length > 2) window.latestChange = window.latestChange.slice(-2)
     if (!editData.backup && this.backupConnection) return;
     let data = editData.backup || editData;
     if (this.deltaMap[data.deltaId]) return;

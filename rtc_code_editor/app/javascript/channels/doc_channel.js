@@ -7,12 +7,7 @@ import consumer from "./consumer"
       editing
     }, {
       connected() {
-        console.log("doc channel connected...")
         if (editing) callbacks.connect();
-      },
-
-      disconnected() {
-        console.log("doc channel disconnected")
       },
 
       received(data) {
