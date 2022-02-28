@@ -19,14 +19,6 @@ class User < ApplicationRecord
   primary_key: :id,
   dependent: :destroy
 
-  has_many :document_connections,
-  class_name: 'DocumentConnection',
-  foreign_key: :user_id
-
-  has_many :open_documents,
-  through: :document_connections,
-  source: :document
-  
   has_many :collab_documents,
   through: :collaborations,
   source:  :document

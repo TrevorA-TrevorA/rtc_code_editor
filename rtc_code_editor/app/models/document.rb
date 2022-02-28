@@ -16,13 +16,14 @@ class Document < ApplicationRecord
   primary_key: :id,
   dependent: :destroy
 
-  has_many :active_editors,
-  through: :document_connections,
-  source: :user
+  has_many :accepted_collaborations, -> { accepted },
+  class_name: 'Collaboration',
+  foreign_key: :document_id,
+  primary_key: :id
 
   has_many :editors,
-  through: :collaborations,
-  source: :user
+  through: :accepted_collaborations,
+  source: :editor
 
   private
 

@@ -2,6 +2,8 @@
 require 'base64'
 
 class DocumentsController < ApplicationController
+  before_action :confirm_logged_in
+  
   def create
     @document = Document.new(document_params)
     @document.admin_id = request.path_parameters[:user_id]
@@ -14,6 +16,10 @@ class DocumentsController < ApplicationController
 
   def destroy
     @document = Document.find_by(id: params[:id])
+    if @document.admin != current_user
+      render status: 401, json: { error: "unauthorized" }
+      return
+    end
 
     if @document
       @collaborations = Collaboration.where(document_id: params[:id])
@@ -26,6 +32,11 @@ class DocumentsController < ApplicationController
   end
 
   def index
+    if current_user.id != params[:user_id]
+      render status: 401, json: {error: "unauthorized"}
+      return
+    end
+
     @documents = Document.where(admin_id: request.path_parameters[:user_id])
 
     if params[:ids]
@@ -38,6 +49,10 @@ class DocumentsController < ApplicationController
 
   def show
     @document = Document.find_by(id: params[:id])
+    if !authorized_user?(@document)
+      render status: 401, json: { error: "unauthorized" }
+      return
+    end
 
     if @document
       render json: @document
@@ -49,6 +64,11 @@ class DocumentsController < ApplicationController
   def update
     @document = Document.find_by(id: params[:id])
 
+    if !authorized_user?(@document)
+      render status: 401, json: { error: "unauthorized" }
+      return
+    end
+
     if @document.update(document_params)
       render json: @document
       data = { saved_state: @document, admin_id: @document.admin_id }
@@ -57,10 +77,17 @@ class DocumentsController < ApplicationController
       render status: 400, json: { error: @document.errors.full_messages }
     end
   end
-end
 
-private
+  private
 
-def document_params
-  params.require(:document).permit(:file_name, :size, :content)
+  def document_params
+    params.require(:document).permit(:file_name, :size, :content)
+  end
+
+  def authorized_user?(document)
+    is_editor = document.editors.pluck(:id).include?(current_user.id)
+    is_admin = document.admin_id == current_user.id
+    is_editor || is_admin
+  end
+
 end

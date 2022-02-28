@@ -1,4 +1,6 @@
 class CollaborationsController < ApplicationController
+  before_action :confirm_logged_in
+  
   def index
     @collaborations = Collaboration.where(editor_id: request.path_parameters[:user_id])
     render json: @collaborations
