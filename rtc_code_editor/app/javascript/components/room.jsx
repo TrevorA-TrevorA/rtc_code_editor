@@ -476,6 +476,7 @@ class Room extends React.Component {
   }
 
   componentDidMount() {
+    if (!this.props.user) return;
     const editor = this.editorRef.current.editor;
     editor.focus();
     if (!this.state.initialState) return;
@@ -732,7 +733,7 @@ class Room extends React.Component {
   
   render() {
     if (!this.props.user) {
-      this.docSubscription.unsubscribe();
+      this.docSubscription && this.docSubscription.unsubscribe();
       return <Redirect to="/"/>
     }
 

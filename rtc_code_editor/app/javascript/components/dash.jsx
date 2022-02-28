@@ -55,6 +55,7 @@ class Dash extends React.Component {
   }
 
   componentDidMount() {
+    if (!this.props.user) return;
     this.dashRef.current.focus();
   }
 

@@ -197,7 +197,7 @@ class DocRow extends React.Component {
           </button>
           <Link 
             to={{
-              pathname: `/doc/${this.props.doc.id}/room`
+              pathname: `/doc/${this.props.doc.id}`
               }}>
               <button className='doc-row-button'>&#9998;</button>
           </Link>

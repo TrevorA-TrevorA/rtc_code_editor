@@ -18,7 +18,7 @@ const App = () => (
         <Route exact path="/password-reset" render={() => <PasswordReset/>}/>
         <Route exact path="/log-in" render={() => <LoginContainer/>}/>
         <Route exact path="/dash" render={() => <DashContainer/>}/>
-        <Route exact path="/doc/:docId/room" render={() => <RoomContainer/>}/>
+        <Route exact path="/doc/:docId" render={() => <RoomContainer/>}/>
       </Switch>
     </BrowserRouter>
   </Provider>
