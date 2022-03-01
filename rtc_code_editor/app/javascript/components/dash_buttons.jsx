@@ -46,7 +46,8 @@ export const ManageEditorsButton = props => {
   const hoverText = disabled ? "you must have at least one document to invite editors" : "";
   
   return (
-    <button 
+    <button
+      id="editors-button"
       disabled={disabled} 
       onClick={props.callback} 
       className="dash-button"

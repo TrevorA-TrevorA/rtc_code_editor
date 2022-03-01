@@ -23,6 +23,20 @@ class CollabManager extends React.Component {
     this.isAdmin = false;
   }
 
+  componentDidMount() {
+    $('body').on('click', (e) => {
+      const ignore = Array.from($('#collab').find('*'))
+      ignore.push($('#collab')[0]);
+      ignore.push($('#editors-button')[0]);
+      if (ignore.includes(e.target)) return;
+      this.props.callback();
+    })
+  }
+
+  componentWillUnmount() {
+    $('body').off('click');
+  }
+
   async searchUsers(e) {
     if (!e.target.value) {
       this.setState({userSearchResults: [], searchBarValue: ''})
@@ -91,7 +105,7 @@ class CollabManager extends React.Component {
 
     return (
       <div id="collab">
-        <button onClick={this.props.callback} id="closeCollab">X</button>
+        <button onClick={this.props.callback} id="closeCollab">x</button>
         <div className="editor-search">
           <input 
           onInput={this.searchUsers} 
