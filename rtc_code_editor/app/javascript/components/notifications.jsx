@@ -97,6 +97,7 @@ class Notifications extends React.Component {
   }
 
   receiveNotifications(data) {
+    
     if (data.rescind) {
       this.delist(data);
       return;
@@ -111,6 +112,7 @@ class Notifications extends React.Component {
 
     if (data.new_notification) {
       const type = data.new_notification.notification_type;
+      if (type === "collaboration_decline") return;
       if (type === "deletion_notice") {
         const { document_id, collaboration_id } = data.new_notification.details;
 

@@ -5,9 +5,6 @@ class NotificationsChannel < ApplicationCable::Channel
 
   def receive(data)
     if data["notification_type"] == "collaboration_acceptance"
-      document_id = data["details"]["document_id"]
-      recipient_id = Document.find(document_id).admin_id
-      data["recipient_id"] = recipient_id
       collab_id = data["details"]["collab_id"]
       editor = User.find(data["details"]["editor_id"])
         .attributes
@@ -19,6 +16,8 @@ class NotificationsChannel < ApplicationCable::Channel
       data["details"]["message"] = message
       @notification = Notification.create(data)
       ActionCable.server.broadcast("notifications_channel_#{data["recipient_id"]}", { new_notification: @notification })
+
+      document_id = data["details"]["document_id"]
       ActionCable.server.broadcast("editors_channel_#{document_id}", { new_editor: editor })
       return
     end
@@ -34,6 +33,12 @@ class NotificationsChannel < ApplicationCable::Channel
       return
     end
 
+    if data["notification_type"] == "collaboration_decline"
+      @notification = Notification.new(data)
+      ActionCable.server.broadcast("notifications_channel_#{data["recipient_id"]}", { new_notification: @notification })
+      return
+    end
+    
     @notification = Notification.create(data)
     ActionCable.server.broadcast("notifications_channel_#{data["recipient_id"]}", { new_notification: @notification })
   end

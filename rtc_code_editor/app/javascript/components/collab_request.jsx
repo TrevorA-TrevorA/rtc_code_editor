@@ -10,6 +10,7 @@ class CollabRequest extends React.Component {
     this.acceptEditAccess = this.acceptEditAccess.bind(this);
     this.declineEditAccess = this.declineEditAccess.bind(this);
     this.collabId;
+    console.log(props)
   }
 
   static contextType = NotificationUtilities;
@@ -30,7 +31,7 @@ class CollabRequest extends React.Component {
 
     if (answer === "accept") {
       const acceptance = {
-        recipient_id: null,
+        recipient_id: this.props.notification.details.admin_id,
         notification_type: "collaboration_acceptance",
         details: {
           document_id: this.props.notification.details.document_id,
@@ -41,6 +42,23 @@ class CollabRequest extends React.Component {
       }
 
       this.context.sendNotification(acceptance);
+      return;
+    }
+
+    if (answer === "decline") {
+      const decline = {
+        recipient_id: this.props.notification.details.admin_id,
+        notification_type: "collaboration_decline",
+        details: {
+          document_id: this.props.notification.details.document_id,
+          file_name: this.props.notification.details.file_name,
+          editor_id: this.props.notification.recipient_id,
+          collab_id: this.collabId
+        }
+      }
+
+      console.log(decline);
+      this.context.sendNotification(decline);
     }
   }
 

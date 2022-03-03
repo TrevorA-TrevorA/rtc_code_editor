@@ -8,16 +8,26 @@ class UserSearchResult extends React.Component {
   
   constructor(props) {
     super(props);
-    this.notificationSub = connectToNotifications(this.props.user);
+    this.notificationSub = connectToNotifications(
+      this.props.self,
+      this.revertButton.bind(this)
+      );
     this.state = { 
       invited: (this.props.user.pending_collab_documents.some(doc => {
         return doc.id === this.props.doc.id;
       }))
     }
 
-    this.collaborations = this.props.user.collaborations
+    this.collaborations = this.props.user.collaborations;
     this.inviteUser = this.inviteUser.bind(this);
     this.rescindInvitation = this.rescindInvitation.bind(this);
+  }
+
+  revertButton(data) {
+    const notif = data.new_notification;
+    if (!notif) return;
+    if (notif.notification_type !== "collaboration_decline") return;
+    this.setState({invited: false});
   }
 
   componentWillUnmount() {
@@ -59,6 +69,7 @@ class UserSearchResult extends React.Component {
           collaboration_id: collab_id,
           document_id: this.props.doc.id,
           document_admin: this.props.self.username,
+          admin_id: this.props.self.id,
           file_name: this.props.doc.file_name
         }
       }

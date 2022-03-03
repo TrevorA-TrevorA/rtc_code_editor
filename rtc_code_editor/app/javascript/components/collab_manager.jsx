@@ -71,6 +71,7 @@ class CollabManager extends React.Component {
   }
 
   receiveEditors(data) {
+    console.log(data);
     const { userSearchResults, editors } = this.state;
     if (data.new_editor) {
       const revised = userSearchResults.filter(user => user.id !== data.new_editor.id)
