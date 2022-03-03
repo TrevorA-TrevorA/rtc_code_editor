@@ -10,7 +10,6 @@ class CollabRequest extends React.Component {
     this.acceptEditAccess = this.acceptEditAccess.bind(this);
     this.declineEditAccess = this.declineEditAccess.bind(this);
     this.collabId;
-    console.log(props)
   }
 
   static contextType = NotificationUtilities;
@@ -57,7 +56,6 @@ class CollabRequest extends React.Component {
         }
       }
 
-      console.log(decline);
       this.context.sendNotification(decline);
     }
   }

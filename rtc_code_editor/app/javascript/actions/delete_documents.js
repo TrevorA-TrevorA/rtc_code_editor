@@ -36,7 +36,7 @@ const removeDocuments = () => (dispatch, getState) => {
       dispatch({ type: REMOVE_COLLABORATION, docId: doc.id, collaborationId })
       dispatch({ type: DESELECT, doc })
     })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
   });
 }
 

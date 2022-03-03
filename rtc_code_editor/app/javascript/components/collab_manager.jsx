@@ -47,8 +47,8 @@ class CollabManager extends React.Component {
       let results = await search.json();
       if (!search.ok) throw new Error(search.statusText);
       this.setState({ userSearchResults: results, searchBarValue: e.target.value });
-    } catch(err) {
-      console.log(err);
+    } catch(error) {
+      console.log(error);
     }
   }
 
@@ -71,7 +71,6 @@ class CollabManager extends React.Component {
   }
 
   receiveEditors(data) {
-    console.log(data);
     const { userSearchResults, editors } = this.state;
     if (data.new_editor) {
       const revised = userSearchResults.filter(user => user.id !== data.new_editor.id)
