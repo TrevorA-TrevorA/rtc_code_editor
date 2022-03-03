@@ -2,6 +2,7 @@
   "name": "rtc_code_editor",
   "private": true,
   "dependencies": {
+    "@babel/core": "^7.17.5",
     "@babel/preset-react": "^7.14.5",
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
