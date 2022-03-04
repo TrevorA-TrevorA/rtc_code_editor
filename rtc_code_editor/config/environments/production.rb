@@ -63,11 +63,13 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "code_room_production"
 
   config.action_mailer.perform_caching = false
-
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default_url_options = { host: ENV['PROD_HOST'] }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
   :address              => "smtp.gmail.com",
   :port                 => 587,
+  :domain               => ENV['PROD_EMAIL_DOMAIN']
   :user_name            => ENV['PROD_EMAIL_USERNAME'],
   :password             => ENV['PROD_EMAIL_PASSWORD'],
   :authentication       => "plain",
