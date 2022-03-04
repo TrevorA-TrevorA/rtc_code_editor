@@ -1,5 +1,4 @@
 import React from 'react';
-import connectToChat from '../channels/chat_channel';
 import ChatBody from './chat_body';
 import ChatBoxHeader from './chat_box_header';
 import { Redirect } from 'react-router';

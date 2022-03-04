@@ -40,9 +40,11 @@ const rootReducer = (state, action) => {
       return newState;
     case UPDATE_AVATAR_URL:
       newState.avatarUrl = action.url;
+      newState.user = {...newState.user, avatar_url: action.url}
       return newState;
     case DELETE_AVATAR_URL:
       newState.avatarUrl = null;
+      newState.user = {...newState.user, avatar_url: null}
       return newState;
     case UPDATE:
       newState.documents = docReducer(state.documents, action);
