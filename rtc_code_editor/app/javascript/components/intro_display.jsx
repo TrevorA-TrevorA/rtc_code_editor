@@ -6,11 +6,7 @@ import dataDemo from 'videos/data_view.mp4';
 const IntroDisplay = () => {
 
   useEffect(() => {
-    const coord = setInterval(() => {
-      if (document.readyState !== "complete") return;
-      clearInterval(coord);
-      $(".demo-vid").trigger('play');
-    },100)
+    $(".demo-vid").trigger('play');
   })
 
   return (<div className='intro-view'>
