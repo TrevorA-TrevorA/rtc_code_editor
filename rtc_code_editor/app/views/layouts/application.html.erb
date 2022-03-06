@@ -13,8 +13,9 @@
 
   <body>
   <% if current_user %>
-  <script>
+  <script id="get-current">
     window.currentUser = <%= render("api/users/user.json.jbuilder", user: current_user).html_safe %>
+    $("#get-current").remove();
   </script>
   <% end %>
     <%= yield %>
