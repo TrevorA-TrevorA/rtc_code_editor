@@ -1,3 +1,5 @@
+require 'zlib'
+
 class RemoveOldColRenameNewCol < ActiveRecord::Migration[6.1]
   Document.all.each do |doc|
     compressed = Zlib::Deflate.deflate(doc.content)
