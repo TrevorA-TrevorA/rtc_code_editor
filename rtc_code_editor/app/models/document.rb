@@ -35,7 +35,14 @@ class Document < ApplicationRecord
   private
 
   def compress_content
+    return if already_compressed?
     self.content = Zlib::Deflate.deflate(self.content)
+  end
+
+  def already_compressed?
+    return false if !self.persisted?
+    return false if self.content != Document.find(self.id).content
+    true
   end
 
   def does_not_exceed_max
