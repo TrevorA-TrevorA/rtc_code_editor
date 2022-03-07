@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import DocRowContainer from '../containers/doc_row_container';
-import { v4 as uuid } from 'uuid';
 import NewDocRow from './new_doc_row';
 
 const DocListHeader = props => {
@@ -36,9 +35,16 @@ const DocList = props => {
     hour12: true
   }
 
+  const firstMount = useRef(true);
   const [ resubscribe, setResubscribe] = useState(false);
 
-  useEffect(() => setResubscribe(true))
+  useEffect(() => {
+    if (firstMount.current) {
+      firstMount.current = false;
+    } else {
+      setResubscribe(true)
+    }
+  })
   const docs = props.documents;
   const editables = props.editables;
 
@@ -50,7 +56,7 @@ const DocList = props => {
     .format(new Date(file.updated_at))
     .replaceAll(/\//g, "-")
     return <DocRowContainer
-    key={uuid()}
+    key={file.id}
     doc={file}
     name={file.file_name}
     size={file.size}

@@ -46,11 +46,6 @@ import consumer from "./consumer"
           return;
         }
         
-        // if (data.editors) {
-        //   callbacks.editorList(data);
-        //   return;
-        // }
-
         if (data.arrival || data.departure) {
           callbacks.editorList(data);
         }

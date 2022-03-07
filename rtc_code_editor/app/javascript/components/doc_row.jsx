@@ -14,7 +14,6 @@ class DocRow extends React.Component {
 
     this.state = { 
       editorList: [], 
-      docState: "", 
       editing: false,
     }
 
@@ -61,21 +60,13 @@ class DocRow extends React.Component {
         return res.json();
       }
     }).then(json => {
-      this.props.dispatch({ type: UPDATE, doc: json })
+      this.props.dispatch({ type: UPDATE, doc: json });
+      this.setState({editing: false});
     })
   }
 
   componentWillUnmount() {
     this.subscription.unsubscribe();
-  }
-
-  getTextWidth(text, font) {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-  
-    context.font = font || getComputedStyle(document.body).font;
-  
-    return context.measureText(text).width;
   }
 
   componentDidUpdate() {
@@ -113,7 +104,11 @@ class DocRow extends React.Component {
     }
 
     this.subscription = connectToDoc(this.props.doc.id, false, callbacks);
-    if (this.props.resubscribe) this.subscription.resubscribe()
+    const awaitSubscription = setInterval(() => {
+      if (!this.subscription || this.subscription.identifier) return;
+      clearInterval(awaitSubscription);
+      if (this.props.resubscribe) this.subscription.resubscribe()
+    }, 100);
   }
 
   updateSavedState(data) {
@@ -134,7 +129,6 @@ class DocRow extends React.Component {
   }
 
   render() {
-
     const klass = this.props.accessStatus === "Editor" ?
     "doc-row editor" :
     "doc-row";
@@ -172,7 +166,7 @@ class DocRow extends React.Component {
             {
               this.state.editorList.map(editor => {
                 return <img
-                key={uuid()}
+                key={editor.id}
                 className="avatar doc-status"
                 src={editor.avatar_url || this.context(editor.email)}
                 title={editor.username}

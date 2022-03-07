@@ -3,20 +3,11 @@ class DocChannel < ApplicationCable::Channel
     stream_from "doc_channel_#{params[:document_id]}"
     @user = connection.current_user
     if params[:editing]
-      doc_connection_params = { 
-        editor_id: connection.current_user.id, 
-        document_id: params[:document_id]
-      }
-      
-      # DocumentConnection.where(doc_connection_params).destroy_all
-      # @doc_connection = DocumentConnection.create(doc_connection_params)
-      
       send_join_request
       announce_arrival
     end
 
     send_initial_state
-    # broadcast_active_editors
   end
 
   def receive(data)
@@ -24,20 +15,8 @@ class DocChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    # if @doc_connection
-    #   @doc_connection.destroy
-    # else
-    #   doc_connection_params = { 
-    #     editor_id: connection.current_user.id, 
-    #     document_id: params[:document_id]
-    #   }
-      
-    #   DocumentConnection.where(doc_connection_params).destroy_all
-    # end
-    
     if params[:editing]
       remove_location
-      # broadcast_active_editors
       announce_departure
     end
   end
@@ -57,17 +36,6 @@ class DocChannel < ApplicationCable::Channel
     signal = { join: true, senderId: connection.current_user.id }
     ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", signal)
   end
-
-  # def broadcast_active_editors
-  #   editors = DocumentConnection.where(document_id: params[:document_id])
-  #   .map do |conn|
-  #     User.find(conn.editor_id)
-  #     .attributes
-  #     .slice('id', 'username', 'avatar_url', 'email')
-  #   end
-
-  #   ActionCable.server.broadcast("doc_channel_#{params[:document_id]}", {editors: editors})
-  # end
 
   def send_initial_state
     syncRequest = { sender_id: connection.current_user.id, sync: true }
