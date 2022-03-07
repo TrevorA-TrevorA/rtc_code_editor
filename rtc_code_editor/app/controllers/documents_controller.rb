@@ -8,6 +8,7 @@ class DocumentsController < ApplicationController
     @document = Document.new(document_params)
     @document.admin_id = request.path_parameters[:user_id]
     if @document.save
+      @document.decompress!
       render status: 201, json: @document
     else
       render status: 400, json: { error: @document.errors.full_messages }
@@ -53,7 +54,6 @@ class DocumentsController < ApplicationController
 
     if @document
       @document.decompress!
-      puts @document
       render json: @document
     else
       render status: 404
