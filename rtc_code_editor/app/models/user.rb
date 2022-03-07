@@ -7,7 +7,7 @@ class User < ApplicationRecord
   validates :password, presence: { on: create }, length: { on: create, minimum: 8 }
   after_initialize :ensure_session_token
 
-  has_many :documents,
+  has_many :_documents,
            class_name: 'Document',
            foreign_key: :admin_id,
            primary_key: :id,
@@ -19,7 +19,7 @@ class User < ApplicationRecord
   primary_key: :id,
   dependent: :destroy
 
-  has_many :collab_documents,
+  has_many :_collab_documents,
   through: :collaborations,
   source:  :document
 
@@ -28,14 +28,33 @@ class User < ApplicationRecord
   primary_key: :id,
   foreign_key: :recipient_id
 
+  def collab_documents
+    docs = self._collab_documents
+    docs.each(&:decompress!)
+    docs
+  end
+
+
   def accepted_collab_documents
     accepted_cols = self.collaborations.select { |col| col.accepted == true }
-    accepted_cols.map { |col| col.document }
+    accepted_cols.map do |col|
+      col.document.decompress!
+      col.document
+    end
   end
 
   def pending_collab_documents
     accepted_cols = self.collaborations.select { |col| col.accepted == false }
-    accepted_cols.map { |col| col.document }
+    accepted_cols.map do |col|
+      col.document.decompress!
+      col.document
+    end
+  end
+
+  def documents
+    docs = self._documents
+    docs.each(&:decompress!)
+    docs
   end
 
 

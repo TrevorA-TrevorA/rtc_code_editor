@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_28_025426) do
+ActiveRecord::Schema.define(version: 2022_03_07_010736) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -29,12 +29,11 @@ ActiveRecord::Schema.define(version: 2022_01_28_025426) do
 
   create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "file_name", null: false
-    t.text "content"
     t.uuid "admin_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.float "size", null: false
-    t.text "pending_revisions"
+    t.binary "content"
     t.index ["admin_id"], name: "index_documents_on_admin_id"
   end
 

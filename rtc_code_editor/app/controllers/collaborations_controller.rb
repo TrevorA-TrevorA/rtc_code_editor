@@ -10,6 +10,7 @@ class CollaborationsController < ApplicationController
     @collaboration = Collaboration.find(params[:id])
     @collaboration.update(accepted: true)
     @document = Document.find(@collaboration.document_id)
+    @document.decompress!
     render json: { collaboration: @collaboration, document: @document }
   end
   

@@ -37,13 +37,10 @@ class DocumentsController < ApplicationController
       return
     end
 
-    @documents = Document.where(admin_id: request.path_parameters[:user_id])
-
-    if params[:ids]
-      ids = JSON.parse(Base64.decode64(params[:ids]))
-      @documents = @documents.select { |doc| ids.include?(doc.id) }
+    @documents = Document.where(admin_id: request.path_parameters[:user_id]).map do |doc|
+      doc.decompress!
     end
-    
+
     render json: @documents
   end
 
@@ -55,6 +52,8 @@ class DocumentsController < ApplicationController
     end
 
     if @document
+      @document.decompress!
+      puts @document
       render json: @document
     else
       render status: 404
@@ -70,6 +69,7 @@ class DocumentsController < ApplicationController
     end
 
     if @document.update(document_params)
+      @document.decompress!
       render json: @document
       data = { saved_state: @document, admin_id: @document.admin_id }
       ActionCable.server.broadcast("doc_channel_#{params[:id]}", data)
