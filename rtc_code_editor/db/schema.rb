@@ -10,12 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_07_010736) do
+ActiveRecord::Schema.define(version: 2022_03_08_134225) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "auth_attempts", force: :cascade do |t|
+    t.string "ip_address", null: false
+    t.datetime "last_attempt_time", precision: 6, null: false
+    t.integer "attempt_total", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "collaborations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "editor_id", null: false

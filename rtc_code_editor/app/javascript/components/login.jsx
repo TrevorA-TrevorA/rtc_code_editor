@@ -28,12 +28,16 @@ class Login extends React.Component {
 
     try {
       const response = await fetch("api/session", options)
-      if (!response.ok) throw new Error("log in failed")
-      const user = await response.json();
-      this.props.dispatch({ type: LOGIN, user: user})
+      const responseJson = await response.json();
+      if (!response.ok) {
+        let message = responseJson.error || response.statusText
+        throw new Error(message);
+      }
+
+      this.props.dispatch({ type: LOGIN, user: responseJson})
     } catch(error) {
       console.log(error);
-      this.setState({errorMessage: "Your username or password is invalid."})
+      this.setState({errorMessage: error.message})
     }
   }
   
