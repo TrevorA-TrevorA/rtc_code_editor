@@ -10,7 +10,7 @@ A real-time collaborative code-editing interface.
 
 **UI**: React, Redux, and the Ace Editor API.
 
-**Status**: Currently in development.
+**Status**: Archived.
 
 
 
